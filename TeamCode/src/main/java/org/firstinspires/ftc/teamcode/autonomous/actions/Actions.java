@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Actions {
-    private final Map<Integer, List<Action>> actions = new HashMap<>();
+    private final Map<Integer, Map<Integer, Action>> actions = new HashMap<>();
     private final Hardware hardware;
     private final Localization localization;
 
@@ -19,26 +19,29 @@ public class Actions {
         this.localization = localization;
     }
 
-    // IS SENSITIVE to the order in which actions are added
     public void addTask(Action action)
     {
         if (actions.containsKey(action.index)) {
-            actions.get(action.index).add(action);
+            actions.get(action.index).put(action.priority, action);
         } else {
-            List<Action> actionList = new ArrayList<>();
-            actionList.add(action);
-            actions.put(action.index, actionList);
+            Map<Integer, Action> actionMap = new HashMap<>();
+            actionMap.put(action.priority, action);
+            actions.put(action.index, actionMap);
         }
     }
 
     // Executes the task at the waypoint with a given index
     public void executeTask(int index)
     {
-        List<Action> actionList = actions.get(index);
-        if (actionList == null) {
+        Map<Integer, Action> actionMap = actions.get(index);
+        if (actionMap == null) {
             return;
         }
-        for (Action action : actionList) {
+        for (int i = 0; i < actionMap.size(); i++) {
+            Action action = actionMap.get(i);
+            if (action == null) {
+                throw new RuntimeException("Invalid action priority: expected one priority for each value from 0 to " + (i - 1) + ", but instead found " + i);
+            }
             action.execute(hardware, localization);
         }
     }
