@@ -14,7 +14,7 @@ public class SpinCarouselAction extends Action {
     public void execute(Hardware hardware, Localization localization)
     {
         long time = System.currentTimeMillis();
-        hardware.carouselMotor.setPower(-0.4);
+        hardware.carouselMotor.setPower(-0.15);
         while(System.currentTimeMillis() - time < 2500)
         {
         }

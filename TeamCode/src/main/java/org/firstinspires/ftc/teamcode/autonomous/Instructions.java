@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.autonomous.actions.Actions;
+import org.firstinspires.ftc.teamcode.autonomous.actions.FullStopAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.PlaceCubeAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.RaiseArmAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.SpinCarouselAction;
@@ -37,6 +38,7 @@ public class Instructions {
     {
         actions = new Actions(hardware, localization);
         if (!Constants.IS_LEFT_OPMODE) {
+            actions.addTask(new FullStopAction(0, 0));
             actions.addTask(new SpinCarouselAction(0, 0));
         }
         else{

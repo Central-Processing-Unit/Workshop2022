@@ -38,7 +38,7 @@ public class Drive extends Core {
             hasTargetArmPos = false;
             prevArmPos = armPos;
         } else if (gamepad1.left_trigger > 0) {
-            armMotor.setPower((usePID ? lastPIDOutput : 0) + -gamepad1.left_trigger);
+            armMotor.setPower((usePID ? lastPIDOutput : 0) + gamepad1.left_trigger);
             isArmMoving = true;
             hasTargetArmPos = false;
             prevArmPos = armPos;
@@ -67,7 +67,7 @@ public class Drive extends Core {
             carouselDirection = 0;
         }
 
-        moveCarousel(carouselDirection * 0.3);
+        moveCarousel(carouselDirection * 0.15);
 
         if (gamepad1.b == true && System.currentTimeMillis() - bLastPressed > 250) {
             bLastPressed = System.currentTimeMillis();
