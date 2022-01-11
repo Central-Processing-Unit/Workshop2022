@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.autonomous.Constants;
 
 public class Hardware {
     public DcMotor leftFrontMotor, rightFrontMotor, leftBackMotor, rightBackMotor;
-    public DcMotor armMotor, carouselMotor;
+    public DcMotor armMotor, carouselMotor, clawMotor;
     public BNO055IMU gyro;
     public WebcamName camera;
 
@@ -23,7 +23,7 @@ public class Hardware {
         initializeGyro(hardware);
         initializeDriveMotors(hardware);
         initializeAccessoryMotors(hardware);
-        //initializeWebcam(hardware);
+        initializeWebcam(hardware);
     }
 
     private void initializeDriveMotors(HardwareMap hardware)
@@ -87,6 +87,10 @@ public class Hardware {
         armMotor = hardware.dcMotor.get("armMotor");
         armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        clawMotor = hardware.dcMotor.get("clawMotor");
+        clawMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        clawMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     private void initializeGyro(HardwareMap hardware)

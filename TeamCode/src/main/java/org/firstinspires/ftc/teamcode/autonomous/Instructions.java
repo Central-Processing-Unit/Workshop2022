@@ -5,11 +5,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.autonomous.actions.Actions;
+import org.firstinspires.ftc.teamcode.autonomous.actions.CloseClawAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.FullStopAction;
-import org.firstinspires.ftc.teamcode.autonomous.actions.PlaceCubeAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.RaiseArmAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.SpinCarouselAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.SpeedrunAction;
+import org.firstinspires.ftc.teamcode.autonomous.actions.util.ObjectDetector;
 import org.firstinspires.ftc.teamcode.autonomous.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.autonomous.localization.Localization;
 import org.firstinspires.ftc.teamcode.autonomous.localization.Position;
@@ -24,11 +25,20 @@ isolating these instructions to a separate class, rather than clogging up the Au
 This class also provides a method of disposing resources.
  */
 public class Instructions {
+    public static double initialX, initialY, initialTheta;
+
     public Navigation navigation;
     public Actions actions;
+    public ObjectDetector objectDetector;
+    private static ObjectDetector.TeamElementLocation elementLocation;
 
-    public Instructions(Hardware hardware, Localization localization, ElapsedTime runtime, Telemetry telemetry, LinearOpMode opMode, double initialX, double initialY, double initialTheta)
+    public Instructions(Hardware hardware, Localization localization, ElapsedTime runtime, Telemetry telemetry, LinearOpMode opMode, double _initialX, double _initialY, double _initialTheta)
     {
+        initialX = _initialX;
+        initialY = _initialY;
+        initialTheta = _initialTheta;
+        objectDetector = new ObjectDetector(hardware);
+        elementLocation = objectDetector.getTeamElementLocation();
         registerActions(hardware, localization);
         registerNav(hardware, localization, runtime, actions, telemetry, opMode, initialX, initialY, initialTheta);
     }
@@ -38,12 +48,38 @@ public class Instructions {
     {
         actions = new Actions(hardware, localization);
         if (!Constants.IS_LEFT_OPMODE) {
-            actions.addTask(new FullStopAction(0, 0));
-            actions.addTask(new SpinCarouselAction(0, 0));
+            if (elementLocation != ObjectDetector.TeamElementLocation.INDETERMINATE) {
+                actions.addTask(new CloseClawAction(0, 0));
+                switch (elementLocation) {
+                    case LEFT:
+                        actions.addTask(new RaiseArmAction(10, 0, 1));
+                        break;
+                    case CENTER:
+                        actions.addTask(new RaiseArmAction(100, 0, 1));
+                        break;
+                    case RIGHT:
+                        actions.addTask(new RaiseArmAction(200, 0, 1));
+                        break;
+                }
+            }
+            actions.addTask(new FullStopAction(1, 0));
+            actions.addTask(new SpinCarouselAction(1, 1));
         }
         else{
-            actions.addTask(new RaiseArmAction(0, 0));
-            actions.addTask(new SpeedrunAction(0, 1));
+            if (elementLocation != ObjectDetector.TeamElementLocation.INDETERMINATE) {
+                actions.addTask(new CloseClawAction(0, 0));
+                switch (elementLocation) {
+                    case LEFT:
+                        actions.addTask(new RaiseArmAction(10, 0, 1));
+                        break;
+                    case CENTER:
+                        actions.addTask(new RaiseArmAction(100, 0, 1));
+                        break;
+                    case RIGHT:
+                        actions.addTask(new RaiseArmAction(200, 0, 1));
+                        break;
+                }
+            }
         }
         //actions.addTask(new PlaceCubeAction(3, navigation));
 
@@ -55,12 +91,14 @@ public class Instructions {
     {
         navigation = new Navigation(hardware, localization, runtime, actions, telemetry, opMode);
         if (!Constants.IS_LEFT_OPMODE) {
-            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, 210, 0)));
-            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, 210, 0), new Position(980, 210, initialTheta)));
+            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
+//            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, 210, 0)));
+//            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, 210, 0), new Position(980, 210, initialTheta)));
         }
         else{
-            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, 2083, initialTheta)));
-            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, 2803, initialTheta), new Position(initialX, 2803, initialTheta + Math.PI), true));
+            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
+//            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, 2083, initialTheta)));
+//            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, 2803, initialTheta), new Position(initialX, 2803, initialTheta + Math.PI), true));
         }
     }
 

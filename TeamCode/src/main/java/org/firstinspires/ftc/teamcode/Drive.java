@@ -21,7 +21,7 @@ public class Drive extends Core {
     boolean hasTargetArmPos;
     boolean isArmMoving;
     long prevTime = System.currentTimeMillis();
-    private PID armPID = new PID(new PIDCoefficients(-0.05, 0.0, 0));
+    private PID armPID = new PID(new PIDCoefficients(-0.08, 0, 0));
     double lastPIDOutput = 0;
     boolean isClawClosed;
     long clawOpeningTime = 0;
@@ -32,12 +32,12 @@ public class Drive extends Core {
     public void loop() {
         double armPos = armMotor.getCurrentPosition();
         boolean usePID = Math.abs(armPos) > 5;
-        if (gamepad1.right_trigger > 0) {
+        if (gamepad1.right_trigger > 0.1) {
             armMotor.setPower(-0.2 * gamepad1.right_trigger);
             isArmMoving = true;
             hasTargetArmPos = false;
             prevArmPos = armPos;
-        } else if (gamepad1.left_trigger > 0) {
+        } else if (gamepad1.left_trigger > 0.1) {
             armMotor.setPower((usePID ? lastPIDOutput : 0) + gamepad1.left_trigger);
             isArmMoving = true;
             hasTargetArmPos = false;
@@ -83,7 +83,7 @@ public class Drive extends Core {
             turboMode = !turboMode;
         }
 
-        if (!isClawClosed && clawOpeningTime < 250) {
+        if (!isClawClosed && clawOpeningTime < 100) {
             clawOpeningTime += System.currentTimeMillis() - prevTime;
             clawMotor.setPower(-0.2);
         } else if (!isClawClosed) {
