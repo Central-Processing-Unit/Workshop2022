@@ -34,17 +34,18 @@ public class ObjectDetector {
         vuforiaParams.cameraName = _hardware.camera;
         _vuforia = ClassFactory.getInstance().createVuforia(vuforiaParams);
 
-        TFObjectDetector.Parameters params = new TFObjectDetector.Parameters();
-        params.minResultConfidence = 0.7f;
-        params.isModelTensorFlow2 = true;
-        params.inputSize = 320;
-        _tfod = ClassFactory.getInstance().createTFObjectDetector(params, _vuforia);
-        _tfod.loadModelFromAsset("model.tflite", "TeamElement");
+//        TFObjectDetector.Parameters params = new TFObjectDetector.Parameters();
+//        params.minResultConfidence = 0.7f;
+//        params.isModelTensorFlow2 = true;
+//        params.inputSize = 320;
+//        _tfod = ClassFactory.getInstance().createTFObjectDetector(params, _vuforia);
+//        _tfod.loadModelFromAsset("model.tflite", "TeamElement");
 
         WebcamPipeline webcamPipeline = new WebcamPipeline();
         webcamPipeline.setMatFunction(m -> {
             System.out.println("Mat function called");
         });
+        _hardware.cvCamera.openCameraDeviceAsync(null);
         _hardware.cvCamera.setPipeline(webcamPipeline);
         _hardware.cvCamera.startStreaming(1280, 720);
     }
@@ -52,7 +53,7 @@ public class ObjectDetector {
     //To allow the robot to figure out the position of any element without training an AI model, we will figure out which barcode we can't see.
     public TeamElementLocation getTeamElementLocation() {
 
-        List<Recognition> recognitions = _tfod.getUpdatedRecognitions();
+        List<Recognition> recognitions = null;//_tfod.getUpdatedRecognitions();
 //        camera.stopRecordingPipeline();
 //        camera.closeCameraDevice();
         if (recognitions != null && recognitions.size() > 0)
