@@ -66,7 +66,7 @@ public class Encoder {
         //Holonomic displacement in robot reference frame.
         double deltaX, deltaY;
 
-        //Compute displacement in robot reference frame.
+        //Compute displacement in robot reference include a picture :)frame.
         deltaX = (robotLfDisp + robotRfDisp - robotRbDisp - robotLbDisp) / (2 * Math.sqrt(2));
         deltaY = (robotLfDisp - robotRfDisp - robotRbDisp + robotLbDisp) / (2 * Math.sqrt(2));
 

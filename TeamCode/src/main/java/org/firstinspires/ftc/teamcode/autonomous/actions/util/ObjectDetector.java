@@ -40,6 +40,13 @@ public class ObjectDetector {
         params.inputSize = 320;
         _tfod = ClassFactory.getInstance().createTFObjectDetector(params, _vuforia);
         _tfod.loadModelFromAsset("model.tflite", "TeamElement");
+
+        WebcamPipeline webcamPipeline = new WebcamPipeline();
+        webcamPipeline.setMatFunction(m -> {
+            System.out.println("Mat function called");
+        });
+        _hardware.cvCamera.setPipeline(webcamPipeline);
+        _hardware.cvCamera.startStreaming(1280, 720);
     }
 
     //To allow the robot to figure out the position of any element without training an AI model, we will figure out which barcode we can't see.
