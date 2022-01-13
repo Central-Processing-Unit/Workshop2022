@@ -22,9 +22,11 @@ public class Hardware {
     public BNO055IMU gyro;
     public WebcamName camera;
     public OpenCvCamera cvCamera;
+    public HardwareMap map;
 
     public Hardware (HardwareMap hardware)
     {
+        this.map = hardware;
         initializeGyro(hardware);
         initializeDriveMotors(hardware);
         initializeAccessoryMotors(hardware);

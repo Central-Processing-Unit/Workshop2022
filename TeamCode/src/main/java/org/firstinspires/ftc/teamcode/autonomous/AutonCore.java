@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.autonomous.waypoint.Navigation;
 import org.firstinspires.ftc.teamcode.autonomous.waypoint.Waypoint;
 
 public class AutonCore {
+    // IS SENSITIVE to the order in which actions are added
     public static ElapsedTime runtime;
 
     public void runCore(double initialX, double initialY, double initialTheta, LinearOpMode opMode) {
