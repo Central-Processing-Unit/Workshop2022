@@ -39,6 +39,9 @@ public class Instructions {
         initialTheta = _initialTheta;
         objectDetector = new ObjectDetector(hardware);
         elementLocation = objectDetector.getTeamElementLocation();
+        while (elementLocation == ObjectDetector.TeamElementLocation.LOADING) {
+            elementLocation = objectDetector.getTeamElementLocation();
+        }
         registerActions(hardware, localization);
         registerNav(hardware, localization, runtime, actions, telemetry, opMode, initialX, initialY, initialTheta);
     }

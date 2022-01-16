@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.autonomous;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -20,8 +22,10 @@ import org.firstinspires.ftc.teamcode.autonomous.waypoint.Waypoint;
 public class AutonCore {
     // IS SENSITIVE to the order in which actions are added
     public static ElapsedTime runtime;
+    public static Telemetry telem;
 
-    public void runCore(double initialX, double initialY, double initialTheta, LinearOpMode opMode) {
+    public void runCore(double initialX, double initialY, double initialTheta, LinearOpMode opMode, Telemetry telemetry) {
+        telem = telemetry;
         runtime = new ElapsedTime();
         Hardware hardware = new Hardware(opMode.hardwareMap);
         Localization localization = new Localization(hardware, opMode.telemetry, initialX, initialY, initialTheta);

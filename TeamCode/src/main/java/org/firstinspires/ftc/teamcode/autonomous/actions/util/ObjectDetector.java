@@ -4,10 +4,15 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.Auton;
+import org.firstinspires.ftc.teamcode.autonomous.AutonCore;
 import org.firstinspires.ftc.teamcode.autonomous.Constants;
 import org.firstinspires.ftc.teamcode.autonomous.hardware.Hardware;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -28,31 +33,49 @@ public class ObjectDetector {
     public ObjectDetector(Hardware hardware)
     {
         _hardware = hardware;
-
         initializeObjectDetector();
     }
 
     private void handleMat(Mat mat) {
         TensorImageClassifier tic;
         try {
-            tic = new TFICBuilder(_hardware.map, "model.tflite", "TeamElement", "NoTeamElement").build();
+            tic = new TFICBuilder(_hardware.map, "model.tflite", "TeamElement", "NoTeamElement").setQuantized(true).build();
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
         // todo: these threshold values probably need to be changed
-        Mat leftMat = mat.submat(new Rect(0, 0, Constants.LEFT_TEAM_ELEMENT_LOCATION_THRESHOLD, Constants.WEBCAM_HEIGHT));
-        Mat centerMat = mat.submat(new Rect(Constants.LEFT_TEAM_ELEMENT_LOCATION_THRESHOLD, 0, Constants.RIGHT_TEAM_ELEMENT_LOCATION_THRESHOLD, Constants.WEBCAM_HEIGHT));
-        Mat rightMat = mat.submat(new Rect(Constants.RIGHT_TEAM_ELEMENT_LOCATION_THRESHOLD, 0, Constants.WEBCAM_WIDTH, Constants.WEBCAM_HEIGHT));
+        AutonCore.telem.addData("Beginning crop: %s", mat.width() + " x " + mat.height() + "; c: " + mat.channels());
+        AutonCore.telem.update();
+        Mat rawLeftMat = mat.submat(new Rect(0, 0, Constants.WEBCAM_SECTION_WIDTH, Constants.WEBCAM_HEIGHT));
+        Mat leftMat = new Mat();
+        Imgproc.resize(rawLeftMat, leftMat, new Size(224, 224));
+        AutonCore.telem.addData("Finished first crop: %s", leftMat.width() + " x " + leftMat.height() + "; c: " + leftMat.channels() + "; l: " + (leftMat.total() * leftMat.channels()));
+        AutonCore.telem.update();
+        Mat rawCenterMat = mat.submat(new Rect(Constants.WEBCAM_SECTION_WIDTH, 0, Constants.WEBCAM_SECTION_WIDTH, Constants.WEBCAM_HEIGHT));
+        Mat centerMat = new Mat();
+        Imgproc.resize(rawCenterMat, centerMat, new Size(224, 224));
+        Mat rawRightMap = mat.submat(new Rect(2 * Constants.WEBCAM_SECTION_WIDTH, 0, Constants.WEBCAM_WIDTH - 2 * Constants.WEBCAM_SECTION_WIDTH, Constants.WEBCAM_HEIGHT));
+        Mat rightMat = new Mat();
+        Imgproc.resize(rawRightMap, rightMat, new Size(224, 224));
         List<TensorImageClassifier.Recognition> leftOutput = tic.recognize(leftMat);
+        AutonCore.telem.addLine("Recognized left mat");
+        AutonCore.telem.update();
         List<TensorImageClassifier.Recognition> centerOutput = tic.recognize(centerMat);
         List<TensorImageClassifier.Recognition> rightOutput = tic.recognize(rightMat);
-        float leftConfidence = leftOutput.get(0).getConfidence(); // If this doesn't work, it's because the labels are in random order
-        float centerConfidence = centerOutput.get(0).getConfidence();
-        float rightConfidence = rightOutput.get(0).getConfidence();
+        float leftConfidence = leftOutput.get(0).getTitle().equals("TeamElement") ? leftOutput.get(0).getConfidence() : 1 - leftOutput.get(1).getConfidence();
+        float centerConfidence = centerOutput.get(0).getTitle().equals("TeamElement") ? centerOutput.get(0).getConfidence() : 1 - centerOutput.get(1).getConfidence();
+        float rightConfidence = rightOutput.get(0).getTitle().equals("TeamElement") ? rightOutput.get(0).getConfidence() : 1 - rightOutput.get(1).getConfidence();
         System.out.println("Confidence: " + leftConfidence + " / " + centerConfidence + " / " + rightConfidence);
+        System.out.println("Left: " + leftOutput.size() + "; " + leftOutput.get(0).getTitle() + ": " + leftOutput.get(0).getConfidence() + "; " + leftOutput.get(1).getTitle() + ": " + leftOutput.get(1).getConfidence());
+        System.out.println("Center: " + centerOutput.size() + "; " + centerOutput.get(0).getTitle() + ": " + centerOutput.get(0).getConfidence() + "; " + centerOutput.get(1).getTitle() + ": " + centerOutput.get(1).getConfidence());
+        System.out.println("Right: " + rightOutput.size() + "; " + rightOutput.get(0).getTitle() + ": " + rightOutput.get(0).getConfidence() + "; " + rightOutput.get(1).getTitle() + ": " + rightOutput.get(1).getConfidence());
+        AutonCore.telem.addLine("Confidence: " + leftConfidence + " / " + centerConfidence + " / " + rightConfidence);
+        AutonCore.telem.update();
         if (Math.max(Math.max(leftConfidence, centerConfidence), rightConfidence) < 0.5f) {
             teamElementLocation = TeamElementLocation.INDETERMINATE;
+            AutonCore.telem.addData("TeamElementLocation: INDETERMINATE %s", teamElementLocation.toString());
+            AutonCore.telem.update();
             return;
         }
         if (leftConfidence > centerConfidence) {
@@ -66,6 +89,8 @@ public class ObjectDetector {
         } else {
             teamElementLocation = TeamElementLocation.RIGHT;
         }
+        AutonCore.telem.addData("TeamElementLocation: %s", teamElementLocation.toString());
+        AutonCore.telem.update();
     }
 
     private void initializeObjectDetector()
@@ -84,6 +109,8 @@ public class ObjectDetector {
 
         WebcamPipeline webcamPipeline = new WebcamPipeline();
         webcamPipeline.setMatFunction(m -> {
+            AutonCore.telem.addLine("MatFunction");
+            AutonCore.telem.update();
             System.out.println("Mat function called");
             _hardware.cvCamera.stopStreaming();
             _hardware.cvCamera.closeCameraDevice();
@@ -93,7 +120,7 @@ public class ObjectDetector {
         _hardware.cvCamera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                _hardware.cvCamera.startStreaming(Constants.WEBCAM_WIDTH, Constants.WEBCAM_HEIGHT);
+                _hardware.cvCamera.startStreaming(Constants.WEBCAM_WIDTH, Constants.WEBCAM_HEIGHT, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
