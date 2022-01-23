@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.autonomous.AutonCore;
 import org.firstinspires.ftc.teamcode.autonomous.Constants;
 import org.firstinspires.ftc.teamcode.autonomous.actions.Actions;
 import org.firstinspires.ftc.teamcode.autonomous.control.PID;
+import org.firstinspires.ftc.teamcode.autonomous.control.SplineController;
 import org.firstinspires.ftc.teamcode.autonomous.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.autonomous.localization.Localization;
 import org.firstinspires.ftc.teamcode.autonomous.localization.Position;
@@ -26,6 +27,7 @@ public class Navigation {
     private final ElapsedTime runtime;
     private final PID controller;
     private final PID thetaController;
+	private final SplineController splineController;
     private final Telemetry telem;
     public Position position = new Position();
     /*
@@ -50,6 +52,7 @@ public class Navigation {
 
         controller = new PID(coefficients);
         thetaController = new PID(thetaCoefficients);
+		splineController = new SplineController();
 
         waypoints = new ArrayList<>();
         this.opMode = opMode;
@@ -88,13 +91,16 @@ public class Navigation {
             telem.addData("starting T", waypoint.startingPos.t);
             telem.addData("target T", waypoint.targetPos.t);
 
-            driveToTarget(waypoint.startingPos, waypoint.onlyRotate);
+            // TODO force this move to happen linearly regardless of isSpline
+			if (!waypoint.isSpline)
+	            driveToTarget(waypoint.startingPos, waypoint.isSpline, waypoint.onlyRotate);
+
             controller.resetSum();
 
             if (opMode.isStopRequested())
                 break;
 
-            driveToTarget(waypoint.targetPos, waypoint.onlyRotate);
+            driveToTarget(waypoint.targetPos, waypoint.isSpline, waypoint.onlyRotate);
             controller.resetSum();
 
             if (opMode.isStopRequested())
@@ -107,10 +113,15 @@ public class Navigation {
     }
 
     public void driveToTarget(Position destination) {
-        driveToTarget(destination, false);
+        driveToTarget(destination, false, false);
     }
 
-    public void driveToTarget(Position destination, boolean onlyRotate)
+    public void driveToTarget(Position destination, boolean isSpline, boolean onlyRotate)
+	{
+		driveToTarget(new Position(0,0,0), new Position(0,0,0), new Position(0,0,0), destination, isSpline, onlyRotate);
+	}
+
+	public void driveToTarget(Position start, Position control1, Position control2, Position destination, boolean isSpline, boolean onlyRotate)
     {
         boolean thetaFinished = false;
         //Assume that starting position has been reached. Drive to target specified by waypoint.
@@ -130,9 +141,14 @@ public class Navigation {
             if (Math.abs(thetaError) < THETA_TOLERANCE){
                 thetaFinished = true;
             }
-            moveToTarget(destination, thetaError, isCounterClockwise, onlyRotate);
+			if (isSpline)
+				splineToTarget(start, control1, control2, destination);
+			else
+	            moveToTarget(destination, thetaError, isCounterClockwise, onlyRotate);
         }
     }
+
+	public void splineToTarget(Position startPos, Position control1, Position control2, Position endPos) {};
 
     public void moveToTarget(Position waypointPos, double thetaError, boolean isCounterClockwise, boolean onlyRotate)
     {
@@ -142,6 +158,7 @@ public class Navigation {
         position = _localization.getRobotPosition(telem);
         _localization.increment(position);
         Velocity velocity = _localization.getRobotVelocity(runtime);
+
         double orientation, magnitude, negOutput, posOutput;
 
         if (waypointPos.x - position.x > 0)

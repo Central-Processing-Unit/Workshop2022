@@ -83,6 +83,7 @@ The vision algorithm is comparatively simpler:
 The algorithm for navigation converts a start-point and target-point pair (a `Waypoint`) into motor instructions for moving towards the target. This algorithm repeatedly runs and recalculates based on its measured position on the field, as calculated in the localization algorithm. Once the navigation algorithm is given a waypoint to execute, the following procedure is run:
 
 1. Drive the robot to the starting point of the waypoint. This may seem redundant, but this is necessary for when the robot overshoots the previous waypoint, which could otherwise give rise to problems with accuracy
+2. Drive to the target waypoint
 
 #### Waypoints
 
