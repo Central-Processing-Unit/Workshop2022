@@ -52,19 +52,19 @@ public class SplineController
 
 	// Returns the total length of the curve. This is an approximation based on a set number (in this case 200) of secant lines placed along the curve.
 
-	private double getArcLength(Position p0, Position p1, Position p2, Position p3)
+	public double getArcLength(Position p0, Position p1, Position p2, Position p3)
 	{
 		Position nextPos = new Position(0, 0, 0);
 		Position pos = new Position(0, 0, 0);
 		double deltaX, deltaY, l = 0;
 
-		for (int i = 1/200; i <= 1; i += 1/200)
+		for (int i = 1; i < 201; i++)
 		{
 			deltaX = nextPos.x - pos.x;
 			deltaY = nextPos.y = pos.y;
 
 			pos = nextPos;
-			nextPos = getPositionVector(p0, p1, p2, p3, i);
+			nextPos = getPositionVector(p0, p1, p2, p3, i/200d);
 
 			l += Math.sqrt((deltaX * deltaX) + (deltaY * deltaY));
 		}

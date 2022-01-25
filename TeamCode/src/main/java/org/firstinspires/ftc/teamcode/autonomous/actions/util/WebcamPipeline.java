@@ -1,11 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous.actions.util;
 
 import org.opencv.core.Mat;
-import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
-
-import java.util.function.BiFunction;
-import java.util.function.Predicate;
 
 public class WebcamPipeline extends OpenCvPipeline {
 

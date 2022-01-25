@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.autonomous.control;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 
 import org.firstinspires.ftc.teamcode.autonomous.localization.Position;
-import org.firstinspires.ftc.teamcode.autonomous.localization.Velocity;
 
 public class PID {
     private final double kP;
