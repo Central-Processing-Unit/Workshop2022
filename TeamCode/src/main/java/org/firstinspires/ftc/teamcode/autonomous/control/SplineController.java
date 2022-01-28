@@ -61,7 +61,7 @@ public class SplineController
 		for (int i = 1; i < 201; i++)
 		{
 			deltaX = nextPos.x - pos.x;
-			deltaY = nextPos.y = pos.y;
+			deltaY = nextPos.y - pos.y;
 
 			pos = nextPos;
 			nextPos = getPositionVector(p0, p1, p2, p3, i/200d);

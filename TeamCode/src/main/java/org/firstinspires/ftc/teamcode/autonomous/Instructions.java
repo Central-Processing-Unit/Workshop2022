@@ -95,9 +95,9 @@ public class Instructions {
     {
         navigation = new Navigation(hardware, localization, runtime, actions, telemetry, opMode);
         navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta),
-                new Position(initialX + 2000,initialY + 2000, initialTheta),
-                new Position(initialX + 2000,initialY - 2000,initialTheta),
-                new Position(initialX + 4000, initialY + 2000, initialTheta)));
+                new Position(initialX + 200,initialY + 400, initialTheta),
+                new Position(initialX + 400,initialY - 400,initialTheta),
+                new Position(initialX + 600, initialY, initialTheta)));
         if (!Constants.IS_LEFT_OPMODE) {
 
 //            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));

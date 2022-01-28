@@ -53,14 +53,18 @@ public class Core extends OpMode {
         rightback.setPower(posinput-rotinput);
     }
 
-    public void moveCarousel(double carouselpower)
+    public void moveCarousel(double carouselPower)
     {
-            carousel.setPower(carouselpower);
+        carousel.setPower(carouselPower);
     }
 
-    public void closeClaw()
+    public void moveClaw(double clawPower)
     {
-        clawMotor.setPower(0.4);
+        clawMotor.setPower(clawPower);
     }
 
+    public void moveArm(double armPower)
+    {
+        armMotor.setPower(armPower);
+    }
 }

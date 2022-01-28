@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.autonomous.AutonCore;
 import org.firstinspires.ftc.teamcode.autonomous.Constants;
 import org.firstinspires.ftc.teamcode.autonomous.Instructions;
 import org.firstinspires.ftc.teamcode.autonomous.actions.Actions;
@@ -123,7 +124,6 @@ public class Navigation {
 	public void driveToTarget(Position start, Position control1, Position control2, Position destination, boolean isSpline, boolean onlyRotate)
     {
         boolean thetaFinished = false;
-        boolean condition = ((Math.abs(destination.x - position.x) > 5) || (Math.abs(destination.y - position.y) > 5) || !thetaFinished) && !opMode.isStopRequested() && (!onlyRotate || !thetaFinished);
         distAlongCurve = 0;
         arcLength = splineController.getArcLength(start, control1, control2, destination);
 
@@ -169,16 +169,26 @@ public class Navigation {
         t = splineController.getT(distAlongCurve, arcLength);
         Position velocityVector = splineController.getVelocityVector(startPos, control1, control2, endPos, t);
 
-        if (endPos.x - position.x > 0)
-            orientation = Math.atan(velocityVector.y / velocityVector.x) - Math.PI / 4 - position.t;
+        if (velocityVector.x > 0)
+            orientation = Math.atan(velocityVector.y / velocityVector.x) - Math.PI / 4;
         else
-            orientation = Math.atan(velocityVector.y / velocityVector.x) + Math.PI - Math.PI / 4 - position.t;
+            orientation = Math.atan(velocityVector.y / velocityVector.x) + Math.PI - Math.PI / 4;
 
-        negOutput = 0.355 * (1-t) * Math.sin(orientation);
+        negOutput = 0.5 * (1-t) * Math.sin(orientation);
         if (orientation == 0)
-            posOutput = 1;
+            posOutput = negOutput;
         else
-            posOutput = 0.355 * (1-t) * Math.cos(orientation);
+            posOutput = 0.5 * (1-t) * Math.cos(orientation);
+
+        AutonCore.telem.addData("t: ", t);
+        AutonCore.telem.addData("VelocityVector.x: ", velocityVector.x);
+        AutonCore.telem.addData("VelocityVector.y: ", velocityVector.y);
+        AutonCore.telem.addData("orientation: ", orientation);
+        AutonCore.telem.addData("arcLength: ", arcLength);
+        AutonCore.telem.addData("distAlongCurve: ", distAlongCurve);
+        AutonCore.telem.addData("negOutput: ", negOutput);
+        AutonCore.telem.addData("posOutput: ", posOutput);
+        AutonCore.telem.update();
 
         _hardware.setMotorValues(posOutput, negOutput);
     }
