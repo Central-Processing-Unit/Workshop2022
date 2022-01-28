@@ -14,6 +14,7 @@ public class Localization {
     private final ElapsedTime runtime;
     private double currentTime;
     private double previousTime;
+    private Position prevPosition;
 
     public Localization(Hardware hardware, Telemetry telemetry, double xOffset, double yOffset, double initialTheta)
     {
@@ -27,6 +28,7 @@ public class Localization {
         encoder = new Encoder(hardware, initialTheta);
         //vision = new Vision(hardware);
         runtime = new ElapsedTime();
+        prevPosition = new Position(0, 0, 0);
     }
 
     public void increment(Position _newPosition)
@@ -53,5 +55,18 @@ public class Localization {
     {
         currentTime = runtime.milliseconds();
         return encoder.getRobotVelocity(previousRobotPosition, newPosition, previousTime, currentTime);
+    }
+
+    public double getDeltaPosition()
+    {
+        Position position;
+        double dposition;
+
+        position = encoder.getRawPosition();
+        dposition = encoder.getDistanceTraveled(prevPosition, position);
+
+        prevPosition = position;
+
+        return dposition;
     }
 }

@@ -4,7 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.teamcode.autonomous.AutonCore;
 import org.firstinspires.ftc.teamcode.autonomous.Constants;
 import org.firstinspires.ftc.teamcode.autonomous.Instructions;
@@ -28,7 +30,12 @@ public class Navigation {
 	private final SplineController splineController;
     private final Telemetry telem;
     public Position position = new Position();
-    private Position oldPosition;
+    public Position prevPosition = new Position();
+    private org.firstinspires.ftc.robotcore.external.navigation.Velocity velocity = new org.firstinspires.ftc.robotcore.external.navigation.Velocity();
+    private Acceleration acceleration = new Acceleration();
+
+    private double time, oldTime, deltaTime;
+
     /*
     Holds waypoints that we can drive to. This allows for the robot to split a move up into
     multiple linear movements. This allows the robot to avoid obstacles and for movement to be planned.
@@ -57,8 +64,6 @@ public class Navigation {
 
         waypoints = new ArrayList<>();
         this.opMode = opMode;
-
-        oldPosition = new Position(Instructions.initialX, Instructions.initialY, Instructions.initialTheta);
     }
 
     public void reset() {
@@ -163,8 +168,7 @@ public class Navigation {
 
         double orientation, negOutput, posOutput, t;
 
-        distAlongCurve += Math.sqrt(Math.pow(position.x - oldPosition.x, 2) + Math.pow(position.y - oldPosition.y, 2));
-        oldPosition = position;
+        distAlongCurve += _localization.getDeltaPosition();;
 
         t = splineController.getT(distAlongCurve, arcLength);
         Position velocityVector = splineController.getVelocityVector(startPos, control1, control2, endPos, t);
@@ -174,11 +178,11 @@ public class Navigation {
         else
             orientation = Math.atan(velocityVector.y / velocityVector.x) + Math.PI - Math.PI / 4;
 
-        negOutput = 0.5 * (1-t) * Math.sin(orientation);
+        negOutput = 0.3 * Math.sin(orientation);
         if (orientation == 0)
             posOutput = negOutput;
         else
-            posOutput = 0.5 * (1-t) * Math.cos(orientation);
+            posOutput = 0.3 * Math.cos(orientation);
 
         AutonCore.telem.addData("t: ", t);
         AutonCore.telem.addData("VelocityVector.x: ", velocityVector.x);
@@ -190,7 +194,10 @@ public class Navigation {
         AutonCore.telem.addData("posOutput: ", posOutput);
         AutonCore.telem.update();
 
-        _hardware.setMotorValues(posOutput, negOutput);
+        if (t < 1)
+            _hardware.setMotorValues(posOutput, negOutput);
+        else
+            _hardware.setMotorValues(0, 0);
     }
 
     public void moveToTarget(Position waypointPos, double thetaError, boolean isCounterClockwise, boolean onlyRotate)

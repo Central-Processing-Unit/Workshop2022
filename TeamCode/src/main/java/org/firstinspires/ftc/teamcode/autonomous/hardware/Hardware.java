@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 
@@ -99,6 +101,7 @@ public class Hardware {
         params.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         params.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         gyro = hardware.get(BNO055IMU.class, "imu");
+        gyro.startAccelerationIntegration(new Position(), new Velocity(), 100);
         gyro.initialize(params);
     }
 

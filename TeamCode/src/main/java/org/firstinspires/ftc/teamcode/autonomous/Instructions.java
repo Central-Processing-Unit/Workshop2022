@@ -94,10 +94,10 @@ public class Instructions {
     private void registerNav(Hardware hardware, Localization localization, ElapsedTime runtime, Actions actions, Telemetry telemetry, LinearOpMode opMode, double initialX, double initialY, double initialTheta)
     {
         navigation = new Navigation(hardware, localization, runtime, actions, telemetry, opMode);
-        navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta),
-                new Position(initialX + 200,initialY + 400, initialTheta),
-                new Position(initialX + 400,initialY - 400,initialTheta),
-                new Position(initialX + 600, initialY, initialTheta)));
+        navigation.addWayPointToQueue(new Waypoint(new Position(0, 0, 0),
+                new Position(20,100, 0),
+                new Position(40,-100, 0),
+                new Position(60, 100, 0)));
         if (!Constants.IS_LEFT_OPMODE) {
 
 //            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));

@@ -31,19 +31,26 @@ public class SplineController
 
 	public Position getVelocityVector(Position p0, Position p1, Position p2, Position p3, double t)
 	{
-		double xVector =	( -3 * p0.x * ((1-t) * (1-t)) ) +
-							( -6 * p1.x * (1-t ) * t ) +
-							( 3 * p1.x * ((1-t) * (1-t)) ) +
-							( -3 * p2.x * (t * t) ) +
-							( 6 * p2.x * (1-t) * (t+t) ) +
-							( 3 * p3.x * (t*t) );
+	    double p0Vector = -3 * Math.pow(1-t, 2);
+	    double p1Vector = -6 * t * (1-t);
+	    double p1Vector_= 3 * Math.pow(1-t, 2);
+	    double p2Vector = -3 * Math.pow(t, 2);
+	    double p2Vector_ = 6 * (1-t) * 2 * t;
+	    double p3Vector = 3 * Math.pow(t, 2);
 
-		double yVector =	( -3 * p0.y * ((1-t) * (1-t)) ) +
-							( -6 * p1.y * (1-t ) * t ) +
-							( 3 * p1.y * ((1-t) * (1-t)) ) +
-							( -3 * p2.y * (t * t) ) +
-							( 6 * p2.y * (1-t) * (t+t) ) +
-							( 3 * p3.y * (t*t) );
+	    double xVector = (p0.x * p0Vector) +
+				(p1.x * p1Vector) +
+				(p1.x * p1Vector_) +
+				(p2.x * p2Vector) +
+				(p2.x * p2Vector_) +
+				(p3.x * p3Vector);
+
+		double yVector = (p0.x * p0Vector) +
+				(p1.y * p1Vector) +
+				(p1.y * p1Vector_) +
+				(p2.y * p2Vector) +
+				(p2.y * p2Vector_) +
+				(p3.y * p3Vector);
 
 		Position vector = new Position(xVector, yVector, 0);
 
@@ -58,13 +65,13 @@ public class SplineController
 		Position pos = new Position(0, 0, 0);
 		double deltaX, deltaY, l = 0;
 
-		for (int i = 1; i < 201; i++)
+		for (int i = 1; i < 2001; i++)
 		{
 			deltaX = nextPos.x - pos.x;
 			deltaY = nextPos.y - pos.y;
 
 			pos = nextPos;
-			nextPos = getPositionVector(p0, p1, p2, p3, i/200d);
+			nextPos = getPositionVector(p0, p1, p2, p3, i/2000d);
 
 			l += Math.sqrt((deltaX * deltaX) + (deltaY * deltaY));
 		}
