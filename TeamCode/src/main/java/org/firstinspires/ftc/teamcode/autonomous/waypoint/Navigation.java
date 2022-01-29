@@ -184,15 +184,15 @@ public class Navigation {
         else
             posOutput = 0.3 * Math.cos(orientation);
 
-        AutonCore.telem.addData("t: ", t);
-        AutonCore.telem.addData("VelocityVector.x: ", velocityVector.x);
-        AutonCore.telem.addData("VelocityVector.y: ", velocityVector.y);
-        AutonCore.telem.addData("orientation: ", orientation);
-        AutonCore.telem.addData("arcLength: ", arcLength);
-        AutonCore.telem.addData("distAlongCurve: ", distAlongCurve);
-        AutonCore.telem.addData("negOutput: ", negOutput);
-        AutonCore.telem.addData("posOutput: ", posOutput);
-        AutonCore.telem.update();
+//        AutonCore.telem.addData("t: ", t);
+//        AutonCore.telem.addData("VelocityVector.x: ", velocityVector.x);
+//        AutonCore.telem.addData("VelocityVector.y: ", velocityVector.y);
+//        AutonCore.telem.addData("orientation: ", orientation);
+//        AutonCore.telem.addData("arcLength: ", arcLength);
+//        AutonCore.telem.addData("distAlongCurve: ", distAlongCurve);
+//        AutonCore.telem.addData("negOutput: ", negOutput);
+//        AutonCore.telem.addData("posOutput: ", posOutput);
+//        AutonCore.telem.update();
 
         if (t < 1)
             _hardware.setMotorValues(posOutput, negOutput);

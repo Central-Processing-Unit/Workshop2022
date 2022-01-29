@@ -31,18 +31,14 @@ public class Instructions {
     public Navigation navigation;
     public Actions actions;
     public ObjectDetector objectDetector;
-    private static ObjectDetector.TeamElementLocation elementLocation;
 
-    public Instructions(Hardware hardware, Localization localization, ElapsedTime runtime, Telemetry telemetry, LinearOpMode opMode, double _initialX, double _initialY, double _initialTheta)
+    public Instructions(Hardware hardware, Localization localization, ElapsedTime runtime, Telemetry telemetry, LinearOpMode opMode, double _initialX, double _initialY, double _initialTheta, ObjectDetector objectDetector)
     {
+        this.objectDetector = objectDetector;
         initialX = _initialX;
         initialY = _initialY;
         initialTheta = _initialTheta;
-//        objectDetector = new ObjectDetector(hardware);
-//        elementLocation = objectDetector.getTeamElementLocation();
-//        while (elementLocation == ObjectDetector.TeamElementLocation.LOADING) {
-//            elementLocation = objectDetector.getTeamElementLocation();
-//        }
+        objectDetector.calculateState();
         registerActions(hardware, localization);
         registerNav(hardware, localization, runtime, actions, telemetry, opMode, initialX, initialY, initialTheta);
     }
@@ -51,6 +47,20 @@ public class Instructions {
     private void registerActions(Hardware hardware, Localization localization)
     {
         actions = new Actions(hardware, localization);
+        if (objectDetector.getTeamElementLocation() != ObjectDetector.TeamElementLocation.INDETERMINATE) {
+            actions.addTask(new CloseClawAction(0, 0));
+            switch (objectDetector.getTeamElementLocation()) {
+                case LEFT:
+                    actions.addTask(new RaiseArmAction(10, 0, 1));
+                    break;
+                case CENTER:
+                    actions.addTask(new RaiseArmAction(100, 0, 1));
+                    break;
+                case RIGHT:
+                    actions.addTask(new RaiseArmAction(200, 0, 1));
+                    break;
+            }
+        }
         /*if (!Constants.IS_LEFT_OPMODE) {
             if (elementLocation != ObjectDetector.TeamElementLocation.INDETERMINATE) {
                 actions.addTask(new CloseClawAction(0, 0));

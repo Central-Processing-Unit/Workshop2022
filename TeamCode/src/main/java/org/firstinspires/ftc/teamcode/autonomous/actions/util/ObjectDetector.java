@@ -19,10 +19,10 @@ import java.util.List;
 
 public class ObjectDetector {
     private Hardware _hardware;
-    private VuforiaLocalizer _vuforia;
-    private TFObjectDetector _tfod;
     private OpenCvCamera camera;
     private TeamElementLocation teamElementLocation = TeamElementLocation.LOADING;
+    public static TensorImageClassifier tic;
+    private WebcamPipeline webcamPipeline;
 
     public ObjectDetector(Hardware hardware)
     {
@@ -30,86 +30,81 @@ public class ObjectDetector {
         initializeObjectDetector();
     }
 
-    private void handleMat(Mat mat) {
-        TensorImageClassifier tic;
-        try {
-            tic = new TFICBuilder(_hardware.map, "model.tflite", "TeamElement", "NoTeamElement").setQuantized(true).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
+    private static float getConfidence(List<TensorImageClassifier.Recognition> output) {
+        if (output.size() < 2) {
+            return -1;
         }
-        // todo: these threshold values probably need to be changed
-        AutonCore.telem.addData("Beginning crop: %s", mat.width() + " x " + mat.height() + "; c: " + mat.channels());
-        AutonCore.telem.update();
-        Mat rawLeftMat = mat.submat(new Rect(0, 0, Constants.WEBCAM_SECTION_WIDTH, Constants.WEBCAM_HEIGHT));
-        Mat leftMat = new Mat();
-        Imgproc.resize(rawLeftMat, leftMat, new Size(224, 224));
-        AutonCore.telem.addData("Finished first crop: %s", leftMat.width() + " x " + leftMat.height() + "; c: " + leftMat.channels() + "; l: " + (leftMat.total() * leftMat.channels()));
-        AutonCore.telem.update();
-        Mat rawCenterMat = mat.submat(new Rect(Constants.WEBCAM_SECTION_WIDTH, 0, Constants.WEBCAM_SECTION_WIDTH, Constants.WEBCAM_HEIGHT));
-        Mat centerMat = new Mat();
-        Imgproc.resize(rawCenterMat, centerMat, new Size(224, 224));
-        Mat rawRightMap = mat.submat(new Rect(2 * Constants.WEBCAM_SECTION_WIDTH, 0, Constants.WEBCAM_WIDTH - 2 * Constants.WEBCAM_SECTION_WIDTH, Constants.WEBCAM_HEIGHT));
-        Mat rightMat = new Mat();
-        Imgproc.resize(rawRightMap, rightMat, new Size(224, 224));
-        List<TensorImageClassifier.Recognition> leftOutput = tic.recognize(leftMat);
-        AutonCore.telem.addLine("Recognized left mat");
-        AutonCore.telem.update();
-        List<TensorImageClassifier.Recognition> centerOutput = tic.recognize(centerMat);
-        List<TensorImageClassifier.Recognition> rightOutput = tic.recognize(rightMat);
-        float leftConfidence = leftOutput.get(0).getTitle().equals("TeamElement") ? leftOutput.get(0).getConfidence() : 1 - leftOutput.get(1).getConfidence();
-        float centerConfidence = centerOutput.get(0).getTitle().equals("TeamElement") ? centerOutput.get(0).getConfidence() : 1 - centerOutput.get(1).getConfidence();
-        float rightConfidence = rightOutput.get(0).getTitle().equals("TeamElement") ? rightOutput.get(0).getConfidence() : 1 - rightOutput.get(1).getConfidence();
-        System.out.println("Confidence: " + leftConfidence + " / " + centerConfidence + " / " + rightConfidence);
-        System.out.println("Left: " + leftOutput.size() + "; " + leftOutput.get(0).getTitle() + ": " + leftOutput.get(0).getConfidence() + "; " + leftOutput.get(1).getTitle() + ": " + leftOutput.get(1).getConfidence());
-        System.out.println("Center: " + centerOutput.size() + "; " + centerOutput.get(0).getTitle() + ": " + centerOutput.get(0).getConfidence() + "; " + centerOutput.get(1).getTitle() + ": " + centerOutput.get(1).getConfidence());
-        System.out.println("Right: " + rightOutput.size() + "; " + rightOutput.get(0).getTitle() + ": " + rightOutput.get(0).getConfidence() + "; " + rightOutput.get(1).getTitle() + ": " + rightOutput.get(1).getConfidence());
-        AutonCore.telem.addLine("Confidence: " + leftConfidence + " / " + centerConfidence + " / " + rightConfidence);
-        AutonCore.telem.update();
-        if (Math.max(Math.max(leftConfidence, centerConfidence), rightConfidence) < 0.5f) {
-            teamElementLocation = TeamElementLocation.INDETERMINATE;
-            AutonCore.telem.addData("TeamElementLocation: INDETERMINATE %s", teamElementLocation.toString());
+        return output.get(0).getTitle().equals("TeamElement") ? output.get(0).getConfidence() : output.get(1).getConfidence();
+    }
+
+    public void calculateState() {
+        _hardware.cvCamera.stopStreaming();
+        _hardware.cvCamera.closeCameraDevice();
+
+        System.out.println("handleMat");
+        if (tic == null || webcamPipeline.getLastMat() == null) {
+            AutonCore.telem.addLine("Last mat: " + webcamPipeline.getLastMat());
             AutonCore.telem.update();
             return;
         }
-        if (leftConfidence > centerConfidence) {
-            if (leftConfidence > rightConfidence) {
-                teamElementLocation = TeamElementLocation.LEFT;
-            } else {
-                teamElementLocation = TeamElementLocation.RIGHT;
-            }
-        } else if (centerConfidence > rightConfidence) {
+        Mat mat = webcamPipeline.getLastMat();
+        // todo: these threshold values probably need to be changed
+        Mat rawLeftMat = mat.submat(new Rect(0, 0, Constants.WEBCAM_SECTION_WIDTH, Constants.WEBCAM_HEIGHT));
+        Mat leftMat = new Mat();
+        Imgproc.resize(rawLeftMat, leftMat, new Size(224, 224));
+        List<TensorImageClassifier.Recognition> leftOutput = tic.recognize(leftMat);
+        float leftConfidence = getConfidence(leftOutput);
+        if (leftConfidence > 0.5) {
+            teamElementLocation = TeamElementLocation.LEFT;
+            AutonCore.telem.addLine("LEFT: " + leftConfidence);
+            AutonCore.telem.update();
+            return;
+        }
+        Mat rawCenterMat = mat.submat(new Rect(Constants.WEBCAM_SECTION_WIDTH, 0, Constants.WEBCAM_SECTION_WIDTH, Constants.WEBCAM_HEIGHT));
+        Mat centerMat = new Mat();
+        Imgproc.resize(rawCenterMat, centerMat, new Size(224, 224));
+        List<TensorImageClassifier.Recognition> centerOutput = tic.recognize(centerMat);
+        float centerConfidence = getConfidence(centerOutput);
+        if (centerConfidence > 0.5) {
             teamElementLocation = TeamElementLocation.CENTER;
+            AutonCore.telem.addLine("CENTER: " + centerConfidence);
+            AutonCore.telem.update();
+            return;
+        }
+        if (leftConfidence > 0.2 || centerConfidence > 0.2) {
+            Mat rawRightMat = mat.submat(new Rect(Constants.WEBCAM_SECTION_WIDTH, 0, Constants.WEBCAM_SECTION_WIDTH, Constants.WEBCAM_HEIGHT));
+            Mat rightMat = new Mat();
+            Imgproc.resize(rawRightMat, rightMat, new Size(224, 224));
+            List<TensorImageClassifier.Recognition> rightOutput = tic.recognize(rightMat);
+            float rightConfidence = getConfidence(rightOutput);
+            if (rightConfidence > centerConfidence) {
+                if (rightConfidence > leftConfidence) {
+                    teamElementLocation = TeamElementLocation.RIGHT;
+                    AutonCore.telem.addLine("RIGHT: " + rightConfidence);
+                } else {
+                    teamElementLocation = TeamElementLocation.CENTER;
+                    AutonCore.telem.addLine("CENTER: " + centerConfidence);
+                }
+                AutonCore.telem.update();
+            } else if (centerConfidence > leftConfidence) {
+                teamElementLocation = TeamElementLocation.CENTER;
+                AutonCore.telem.addLine("CENTER: " + centerConfidence);
+                AutonCore.telem.update();
+            } else {
+                teamElementLocation = TeamElementLocation.LEFT;
+                AutonCore.telem.addLine("LEFT: " + leftConfidence);
+                AutonCore.telem.update();
+            }
         } else {
             teamElementLocation = TeamElementLocation.RIGHT;
+            AutonCore.telem.addLine("RIGHT: " + leftConfidence + "; " + centerConfidence);
+            AutonCore.telem.update();
         }
-        AutonCore.telem.addData("TeamElementLocation: %s", teamElementLocation.toString());
-        AutonCore.telem.update();
     }
 
     private void initializeObjectDetector()
     {
-        VuforiaLocalizer.Parameters vuforiaParams = new VuforiaLocalizer.Parameters();
-        vuforiaParams.vuforiaLicenseKey = Constants.VUFORIA_KEY;
-        vuforiaParams.cameraName = _hardware.camera;
-        _vuforia = ClassFactory.getInstance().createVuforia(vuforiaParams);
-
-//        TFObjectDetector.Parameters params = new TFObjectDetector.Parameters();
-//        params.minResultConfidence = 0.7f;
-//        params.isModelTensorFlow2 = true;
-//        params.inputSize = 320;
-//        _tfod = ClassFactory.getInstance().createTFObjectDetector(params, _vuforia);
-//        _tfod.loadModelFromAsset("model.tflite", "TeamElement");
-
-        WebcamPipeline webcamPipeline = new WebcamPipeline();
-        webcamPipeline.setMatFunction(m -> {
-            AutonCore.telem.addLine("MatFunction");
-            AutonCore.telem.update();
-            System.out.println("Mat function called");
-            _hardware.cvCamera.stopStreaming();
-            _hardware.cvCamera.closeCameraDevice();
-            handleMat(m);
-        });
+        webcamPipeline = new WebcamPipeline();
         _hardware.cvCamera.setPipeline(webcamPipeline);
         _hardware.cvCamera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
