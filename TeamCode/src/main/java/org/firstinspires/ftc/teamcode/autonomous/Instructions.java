@@ -9,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.autonomous.actions.Actions;
 import org.firstinspires.ftc.teamcode.autonomous.actions.CloseClawAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.FullStopAction;
+import org.firstinspires.ftc.teamcode.autonomous.actions.OpenClawAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.RaiseArmAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.SpinCarouselAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.util.ObjectDetector;
@@ -60,44 +61,12 @@ public class Instructions {
                     actions.addTask(new RaiseArmAction(200, 0, 1));
                     break;
             }
+            actions.addTask(new OpenClawAction(1, 0));
         }
-        /*if (!Constants.IS_LEFT_OPMODE) {
-            if (elementLocation != ObjectDetector.TeamElementLocation.INDETERMINATE) {
-                actions.addTask(new CloseClawAction(0, 0));
-                switch (elementLocation) {
-                    case LEFT:
-                        actions.addTask(new RaiseArmAction(10, 0, 1));
-                        break;
-                    case CENTER:
-                        actions.addTask(new RaiseArmAction(100, 0, 1));
-                        break;
-                    case RIGHT:
-                        actions.addTask(new RaiseArmAction(200, 0, 1));
-                        break;
-                }
-            }
-            actions.addTask(new FullStopAction(1, 0));
-            actions.addTask(new SpinCarouselAction(1, 1));
+        if (!Constants.IS_LEFT_OPMODE) {
+            actions.addTask(new FullStopAction(3, 0));
+            actions.addTask(new SpinCarouselAction(3, 1));
         }
-        else{
-            if (elementLocation != ObjectDetector.TeamElementLocation.INDETERMINATE) {
-                actions.addTask(new CloseClawAction(0, 0));
-                switch (elementLocation) {
-                    case LEFT:
-                        actions.addTask(new RaiseArmAction(10, 0, 1));
-                        break;
-                    case CENTER:
-                        actions.addTask(new RaiseArmAction(100, 0, 1));
-                        break;
-                    case RIGHT:
-                        actions.addTask(new RaiseArmAction(200, 0, 1));
-                        break;
-                }
-            }
-        }*/
-        //actions.addTask(new PlaceCubeAction(3, navigation));
-
-        //actions.addTask(new SpinCarouselAction(1));
     }
 
     //Enter initial navigation waypoints here.
@@ -108,16 +77,19 @@ public class Instructions {
                 new Position(20,100, 0),
                 new Position(40,-100, 0),
                 new Position(60, 100, 0)));
-        if (!Constants.IS_LEFT_OPMODE) {
-
-//            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
-//            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, 210, 0)));
-//            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, 210, 0), new Position(980, 210, initialTheta)));
+        if (!Constants.IS_LEFT_OPMODE)
+        {
+            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
+            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX+590, initialY+590, initialTheta)));
+            navigation.addWayPointToQueue(new Waypoint(new Position(initialX+590, initialY+630, initialTheta), new Position(initialX+200, initialY-700, initialTheta)));
+            navigation.addWayPointToQueue(new Waypoint(new Position(initialX+200, initialY-700, initialTheta), new Position(initialX+630, initialY-800, initialTheta)));
         }
         else{
-//            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
-//            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, 2083, initialTheta)));
-//            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, 2803, initialTheta), new Position(initialX, 2803, initialTheta + Math.PI), true));
+            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
+            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX+590, initialY-630, initialTheta)));
+            navigation.addWayPointToQueue(new Waypoint(new Position(initialX+590, initialY-630, initialTheta), new Position(initialX+590, initialY-630, initialTheta+Math.PI/2), true));
+            navigation.addWayPointToQueue(new Waypoint(new Position(0,0,0), new Position(-50,0,0), new Position (-60,80,0), new Position(-30,80,0)));
+            navigation.addWayPointToQueue(new Waypoint(new Position(0,0,initialTheta+Math.PI/2), new Position(0,0,initialTheta), true));
         }
     }
 

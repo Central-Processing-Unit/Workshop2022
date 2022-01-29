@@ -168,7 +168,7 @@ public class Navigation {
 
         double orientation, negOutput, posOutput, t;
 
-        distAlongCurve += _localization.getDeltaPosition();;
+        distAlongCurve += _localization.getDeltaPosition();
 
         t = splineController.getT(distAlongCurve, arcLength);
         Position velocityVector = splineController.getVelocityVector(startPos, control1, control2, endPos, t);
