@@ -21,7 +21,7 @@ public class RaiseArmAction extends Action{
     {
         double armPos = hardware.armMotor.getCurrentPosition();
         double armPosError = armPos - targetArmPos;
-        while (armPosError > 5)
+        while (Math.abs(armPosError) > 5)
         {
             armPos = hardware.armMotor.getCurrentPosition();
             armPosError = armPos - targetArmPos;

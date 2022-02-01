@@ -88,7 +88,9 @@ public class Hardware {
 
         armMotor = hardware.dcMotor.get("armMotor");
         armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         clawMotor = hardware.dcMotor.get("clawMotor");
         clawMotor.setDirection(DcMotorSimple.Direction.FORWARD);

@@ -38,7 +38,7 @@ public class Actions {
         for (int i = 0; i < actionMap.size(); i++) {
             Action action = actionMap.get(i);
             if (action == null) {
-                throw new RuntimeException("Invalid action priority: expected one priority for each value from 0 to " + (i - 1) + ", but instead found " + i);
+                throw new RuntimeException("Invalid action priority: expected one priority for each value from 0 to " + (actionMap.size() - 1) + ", but instead found " + i);
             }
             action.execute(hardware, localization);
         }

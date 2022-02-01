@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.autonomous.actions.Action;
 import org.firstinspires.ftc.teamcode.autonomous.actions.Actions;
 import org.firstinspires.ftc.teamcode.autonomous.actions.CloseClawAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.FullStopAction;
@@ -50,46 +51,50 @@ public class Instructions {
         actions = new Actions(hardware, localization);
         if (objectDetector.getTeamElementLocation() != ObjectDetector.TeamElementLocation.INDETERMINATE) {
             actions.addTask(new CloseClawAction(0, 0));
-            switch (objectDetector.getTeamElementLocation()) {
-                case LEFT:
-                    actions.addTask(new RaiseArmAction(10, 0, 1));
-                    break;
-                case CENTER:
-                    actions.addTask(new RaiseArmAction(100, 0, 1));
-                    break;
-                case RIGHT:
-                    actions.addTask(new RaiseArmAction(200, 0, 1));
-                    break;
-            }
+//            switch (objectDetector.getTeamElementLocation()) {
+//                case LEFT:
+//                    actions.addTask(new RaiseArmAction(10, 0, 1));
+//                    break;
+//                case CENTER:
+//                    actions.addTask(new RaiseArmAction(40, 0, 1));
+//                    break;
+//                case RIGHT:
+//                    actions.addTask(new RaiseArmAction(200, 0, 1));
+//                    break;
+//            }
             actions.addTask(new OpenClawAction(1, 0));
+
+//            actions.addTask(new Action(3, 0) {
+//                @Override
+//                public void execute(Hardware hardware, Localization localization) {
+//                    navigation.targetArmPos = 0;
+//                }
+//            });
         }
         if (!Constants.IS_LEFT_OPMODE) {
-            actions.addTask(new FullStopAction(3, 0));
-            actions.addTask(new SpinCarouselAction(3, 1));
+//            actions.addTask(new FullStopAction(3, 0));
+            actions.addTask(new SpinCarouselAction(2, 0));
         }
     }
 
     //Enter initial navigation waypoints here.
     private void registerNav(Hardware hardware, Localization localization, ElapsedTime runtime, Actions actions, Telemetry telemetry, LinearOpMode opMode, double initialX, double initialY, double initialTheta)
     {
-        navigation = new Navigation(hardware, localization, runtime, actions, telemetry, opMode);
-        navigation.addWayPointToQueue(new Waypoint(new Position(0, 0, 0),
-                new Position(20,100, 0),
-                new Position(40,-100, 0),
-                new Position(60, 100, 0)));
+        navigation = new Navigation(hardware, localization, runtime, actions, telemetry, opMode, objectDetector);
         if (!Constants.IS_LEFT_OPMODE)
         {
             navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
             navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX+590, initialY+590, initialTheta)));
-            navigation.addWayPointToQueue(new Waypoint(new Position(initialX+590, initialY+630, initialTheta), new Position(initialX+200, initialY-700, initialTheta)));
-            navigation.addWayPointToQueue(new Waypoint(new Position(initialX+200, initialY-700, initialTheta), new Position(initialX+630, initialY-800, initialTheta)));
+            navigation.addWayPointToQueue(new Waypoint(new Position(initialX+590, initialY+590, initialTheta), new Position(initialX, initialY-1000, initialTheta)));
+            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY-800, initialTheta), new Position(initialX+680, initialY-900, initialTheta)));
         }
         else{
             navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
             navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX+590, initialY-630, initialTheta)));
-            navigation.addWayPointToQueue(new Waypoint(new Position(initialX+590, initialY-630, initialTheta), new Position(initialX+590, initialY-630, initialTheta+Math.PI/2), true));
-            navigation.addWayPointToQueue(new Waypoint(new Position(0,0,0), new Position(-50,0,0), new Position (-60,80,0), new Position(-30,80,0)));
-            navigation.addWayPointToQueue(new Waypoint(new Position(0,0,initialTheta+Math.PI/2), new Position(0,0,initialTheta), true));
+            navigation.addWayPointToQueue(new Waypoint(new Position(initialX+590, initialY-630, initialTheta), new Position(initialX+590, initialY-630, initialTheta-Math.PI/2), true));
+            navigation.addWayPointToQueue(new Waypoint(new Position(initialX+590, initialY-630, initialTheta-Math.PI/2), new Position(initialX, initialY-630, initialTheta-Math.PI/2), false));
+            navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY-630, initialTheta-Math.PI/2), new Position(initialX-200, initialY+1300, initialTheta-Math.PI/2), false));
+            navigation.addWayPointToQueue(new Waypoint(new Position(0,0,initialTheta-Math.PI/2), new Position(0,0,initialTheta), true));
         }
     }
 

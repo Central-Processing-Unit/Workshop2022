@@ -11,5 +11,6 @@ public class OpenClawAction extends Action{
         long initialTime = System.currentTimeMillis();
         hardware.clawMotor.setPower(-0.2);
         while(System.currentTimeMillis() - initialTime < 100) {}
+        hardware.clawMotor.setPower(0);
     }
 }

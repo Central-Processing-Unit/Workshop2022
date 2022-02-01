@@ -95,7 +95,7 @@ public class Drive extends Core {
 
         // This is all we need to actually move the robot, method decs in Core.java
         move(positive_power, negative_power, rot_power);
-        moveCarousel(carouselDirection * 0.15);
+        moveCarousel(carouselDirection * 0.25);
         moveClaw(clawPower);
         moveArm(armPower);
     }

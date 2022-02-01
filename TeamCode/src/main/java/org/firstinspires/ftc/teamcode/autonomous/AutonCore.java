@@ -12,7 +12,6 @@ import org.outoftheboxrobotics.tensorflowapi.ImageClassification.TFICBuilder;
 import java.io.IOException;
 
 public class AutonCore {
-    // IS SENSITIVE to the order in which actions are added
     public static ElapsedTime runtime;
     public static Telemetry telem;
 

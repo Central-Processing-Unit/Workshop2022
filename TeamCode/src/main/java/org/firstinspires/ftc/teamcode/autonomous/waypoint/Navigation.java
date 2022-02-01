@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.autonomous.AutonCore;
 import org.firstinspires.ftc.teamcode.autonomous.Constants;
 import org.firstinspires.ftc.teamcode.autonomous.Instructions;
 import org.firstinspires.ftc.teamcode.autonomous.actions.Actions;
+import org.firstinspires.ftc.teamcode.autonomous.actions.util.ObjectDetector;
 import org.firstinspires.ftc.teamcode.autonomous.control.PID;
 import org.firstinspires.ftc.teamcode.autonomous.control.SplineController;
 import org.firstinspires.ftc.teamcode.autonomous.hardware.Hardware;
@@ -33,6 +34,10 @@ public class Navigation {
     public Position prevPosition = new Position();
     private org.firstinspires.ftc.robotcore.external.navigation.Velocity velocity = new org.firstinspires.ftc.robotcore.external.navigation.Velocity();
     private Acceleration acceleration = new Acceleration();
+    public double targetArmPos, prevArmPos;
+    private long prevTime = System.currentTimeMillis();
+    private PID armPID = new PID(new PIDCoefficients(0.004, 0, 0));
+    private long startTime;
 
     private double time, oldTime, deltaTime;
 
@@ -48,8 +53,21 @@ public class Navigation {
     private double distAlongCurve;
     private double arcLength;
 
-    public Navigation(Hardware hardware, Localization localization, ElapsedTime runtime, Actions actions, Telemetry telemetry, LinearOpMode opMode)
+    public Navigation(Hardware hardware, Localization localization, ElapsedTime runtime, Actions actions, Telemetry telemetry, LinearOpMode opMode, ObjectDetector objectDetector)
     {
+
+        switch (objectDetector.getTeamElementLocation()) {
+            case LEFT:
+                targetArmPos = 200;
+                break;
+            case CENTER:
+                targetArmPos = 425;
+                break;
+            case RIGHT:
+                targetArmPos = 700;
+                break;
+        }
+//        targetArmPos = 10;
         telem = telemetry;
         this.runtime = runtime;
         _actions = actions;
@@ -75,8 +93,8 @@ public class Navigation {
         if (!Constants.IS_BLUE_TEAM) {
             waypoint.startingPos.x *= -1;
             waypoint.targetPos.x *= -1;
-            /*waypoint.startingPos.t = -1 * waypoint.startingPos.t + 2 * Math.PI;
-            waypoint.targetPos.t = -1 * waypoint.targetPos.t + 2 * Math.PI; */
+//            waypoint.startingPos.t = -1 * waypoint.startingPos.t + 2 * Math.PI;
+//            waypoint.targetPos.t = -1 * waypoint.targetPos.t + 2 * Math.PI;
         }
         waypoints.add(waypoint);
     }
@@ -101,14 +119,19 @@ public class Navigation {
 
             // TODO force this move to happen linearly regardless of isSpline
 			if (!waypoint.isSpline)
-	            driveToTarget(waypoint.startingPos, waypoint.isSpline, waypoint.onlyRotate);
+	            driveToTarget(waypoint.startingPos, false, waypoint.onlyRotate);
+
 
             controller.resetSum();
 
             if (opMode.isStopRequested())
                 break;
 
-            driveToTarget(waypoint.startingPos, waypoint.splinePos1, waypoint.splinePos2, waypoint.targetPos, waypoint.isSpline, waypoint.onlyRotate);
+            if (waypoint.isSpline)
+                driveToTarget(waypoint.startingPos, waypoint.splinePos1, waypoint.splinePos2, waypoint.targetPos, waypoint.isSpline, waypoint.onlyRotate);
+            else
+                driveToTarget(waypoint.targetPos, false, waypoint.onlyRotate);
+
             controller.resetSum();
 
             if (opMode.isStopRequested())
@@ -118,6 +141,27 @@ public class Navigation {
         }
 
         waypoints.clear();
+    }
+
+    private void updateArm() {
+        if (startTime == 0) {
+            startTime = System.currentTimeMillis();
+            return;
+        }
+        if (System.currentTimeMillis() - startTime < 250) {
+            return;
+        }
+        double armPos = _hardware.armMotor.getCurrentPosition();
+        double armPosError = targetArmPos - armPos;
+        double dArmPosError = (armPos - prevArmPos) / (System.currentTimeMillis() - prevTime);
+        double output = armPID.getOutput(armPosError, dArmPosError);
+        _hardware.armMotor.setPower(output);
+        prevArmPos = armPos;
+        prevTime = System.currentTimeMillis();
+        telem.addLine("armOutput: " + output);
+        telem.addLine("armError: " + armPosError);
+        telem.addLine("armPos: " + armPos);
+
     }
 
     public void driveToTarget(Position destination) {
@@ -134,6 +178,7 @@ public class Navigation {
 
         //Assume that starting position has been reached. Drive to target specified by waypoint.
         while(((Math.abs(destination.x - position.x) > 5) || (Math.abs(destination.y - position.y) > 5) || !thetaFinished) && !opMode.isStopRequested() && (!onlyRotate || !thetaFinished)) {
+            updateArm();
             thetaFinished = false;
             double thetaError = destination.t - position.t;
             boolean isCounterClockwise = false;
@@ -156,6 +201,8 @@ public class Navigation {
             } else
 	            moveToTarget(destination, thetaError, isCounterClockwise, onlyRotate);
         }
+
+        _hardware.setAllMotorPowers(0);
     }
 
 	public void splineToTarget(Position startPos, Position control1, Position control2, Position endPos)
@@ -213,8 +260,10 @@ public class Navigation {
 
         if (waypointPos.x - position.x > 0)
             orientation = Math.atan(controller.getSlope(waypointPos, position)) - Math.PI / 4 - position.t;
-        else
+        else if (waypointPos.x - position.x < 0)
             orientation = Math.atan(controller.getSlope(waypointPos, position)) + Math.PI - Math.PI / 4 - position.t;
+        else
+            orientation = Math.PI / 2;
 
         double error = Math.sqrt(Math.pow(waypointPos.y - position.y, 2) + Math.pow(waypointPos.x - position.x, 2));
         double speed = Math.sqrt(Math.pow(velocity.dy, 2) + Math.pow(velocity.dx, 2));
