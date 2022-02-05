@@ -212,24 +212,25 @@ public class Navigation {
 
         position = _localization.getRobotPosition(telem);
         _localization.increment(position);
+		Velocity velocity = _localization.getRobotVelocity();
 
         double orientation, negOutput, posOutput, t;
 
-        distAlongCurve += _localization.getDeltaPosition();
+        distAlongCurve += Math.sqrt(Math.pow(velocity.dx * (_localization.currentTime - _localization.previousTime), 2) + Math.pow(velocity.dy * (_localization.currentTime - _localization.previousTime), 2));
 
         t = splineController.getT(distAlongCurve, arcLength);
         Position velocityVector = splineController.getVelocityVector(startPos, control1, control2, endPos, t);
 
         if (velocityVector.x > 0)
-            orientation = Math.atan(velocityVector.y / velocityVector.x) - Math.PI / 4;
+            orientation = Math.atan(velocityVector.y / velocityVector.x) - Math.PI / 4 - position.t;
         else
-            orientation = Math.atan(velocityVector.y / velocityVector.x) + Math.PI - Math.PI / 4;
+            orientation = Math.atan(velocityVector.y / velocityVector.x) + Math.PI - Math.PI / 4 - position.t;
 
-        negOutput = 0.3 * Math.sin(orientation);
+        negOutput = 0.5 * Math.sin(orientation);
         if (orientation == 0)
             posOutput = negOutput;
         else
-            posOutput = 0.3 * Math.cos(orientation);
+            posOutput = 0.5 * Math.cos(orientation);
 
 //        AutonCore.telem.addData("t: ", t);
 //        AutonCore.telem.addData("VelocityVector.x: ", velocityVector.x);
@@ -254,7 +255,7 @@ public class Navigation {
 
         position = _localization.getRobotPosition(telem);
         _localization.increment(position);
-        Velocity velocity = _localization.getRobotVelocity(runtime);
+        Velocity velocity = _localization.getRobotVelocity();
 
         double orientation, magnitude, negOutput, posOutput;
 

@@ -12,8 +12,8 @@ public class Localization {
     private final Encoder encoder; //Contains all logic for encoder based localization.
     private Vision vision; //Contains all logic for vision based localization.
     private final ElapsedTime runtime;
-    private double currentTime;
-    private double previousTime;
+    public double currentTime;
+    public double previousTime;
     private Position prevPosition;
 
     public Localization(Hardware hardware, Telemetry telemetry, double xOffset, double yOffset, double initialTheta)
@@ -51,7 +51,7 @@ public class Localization {
         return encoder.getRobotPosition(newPosition, telem); //If we can't see vision targets, return encoder based location.
     }
 
-    public Velocity getRobotVelocity(ElapsedTime runtime)
+    public Velocity getRobotVelocity()
     {
         currentTime = runtime.milliseconds();
         return encoder.getRobotVelocity(previousRobotPosition, newPosition, previousTime, currentTime);
