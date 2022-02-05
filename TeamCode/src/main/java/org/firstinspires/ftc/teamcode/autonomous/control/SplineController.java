@@ -10,15 +10,20 @@ public class SplineController
 
 	private Position getPositionVector(Position p0, Position p1, Position p2, Position p3, double t)
 	{
-		double xVector =	( p0.x * ((1-t) * (1-t) * (1-t)) ) +
-							( p1.x * ((1-t) * (1-t)) * t ) +
-							( p2.x * (1-t) * (t*t) ) +
-							( p3.x * (t*t*t) );
+	    double p0Vector = Math.pow(1-t, 3); // (1-t)(1-2t+t^2) = 1-2t+t^2-t+2t^2-t^3 = -t^3+3t^2-3t+1; f' = -3t^2+6t-3
+	    double p1Vector = 3 * Math.pow(1-t, 2) * t; // 3t(1-2t+t^2) = 3t-6t^2+3t^3; f' = 9t^2-12t+3
+	    double p2Vector = 3 * (1-t) * Math.pow(t, 2); // 3t^2-3t^3
+	    double p3Vector = Math.pow(t, 3);
 
-		double yVector =	( p0.y * ((1-t) * (1-t) * (1-t)) ) +
-							( p1.y * ((1-t) * (1-t)) * t ) +
-							( p2.y * (1-t) * (t*t) ) +
-							( p3.y * (t*t*t) );
+	    double xVector = (p0.x * p0Vector) +
+				(p1.x * p1Vector) +
+				(p2.x * p2Vector) +
+				(p3.x * p3Vector);
+
+		double yVector = (p0.y * p0Vector) +
+				(p1.y * p1Vector) +
+				(p2.y * p2Vector) +
+				(p3.y * p3Vector);
 
 		Position vector = new Position(xVector, yVector, 0);
 
@@ -31,28 +36,12 @@ public class SplineController
 
 	public Position getVelocityVector(Position p0, Position p1, Position p2, Position p3, double t)
 	{
-	    double p0Vector = -3 * Math.pow(1-t, 2);
-	    double p1Vector = -6 * t * (1-t);
-	    double p1Vector_= 3 * Math.pow(1-t, 2);
-	    double p2Vector = -3 * Math.pow(t, 2);
-	    double p2Vector_ = 6 * (1-t) * 2 * t;
-	    double p3Vector = 3 * Math.pow(t, 2);
-
-	    double xVector = (p0.x * p0Vector) +
-				(p1.x * p1Vector) +
-				(p1.x * p1Vector_) +
-				(p2.x * p2Vector) +
-				(p2.x * p2Vector_) +
-				(p3.x * p3Vector);
-
-		double yVector = (p0.x * p0Vector) +
-				(p1.y * p1Vector) +
-				(p1.y * p1Vector_) +
-				(p2.y * p2Vector) +
-				(p2.y * p2Vector_) +
-				(p3.y * p3Vector);
+	    double xVector = -3*(p0.x * Math.pow(1-t, 2) + p1.x * (-3 * Math.pow(t, 2) + 4*t - 1) + t * (3 * p2.x * t - 2 * p2.x - p3.x * t));
+		double yVector = -3*(p0.y * Math.pow(1-t, 2) + p1.y * (-3 * Math.pow(t, 2) + 4*t - 1) + t * (3 * p2.y * t - 2 * p2.y - p3.y * t));
 
 		Position vector = new Position(xVector, yVector, 0);
+
+		vector.x = vector.x == 0 ? 0.00000001 : vector.x;
 
 		return vector;
 	}
@@ -61,8 +50,8 @@ public class SplineController
 
 	public double getArcLength(Position p0, Position p1, Position p2, Position p3)
 	{
-		Position nextPos = new Position(0, 0, 0);
-		Position pos = new Position(0, 0, 0);
+		Position nextPos = getPositionVector(p0, p1, p2, p3, 0);
+		Position pos = getPositionVector(p0, p1, p2, p3, 0);
 		double deltaX, deltaY, l = 0;
 
 		for (int i = 1; i < 2001; i++)

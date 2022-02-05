@@ -73,8 +73,8 @@ public class Navigation {
         _actions = actions;
         _hardware = hardware;
         _localization = localization;
-        PIDCoefficients coefficients = new PIDCoefficients(0.005, 0.00001, 0);
-        PIDCoefficients thetaCoefficients = new PIDCoefficients(0.07, 0.0001, 0);
+        PIDCoefficients coefficients = new PIDCoefficients(0.01, 0.00006, 0);
+        PIDCoefficients thetaCoefficients = new PIDCoefficients(0.14, 0.0006, 0);
 
         controller = new PID(coefficients);
         thetaController = new PID(thetaCoefficients);
@@ -226,21 +226,24 @@ public class Navigation {
         else
             orientation = Math.atan(velocityVector.y / velocityVector.x) + Math.PI - Math.PI / 4 - position.t;
 
-        negOutput = 0.5 * Math.sin(orientation);
+        negOutput = 0.1 * Math.sin(orientation);
         if (orientation == 0)
             posOutput = negOutput;
         else
-            posOutput = 0.5 * Math.cos(orientation);
+            posOutput = 0.1 * Math.cos(orientation);
 
-//        AutonCore.telem.addData("t: ", t);
-//        AutonCore.telem.addData("VelocityVector.x: ", velocityVector.x);
-//        AutonCore.telem.addData("VelocityVector.y: ", velocityVector.y);
-//        AutonCore.telem.addData("orientation: ", orientation);
-//        AutonCore.telem.addData("arcLength: ", arcLength);
-//        AutonCore.telem.addData("distAlongCurve: ", distAlongCurve);
-//        AutonCore.telem.addData("negOutput: ", negOutput);
-//        AutonCore.telem.addData("posOutput: ", posOutput);
-//        AutonCore.telem.update();
+        telem.addData("X", position.x);
+        telem.addData("Y", position.y);
+        telem.addData("T", position.t);
+        AutonCore.telem.addData("t: ", t);
+        AutonCore.telem.addData("VelocityVector.x: ", velocityVector.x);
+        AutonCore.telem.addData("VelocityVector.y: ", velocityVector.y);
+        AutonCore.telem.addData("orientation: ", orientation);
+        AutonCore.telem.addData("arcLength: ", arcLength);
+        AutonCore.telem.addData("distAlongCurve: ", distAlongCurve);
+        AutonCore.telem.addData("negOutput: ", negOutput);
+        AutonCore.telem.addData("posOutput: ", posOutput);
+        AutonCore.telem.update();
 
         if (t < 1)
             _hardware.setMotorValues(posOutput, negOutput);

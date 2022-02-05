@@ -92,9 +92,11 @@ public class Instructions {
             navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
             navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX+590, initialY-630, initialTheta)));
             navigation.addWayPointToQueue(new Waypoint(new Position(initialX+590, initialY-630, initialTheta), new Position(initialX+590, initialY-630, initialTheta-Math.PI/2), true));
-            navigation.addWayPointToQueue(new Waypoint(new Position(initialX+590, initialY-630, initialTheta-Math.PI/2), new Position(-10, 1190, initialTheta-Math.PI/2), new Position(90, 2930, initialTheta-Math.PI/2), new Position(250, 2880, initialTheta-Math.PI/2)));
+            navigation.addWayPointToQueue(new Waypoint(new Position(initialX+590, initialY-630, initialTheta-Math.PI/2), new Position(-310, 1190, initialTheta-Math.PI/2), new Position(-60, 3050, initialTheta-Math.PI/2), new Position(250, 2880, initialTheta-Math.PI/2)));
             navigation.addWayPointToQueue(new Waypoint(new Position(0,0,initialTheta-Math.PI/2), new Position(0,0,initialTheta), true));
         }
+
+//          navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(429, 2283, initialTheta), new Position(629, 2483, initialTheta), new Position(829, 2683, initialTheta)));
     }
 
     public void runTasks()
