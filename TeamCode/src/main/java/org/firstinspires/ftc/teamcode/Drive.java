@@ -16,43 +16,29 @@ public class Drive extends Core {
     Orientation gyro_angles;
     long prevTime = System.currentTimeMillis();
     boolean isClawClosed;
-    long clawOpeningTime = 0;
     long bLastPressed = -1;
     long yLastPressed = -1;
     boolean turboMode;
-    double clawPower;
+    double clawPos;
     double armPower;
     double triggerLastPressed;
     boolean isArmRaised;
 
     public void loop()
-    {
+	{
         carouselDirection = gamepad1.a ? 1 :
                             gamepad1.x ? -1 :
                                     0;
 
-        if (gamepad1.right_trigger > 0.3 && System.currentTimeMillis() - triggerLastPressed > 250) {
-            triggerLastPressed = System.currentTimeMillis();
-            isArmRaised = !isArmRaised;
-        }
-
-        armPower = isArmRaised ? 0.6 : 0.0;
+        armPower = gamepad1.right_trigger > 0.1 ? 1 :
+                (gamepad1.left_trigger > 0.1 ? -1 : 0);
 
         if (gamepad1.b && System.currentTimeMillis() - bLastPressed > 250) {
             bLastPressed = System.currentTimeMillis();
             isClawClosed = !isClawClosed;
-            clawOpeningTime = 0;
-            if (isClawClosed) {
-                clawPower = 0.6;
-            }
         }
 
-        if (!isClawClosed && clawOpeningTime < 100) {
-            clawOpeningTime += System.currentTimeMillis() - prevTime;
-            clawPower = -0.2;
-        } else if (!isClawClosed) {
-            clawPower = 0;
-        }
+        clawPos = isClawClosed ? 1 : 0;
 
         if (gamepad1.y && System.currentTimeMillis() - yLastPressed > 250) {
             yLastPressed = System.currentTimeMillis();
@@ -88,15 +74,15 @@ public class Drive extends Core {
 
         if (!turboMode)
         {
-            negative_power *= 0.4;
-            positive_power *= 0.4;
-            rot_power *= 0.5;
+            negative_power *= 0.6;
+            positive_power *= 0.6;
+            rot_power *= 0.6;
         }
 
         // This is all we need to actually move the robot, method decs in Core.java
         move(positive_power, negative_power, rot_power);
         moveCarousel(carouselDirection * 0.25);
-        moveClaw(clawPower);
+        setClawPos(clawPos);
         moveArm(armPower);
     }
 }

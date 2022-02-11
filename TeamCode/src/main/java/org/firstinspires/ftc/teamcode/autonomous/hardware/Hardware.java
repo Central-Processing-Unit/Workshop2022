@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -13,7 +14,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 
 public class Hardware {
     public DcMotor leftFrontMotor, rightFrontMotor, leftBackMotor, rightBackMotor;
-    public DcMotor armMotor, carouselMotor, clawMotor;
+    public DcMotor armMotor, carouselMotor;
+    public Servo clawServo;
     public BNO055IMU gyro;
     public WebcamName camera;
     public OpenCvCamera cvCamera;
@@ -92,9 +94,7 @@ public class Hardware {
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        clawMotor = hardware.dcMotor.get("clawMotor");
-        clawMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        clawMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        clawServo = hardware.get(Servo.class, "clawServo");
     }
 
     private void initializeGyro(HardwareMap hardware)

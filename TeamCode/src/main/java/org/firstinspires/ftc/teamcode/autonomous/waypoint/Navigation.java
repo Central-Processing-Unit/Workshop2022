@@ -31,15 +31,6 @@ public class Navigation {
 	private final SplineController splineController;
     private final Telemetry telem;
     public Position position = new Position();
-    public Position prevPosition = new Position();
-    private org.firstinspires.ftc.robotcore.external.navigation.Velocity velocity = new org.firstinspires.ftc.robotcore.external.navigation.Velocity();
-    private Acceleration acceleration = new Acceleration();
-    public double targetArmPos, prevArmPos;
-    private long prevTime = System.currentTimeMillis();
-    private PID armPID = new PID(new PIDCoefficients(0.004, 0, 0));
-    private long startTime;
-
-    private double time, oldTime, deltaTime;
 
     /*
     Holds waypoints that we can drive to. This allows for the robot to split a move up into
@@ -53,28 +44,22 @@ public class Navigation {
     private double distAlongCurve;
     private double arcLength;
 
-    public Navigation(Hardware hardware, Localization localization, ElapsedTime runtime, Actions actions, Telemetry telemetry, LinearOpMode opMode, ObjectDetector objectDetector)
+    public Navigation(Hardware hardware,
+                      Localization localization,
+                      ElapsedTime runtime,
+                      Actions actions,
+                      Telemetry telemetry,
+                      LinearOpMode opMode,
+                      ObjectDetector objectDetector)
     {
 
-        switch (objectDetector.getTeamElementLocation()) {
-            case LEFT:
-                targetArmPos = 200;
-                break;
-            case CENTER:
-                targetArmPos = 425;
-                break;
-            case RIGHT:
-                targetArmPos = 700;
-                break;
-        }
-//        targetArmPos = 10;
         telem = telemetry;
         this.runtime = runtime;
         _actions = actions;
         _hardware = hardware;
         _localization = localization;
         PIDCoefficients coefficients = new PIDCoefficients(0.01, 0.00006, 0);
-        PIDCoefficients thetaCoefficients = new PIDCoefficients(0.14, 0.0006, 0);
+        PIDCoefficients thetaCoefficients = new PIDCoefficients(0.2, 0.0006, 0);
 
         controller = new PID(coefficients);
         thetaController = new PID(thetaCoefficients);
@@ -88,80 +73,13 @@ public class Navigation {
         waypoints.clear();
     }
 
-    public void addWayPointToQueue(Waypoint waypoint)
-    {
-        if (!Constants.IS_BLUE_TEAM) {
-            waypoint.startingPos.x *= -1;
-            waypoint.targetPos.x *= -1;
-//            waypoint.startingPos.t = -1 * waypoint.startingPos.t + 2 * Math.PI;
-//            waypoint.targetPos.t = -1 * waypoint.targetPos.t + 2 * Math.PI;
-        }
-        waypoints.add(waypoint);
-    }
-
     public void executeTask()
     {
         for (int i = 0; i < waypoints.size(); i++)
         {
-            Waypoint waypoint = waypoints.get(i);
-            if (opMode.isStopRequested())
-                break;
-
-            double time = runtime.milliseconds();
-            _hardware.setAllMotorPowers(0);
-            while (runtime.milliseconds() - time < 500)
-            {
-                //nothing
-            }
-
-            telem.addData("starting T", waypoint.startingPos.t);
-            telem.addData("target T", waypoint.targetPos.t);
-
-            // TODO force this move to happen linearly regardless of isSpline
-			if (!waypoint.isSpline)
-	            driveToTarget(waypoint.startingPos, false, waypoint.onlyRotate);
-
-
-            controller.resetSum();
-
-            if (opMode.isStopRequested())
-                break;
-
-            if (waypoint.isSpline)
-                driveToTarget(waypoint.startingPos, waypoint.splinePos1, waypoint.splinePos2, waypoint.targetPos, waypoint.isSpline, waypoint.onlyRotate);
-            else
-                driveToTarget(waypoint.targetPos, false, waypoint.onlyRotate);
-
-            controller.resetSum();
-
-            if (opMode.isStopRequested())
-                break;
-
-            _actions.executeTask(i);
         }
 
         waypoints.clear();
-    }
-
-    private void updateArm() {
-        if (startTime == 0) {
-            startTime = System.currentTimeMillis();
-            return;
-        }
-        if (System.currentTimeMillis() - startTime < 250) {
-            return;
-        }
-        double armPos = _hardware.armMotor.getCurrentPosition();
-        double armPosError = targetArmPos - armPos;
-        double dArmPosError = (armPos - prevArmPos) / (System.currentTimeMillis() - prevTime);
-        double output = armPID.getOutput(armPosError, dArmPosError);
-        _hardware.armMotor.setPower(output);
-        prevArmPos = armPos;
-        prevTime = System.currentTimeMillis();
-        telem.addLine("armOutput: " + output);
-        telem.addLine("armError: " + armPosError);
-        telem.addLine("armPos: " + armPos);
-
     }
 
     public void driveToTarget(Position destination) {
@@ -170,46 +88,44 @@ public class Navigation {
 
     public void driveToTarget(Position destination, boolean isSpline, boolean onlyRotate) { driveToTarget(new Position(0,0,0), new Position(0,0,0), new Position(0,0,0), destination, isSpline, onlyRotate); }
 
-	public void driveToTarget(Position start, Position control1, Position control2, Position destination, boolean isSpline, boolean onlyRotate)
-    {
+    public boolean isTargetReached(Waypoint waypoint, boolean isErrorCorrectionMove) {
+        final Position target = isErrorCorrectionMove ? waypoint.startingPos : waypoint.targetPos;
         boolean thetaFinished = false;
-        distAlongCurve = 0;
-        arcLength = splineController.getArcLength(start, control1, control2, destination);
-
-        //Assume that starting position has been reached. Drive to target specified by waypoint.
-        while(((Math.abs(destination.x - position.x) > 5) || (Math.abs(destination.y - position.y) > 5) || !thetaFinished) && !opMode.isStopRequested() && (!onlyRotate || !thetaFinished)) {
-            updateArm();
-            thetaFinished = false;
-            double thetaError = destination.t - position.t;
-            boolean isCounterClockwise = false;
-            if ((thetaError) > 0 && (thetaError < Math.PI) ) {
-                isCounterClockwise = true;
-            }
-
-            if ((thetaError) < 0 && (thetaError < -Math.PI)) {
-                isCounterClockwise = true;
-                thetaError = destination.t - position.t + (2 * Math.PI);
-            }
-
-            if (Math.abs(thetaError) < THETA_TOLERANCE){
-                thetaFinished = true;
-            }
-
-			if (isSpline)
-            {
-                splineToTarget(start, control1, control2, destination);
-            } else
-	            moveToTarget(destination, thetaError, isCounterClockwise, onlyRotate);
+        double thetaError = target.t - position.t;
+        if ((thetaError) < 0 && (thetaError < -Math.PI)) {
+            thetaError = target.t - position.t + (2 * Math.PI); // todo: might want to store theta error to an instance variable so we don't calculate it twice every iteration
         }
 
-        _hardware.setAllMotorPowers(0);
+        if (Math.abs(thetaError) < THETA_TOLERANCE){
+            thetaFinished = true;
+        }
+        return !(((Math.abs(target.x - position.x) > 5) || (Math.abs(target.y - position.y) > 5) || !thetaFinished) && (!waypoint.onlyRotate || !thetaFinished));
+    }
+
+	public void driveToTarget(Position start, Position control1, Position control2, Position destination, boolean isSpline, boolean onlyRotate)
+    {
+        arcLength = splineController.getArcLength(start, control1, control2, destination);
+        double thetaError = destination.t - position.t;
+        boolean isCounterClockwise = false;
+        if ((thetaError) > 0 && (thetaError < Math.PI) ) {
+            isCounterClockwise = true;
+        }
+
+        if ((thetaError) < 0 && (thetaError < -Math.PI)) {
+            isCounterClockwise = true;
+            thetaError = destination.t - position.t + (2 * Math.PI);
+        }
+
+        if (isSpline) {
+            splineToTarget(start, control1, control2, destination);
+        } else {
+            moveToTarget(destination, thetaError, isCounterClockwise, onlyRotate);
+        }
+
     }
 
 	public void splineToTarget(Position startPos, Position control1, Position control2, Position endPos)
     {
-        if (opMode.isStopRequested())
-            return;
-
         position = _localization.getRobotPosition(telem);
         _localization.increment(position);
 		Velocity velocity = _localization.getRobotVelocity();
@@ -226,11 +142,11 @@ public class Navigation {
         else
             orientation = Math.atan(velocityVector.y / velocityVector.x) + Math.PI - Math.PI / 4 - position.t;
 
-        negOutput = 0.1 * Math.sin(orientation);
+        negOutput = 0.2 * Math.sin(orientation);
         if (orientation == 0)
             posOutput = negOutput;
         else
-            posOutput = 0.1 * Math.cos(orientation);
+            posOutput = 0.2 * Math.cos(orientation);
 
         telem.addData("X", position.x);
         telem.addData("Y", position.y);
@@ -253,9 +169,6 @@ public class Navigation {
 
     public void moveToTarget(Position waypointPos, double thetaError, boolean isCounterClockwise, boolean onlyRotate)
     {
-        if (opMode.isStopRequested())
-            return;
-
         position = _localization.getRobotPosition(telem);
         _localization.increment(position);
         Velocity velocity = _localization.getRobotVelocity();
@@ -305,4 +218,12 @@ public class Navigation {
             _hardware.setMotorValuesWithRotation(0.1 * posOutput, 0.1 * negOutput, (isCounterClockwise ? -1 : 1) * thetaOutput);
         }
     }
+
+    public void clear() {
+        _hardware.setAllMotorPowers(0);
+        thetaController.resetSum();
+        controller.resetSum();
+        distAlongCurve = 0;
+    }
+
 }

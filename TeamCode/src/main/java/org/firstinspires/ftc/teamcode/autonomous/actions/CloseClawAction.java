@@ -8,8 +8,6 @@ public class CloseClawAction extends Action{
 
     public void execute(Hardware hardware, Localization localization)
     {
-        long initialTime = System.currentTimeMillis();
-        hardware.clawMotor.setPower(0.4);
-        while(System.currentTimeMillis() - initialTime < 1000) {}
+        hardware.clawServo.setPosition(1);
     }
 }

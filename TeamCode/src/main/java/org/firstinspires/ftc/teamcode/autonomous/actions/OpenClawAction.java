@@ -8,9 +8,6 @@ public class OpenClawAction extends Action{
 
     public void execute(Hardware hardware, Localization localization)
     {
-        long initialTime = System.currentTimeMillis();
-        hardware.clawMotor.setPower(-0.2);
-        while(System.currentTimeMillis() - initialTime < 100) {}
-        hardware.clawMotor.setPower(0);
+        hardware.clawServo.setPosition(0);
     }
 }

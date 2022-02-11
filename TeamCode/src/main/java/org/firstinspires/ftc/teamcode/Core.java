@@ -4,9 +4,11 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class Core extends OpMode {
-    DcMotor leftfront, rightfront, leftback, rightback, armMotor, clawMotor, carousel;
+    DcMotor leftfront, rightfront, leftback, rightback, armMotor, carousel;
+    Servo clawServo;
     BNO055IMU imu;
     BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 
@@ -29,10 +31,10 @@ public class Core extends OpMode {
         armMotor = hardwareMap.dcMotor.get("armMotor");
         armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        clawMotor = hardwareMap.dcMotor.get("clawMotor");
-        clawMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        clawMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        clawServo = hardwareMap.get(Servo.class, "clawServo");
 
         carousel = hardwareMap.dcMotor.get("carouselMotor");
         carousel.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -45,7 +47,7 @@ public class Core extends OpMode {
         imu.initialize(parameters);
     }
 
-    public void move(double posinput, double neginput, double rotinput)
+        public void move(double posinput, double neginput, double rotinput)
     {
         leftfront.setPower(-posinput-rotinput);
         rightfront.setPower(neginput-rotinput);
@@ -58,13 +60,15 @@ public class Core extends OpMode {
         carousel.setPower(carouselPower);
     }
 
-    public void moveClaw(double clawPower)
+    public void setClawPos(double clawPos)
     {
-        clawMotor.setPower(clawPower);
+        clawServo.setPosition(clawPos);
     }
 
     public void moveArm(double armPower)
     {
-        armMotor.setPower(armPower);
+        if (armMotor.getCurrentPosition() > 0 || armPower > 0)
+            armMotor.setPower(armPower);
+
     }
 }

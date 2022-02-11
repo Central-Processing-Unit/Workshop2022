@@ -25,9 +25,7 @@ public class SplineController
 				(p2.y * p2Vector) +
 				(p3.y * p3Vector);
 
-		Position vector = new Position(xVector, yVector, 0);
-
-		return vector;
+		return new Position(xVector, yVector, 0);
 	}
 
 	// Returns the velocity (rate of change) as a vector, which will determine the orientation of the robots' movement.
@@ -36,8 +34,9 @@ public class SplineController
 
 	public Position getVelocityVector(Position p0, Position p1, Position p2, Position p3, double t)
 	{
-	    double xVector = -3*(p0.x * Math.pow(1-t, 2) + p1.x * (-3 * Math.pow(t, 2) + 4*t - 1) + t * (3 * p2.x * t - 2 * p2.x - p3.x * t));
-		double yVector = -3*(p0.y * Math.pow(1-t, 2) + p1.y * (-3 * Math.pow(t, 2) + 4*t - 1) + t * (3 * p2.y * t - 2 * p2.y - p3.y * t));
+		double p1Scalar = -3 * Math.pow(t, 2) + 4*t - 1;
+	    double xVector = -3*(p0.x * Math.pow(1-t, 2) + p1.x * p1Scalar + t * (3 * p2.x * t - 2 * p2.x - p3.x * t));
+		double yVector = -3*(p0.y * Math.pow(1-t, 2) + p1.y * p1Scalar + t * (3 * p2.y * t - 2 * p2.y - p3.y * t));
 
 		Position vector = new Position(xVector, yVector, 0);
 
