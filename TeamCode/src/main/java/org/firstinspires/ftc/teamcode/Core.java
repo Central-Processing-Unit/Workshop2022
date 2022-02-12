@@ -67,8 +67,6 @@ public class Core extends OpMode {
 
     public void moveArm(double armPower)
     {
-        if (armMotor.getCurrentPosition() > 0 || armPower > 0)
-            armMotor.setPower(armPower);
-
+        armMotor.setPower(armPower);
     }
 }

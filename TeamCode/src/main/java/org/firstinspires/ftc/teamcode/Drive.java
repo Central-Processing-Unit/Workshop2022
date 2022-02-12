@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.autonomous.control.PID;
 
 @TeleOp
 public class Drive extends Core {
@@ -21,8 +23,9 @@ public class Drive extends Core {
     boolean turboMode;
     double clawPos;
     double armPower;
-    double triggerLastPressed;
-    boolean isArmRaised;
+    PIDCoefficients coeffs = new PIDCoefficients(0.008, 0, 0);
+    PID armController = new PID(coeffs);
+    double armTarget;
 
     public void loop()
 	{
@@ -30,8 +33,12 @@ public class Drive extends Core {
                             gamepad1.x ? -1 :
                                     0;
 
-        armPower = gamepad1.right_trigger > 0.1 ? 1 :
-                (gamepad1.left_trigger > 0.1 ? -1 : 0);
+        if (gamepad1.right_trigger > 0.5)
+            armTarget = -2000;
+        else
+            armTarget = 0;
+
+        armPower = armController.getOutput(armTarget - armMotor.getCurrentPosition(), 0);
 
         if (gamepad1.b && System.currentTimeMillis() - bLastPressed > 250) {
             bLastPressed = System.currentTimeMillis();
