@@ -56,13 +56,13 @@ public class Instructions {
             double targetArmPos = 0;
             switch (objectDetector.getTeamElementLocation()) {
                 case LEFT:
-                    targetArmPos = 200;
+                    targetArmPos = -1371;
                     break;
                 case CENTER:
-                    targetArmPos = 425;
+                    targetArmPos = -2914;
                     break;
                 case RIGHT:
-                    targetArmPos = 700;
+                    targetArmPos = -4400;
                     break;
             }
             // todo: add a way to change the target arm position

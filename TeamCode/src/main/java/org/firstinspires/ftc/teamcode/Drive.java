@@ -23,7 +23,7 @@ public class Drive extends Core {
     boolean turboMode;
     double clawPos;
     double armPower;
-    PIDCoefficients coeffs = new PIDCoefficients(0.008, 0, 0);
+    PIDCoefficients coeffs = new PIDCoefficients(0.005, 0, 0);
     PID armController = new PID(coeffs);
     double armTarget;
 
@@ -34,7 +34,7 @@ public class Drive extends Core {
                                     0;
 
         if (gamepad1.right_trigger > 0.5)
-            armTarget = -2000;
+            armTarget = -4800;
         else
             armTarget = 0;
 
@@ -45,7 +45,7 @@ public class Drive extends Core {
             isClawClosed = !isClawClosed;
         }
 
-        clawPos = isClawClosed ? 1 : 0;
+        clawPos = isClawClosed ? 0.75 : 0.25;
 
         if (gamepad1.y && System.currentTimeMillis() - yLastPressed > 250) {
             yLastPressed = System.currentTimeMillis();
@@ -54,9 +54,11 @@ public class Drive extends Core {
 
         prevTime = System.currentTimeMillis();
         // Get all the info we from the gamepad
-        joystick_y = gamepad1.left_stick_y;
+        joystick_y = gamepad1.left_stick_y < 0 ? Math.pow(gamepad1.left_stick_y, 2) :
+                    -Math.pow(gamepad1.left_stick_y, 2);
         joystick_x = (gamepad1.left_stick_x == 0) ? 0.000001 :
-                gamepad1.left_stick_x;
+                (gamepad1.left_stick_x > 0 ? Math.pow(gamepad1.left_stick_x, 2) :
+                -Math.pow(gamepad1.left_stick_x, 2));
         rot_power = 0.4 * (gamepad1.right_stick_x);
 
         // Find out the distance of the joystick from resting position to control speed
@@ -81,8 +83,8 @@ public class Drive extends Core {
 
         if (!turboMode)
         {
-            negative_power *= 0.6;
-            positive_power *= 0.6;
+            negative_power *= 0.5;
+            positive_power *= 0.5;
             rot_power *= 0.6;
         }
 

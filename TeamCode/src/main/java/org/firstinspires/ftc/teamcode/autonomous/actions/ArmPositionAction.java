@@ -11,7 +11,7 @@ public class ArmPositionAction extends ContinuousAction {
 
     private double targetArmPos = 0;
     private double prevArmPos;
-    private PID controller = new PID(new PIDCoefficients(0.004, 0, 0));
+    private PID controller = new PID(new PIDCoefficients(0.005, 0, 0));
     private long prevTime;
 
     public ArmPositionAction() {
