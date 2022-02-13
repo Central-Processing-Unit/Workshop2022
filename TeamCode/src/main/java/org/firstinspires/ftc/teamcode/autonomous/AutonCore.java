@@ -25,7 +25,7 @@ public class AutonCore {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Localization localization = new Localization(hardware, opMode.telemetry, initialX, initialY, initialTheta);
+        Localization localization = new Localization(hardware, initialX, initialY, initialTheta);
         ObjectDetector objectDetector = new ObjectDetector(hardware);
 
         opMode.waitForStart();
@@ -38,7 +38,7 @@ public class AutonCore {
         runtime.reset();
 
 
-        instructions = new Instructions(hardware, localization, runtime, opMode.telemetry, opMode, initialX, initialY, initialTheta, objectDetector);
+        instructions = new Instructions(hardware, localization, opMode, initialX, initialY, initialTheta, objectDetector);
 
         instructions.runTasks();
         opMode.stop();

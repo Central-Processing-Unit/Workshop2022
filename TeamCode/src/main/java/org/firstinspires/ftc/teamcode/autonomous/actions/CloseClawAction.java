@@ -8,6 +8,6 @@ public class CloseClawAction extends Action{
 
     public void execute(Hardware hardware, Localization localization)
     {
-        hardware.clawServo.setPosition(1);
+        hardware.clawServo.setPosition(0.75);
     }
 }

@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.autonomous.localization.Localization;
 
 public class ArmPositionAction extends ContinuousAction {
 
-    private double targetArmPos = 0;
+    public static double targetArmPos = 0;
     private double prevArmPos;
     private PID controller = new PID(new PIDCoefficients(0.005, 0, 0));
     private long prevTime;
@@ -21,7 +21,6 @@ public class ArmPositionAction extends ContinuousAction {
 
     @Override
     public void execute(Hardware hardware, Localization localization) {
-        double targetArmPos = Constants.ARM_TARGET;
         double armPos = hardware.armMotor.getCurrentPosition();
         double armPosError = targetArmPos - armPos;
         double dArmPosError = (armPos - prevArmPos) / (System.currentTimeMillis() - prevTime);
@@ -38,5 +37,11 @@ public class ArmPositionAction extends ContinuousAction {
     public void initialize(Hardware hardware, Localization localization) {
         prevArmPos = hardware.armMotor.getCurrentPosition();
         prevTime = System.currentTimeMillis();
+        targetArmPos = 0;
+    }
+
+    @Override
+    public boolean isFinished() {
+        return Math.abs(targetArmPos - prevArmPos) < 20;
     }
 }

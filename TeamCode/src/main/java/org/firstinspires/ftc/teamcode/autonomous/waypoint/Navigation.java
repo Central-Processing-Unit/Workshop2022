@@ -4,13 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.teamcode.autonomous.AutonCore;
-import org.firstinspires.ftc.teamcode.autonomous.Constants;
-import org.firstinspires.ftc.teamcode.autonomous.Instructions;
-import org.firstinspires.ftc.teamcode.autonomous.actions.Actions;
+import org.firstinspires.ftc.teamcode.autonomous.actions.ArmPositionAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.util.ObjectDetector;
 import org.firstinspires.ftc.teamcode.autonomous.control.PID;
 import org.firstinspires.ftc.teamcode.autonomous.control.SplineController;
@@ -19,17 +15,16 @@ import org.firstinspires.ftc.teamcode.autonomous.localization.Localization;
 import org.firstinspires.ftc.teamcode.autonomous.localization.Position;
 import org.firstinspires.ftc.teamcode.autonomous.localization.Velocity;
 
+import static org.firstinspires.ftc.teamcode.autonomous.AutonCore.telem;
+
 import java.util.ArrayList;
 
 public class Navigation {
     private final Hardware _hardware;
     private final Localization _localization;
-    private final Actions _actions;
-    private final ElapsedTime runtime;
     private final PID controller;
     private final PID thetaController;
 	private final SplineController splineController;
-    private final Telemetry telem;
     public Position position = new Position();
     double t;
 
@@ -39,27 +34,18 @@ public class Navigation {
 
     In the future, this feature may be used to add a GUI for motion planning.
      */
-    private ArrayList<Waypoint> waypoints;
-    private final LinearOpMode opMode;
+    private final ArrayList<Waypoint> waypoints;
     private static final double THETA_TOLERANCE = 0.025;
     private double distAlongCurve;
     private double arcLength;
 
     public Navigation(Hardware hardware,
-                      Localization localization,
-                      ElapsedTime runtime,
-                      Actions actions,
-                      Telemetry telemetry,
-                      LinearOpMode opMode,
-                      ObjectDetector objectDetector)
+                      Localization localization)
     {
 
-        telem = telemetry;
-        this.runtime = runtime;
-        _actions = actions;
         _hardware = hardware;
         _localization = localization;
-        PIDCoefficients coefficients = new PIDCoefficients(0.01, 0.00001, 0);
+        PIDCoefficients coefficients = new PIDCoefficients(0.008, 0.00001, 0);
         PIDCoefficients thetaCoefficients = new PIDCoefficients(0.2, 0.0003, 0);
 
         controller = new PID(coefficients);
@@ -67,19 +53,9 @@ public class Navigation {
 		splineController = new SplineController();
 
         waypoints = new ArrayList<>();
-        this.opMode = opMode;
     }
 
     public void reset() {
-        waypoints.clear();
-    }
-
-    public void executeTask()
-    {
-        for (int i = 0; i < waypoints.size(); i++)
-        {
-        }
-
         waypoints.clear();
     }
 
@@ -90,8 +66,8 @@ public class Navigation {
     public void driveToTarget(Position destination, boolean isSpline, boolean onlyRotate) { driveToTarget(new Position(0,0,0), new Position(0,0,0), new Position(0,0,0), destination, isSpline, onlyRotate); }
 
     public boolean isTargetReached(Waypoint waypoint, boolean isErrorCorrectionMove) {
-        if (waypoint.isSpline) {
-            return (t > 1);
+        if (waypoint.isSpline && !isErrorCorrectionMove) {
+            return t > 1;
         } else {
             final Position target = isErrorCorrectionMove ? waypoint.startingPos : waypoint.targetPos;
             boolean thetaFinished = false;
@@ -131,7 +107,7 @@ public class Navigation {
 
 	public void splineToTarget(Position startPos, Position control1, Position control2, Position endPos)
     {
-        position = _localization.getRobotPosition(telem);
+        position = _localization.getRobotPosition();
         _localization.increment(position);
 		Velocity velocity = _localization.getRobotVelocity();
 
@@ -156,15 +132,15 @@ public class Navigation {
         telem.addData("X", position.x);
         telem.addData("Y", position.y);
         telem.addData("T", position.t);
-        AutonCore.telem.addData("t: ", t);
-        AutonCore.telem.addData("VelocityVector.x: ", velocityVector.x);
-        AutonCore.telem.addData("VelocityVector.y: ", velocityVector.y);
-        AutonCore.telem.addData("orientation: ", orientation);
-        AutonCore.telem.addData("arcLength: ", arcLength);
-        AutonCore.telem.addData("distAlongCurve: ", distAlongCurve);
-        AutonCore.telem.addData("negOutput: ", negOutput);
-        AutonCore.telem.addData("posOutput: ", posOutput);
-        AutonCore.telem.update();
+        telem.addData("t: ", t);
+        telem.addData("VelocityVector.x: ", velocityVector.x);
+        telem.addData("VelocityVector.y: ", velocityVector.y);
+        telem.addData("orientation: ", orientation);
+        telem.addData("arcLength: ", arcLength);
+        telem.addData("distAlongCurve: ", distAlongCurve);
+        telem.addData("negOutput: ", negOutput);
+        telem.addData("posOutput: ", posOutput);
+        telem.update();
 
         if (t < 1)
             _hardware.setMotorValues(posOutput, negOutput);
@@ -174,7 +150,7 @@ public class Navigation {
 
     public void moveToTarget(Position waypointPos, double thetaError, boolean isCounterClockwise, boolean onlyRotate)
     {
-        position = _localization.getRobotPosition(telem);
+        position = _localization.getRobotPosition();
         _localization.increment(position);
         Velocity velocity = _localization.getRobotVelocity();
 
@@ -207,7 +183,7 @@ public class Navigation {
         telem.addData("Orientation", orientation);
         telem.addData("target T", waypointPos.t);
         telem.addData("Theta Error", thetaError);
-        telem.addData("ARM", Constants.ARM_TARGET);
+        telem.addData("ARM", ArmPositionAction.targetArmPos);
 //        telem.addData("Raw Theta", _hardware.gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle);
 //        telem.addData("Init Theta", Constants.INIT_THETA);
 //        telem.addData("Velocity", Math.sqrt(Math.pow(velocity.dx, 2) + Math.pow(velocity.dy, 2)));

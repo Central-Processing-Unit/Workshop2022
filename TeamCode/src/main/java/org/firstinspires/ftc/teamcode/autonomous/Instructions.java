@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
-import com.qualcomm.hardware.ams.AMSColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -11,7 +10,7 @@ import org.firstinspires.ftc.teamcode.autonomous.actions.ChangeArmTargetAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.CloseClawAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.OpenClawAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.SpinCarouselAction;
-import org.firstinspires.ftc.teamcode.autonomous.actions.WaitAction;
+import org.firstinspires.ftc.teamcode.autonomous.actions.WaitForActionsAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.util.ObjectDetector;
 import org.firstinspires.ftc.teamcode.autonomous.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.autonomous.localization.Localization;
@@ -35,9 +34,9 @@ public class Instructions {
     public ObjectDetector objectDetector;
     private final WaypointManager waypointManager;
     private final LinearOpMode opMode;
-    public ArmPositionAction armPositionAction = new ArmPositionAction();
+    public ArmPositionAction armPositionAction;
 
-    public Instructions(Hardware hardware, Localization localization, ElapsedTime runtime, Telemetry telemetry, LinearOpMode opMode, double _initialX, double _initialY, double _initialTheta, ObjectDetector objectDetector)
+    public Instructions(Hardware hardware, Localization localization, LinearOpMode opMode, double _initialX, double _initialY, double _initialTheta, ObjectDetector objectDetector)
     {
         this.objectDetector = objectDetector;
         initialX = _initialX;
@@ -46,7 +45,8 @@ public class Instructions {
         objectDetector.calculateState();
         this.waypointManager = new WaypointManager();
         this.opMode = opMode;
-        navigation = new Navigation(hardware, localization, runtime, actions, telemetry, opMode, objectDetector);
+        navigation = new Navigation(hardware, localization);
+        armPositionAction = new ArmPositionAction();
         registerActions(hardware, localization);
         registerNav(initialX, initialY, initialTheta);
     }
@@ -55,36 +55,28 @@ public class Instructions {
     private void registerActions(Hardware hardware, Localization localization)
     {
         actions = new Actions(hardware, localization);
-        if (objectDetector.getTeamElementLocation() != ObjectDetector.TeamElementLocation.INDETERMINATE) {
-            actions.addAction(new CloseClawAction(0, 0));
-            double targetArmPos = 0;
-            switch (objectDetector.getTeamElementLocation()) {
-                case LEFT:
-                    targetArmPos = -4500;
-                    break;
-                case CENTER:
-                    targetArmPos = -3300;
-                    break;
-                case RIGHT:
-                    targetArmPos = -1500;
-                    break;
-            }
-            // todo: add a way to change the target arm position
-            actions.addContinuousAction(armPositionAction);
-            actions.addAction(new ChangeArmTargetAction(0, 1, targetArmPos));
-            actions.addAction(new OpenClawAction(1, 0));
-            actions.addAction(new ChangeArmTargetAction(2, 0, 0));
-
-//            actions.addTask(new Action(3, 0) {
-//                @Override
-//                public void execute(Hardware hardware, Localization localization) {
-//                    navigation.targetArmPos = 0;
-//                }
-//            });
+        double targetArmPos = 0;
+        switch (objectDetector.getTeamElementLocation()) {
+            case LEFT:
+                targetArmPos = -4800;
+                break;
+            case CENTER:
+                targetArmPos = -3100;
+                break;
+            case RIGHT:
+                targetArmPos = -1200;
+                break;
         }
+        actions.addContinuousAction(armPositionAction);
+        actions.addAction(new CloseClawAction(0, 0));
+        actions.addAction(new ChangeArmTargetAction(0, 1, targetArmPos));
+        actions.addAction(new WaitForActionsAction(1, 0, actions));
+        actions.addAction(new OpenClawAction(1, 1));
+        actions.addAction(new ChangeArmTargetAction(2, 0, 0));
+
         if (!Constants.IS_LEFT_OPMODE) {
 //            actions.addTask(new FullStopAction(3, 0));
-            actions.addAction(new SpinCarouselAction(3, 0));
+            actions.addAction(new SpinCarouselAction(2, 1));
         }
     }
 
@@ -94,15 +86,15 @@ public class Instructions {
         if (!Constants.IS_LEFT_OPMODE)
         {
             waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX+700, initialY+590, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(initialX+700, initialY+590, initialTheta), new Position(initialX, initialY-800, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX+700, initialY+630, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(initialX+700, initialY+630, initialTheta), new Position(initialX, initialY-800, initialTheta)));
             waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY-800, initialTheta), new Position(initialX+680, initialY-900, initialTheta)));
         }
         else{
             waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX+700, initialY-630, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(initialX+700, initialY-630, initialTheta), new Position(initialX+700, initialY-630, initialTheta-Math.PI/2), true));
-            waypointManager.addWaypoint(new Waypoint(new Position(initialX+700, initialY-630, initialTheta-Math.PI/2), new Position(-310, 1190, initialTheta-Math.PI/2), new Position(-60, 3050, initialTheta-Math.PI/2), new Position(250, 3280, initialTheta-Math.PI/2)));
+            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX+740, initialY-740, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(initialX+740, initialY-740, initialTheta), new Position(initialX+540, initialY-740, initialTheta-Math.PI/2), false));
+            waypointManager.addWaypoint(new Waypoint(new Position(initialX+540, initialY-740, initialTheta-Math.PI/2), new Position(144, 1320, initialTheta-Math.PI/2), new Position(-155, 2880, initialTheta-Math.PI/2), new Position(560, 3000, initialTheta-Math.PI/2)));
             waypointManager.addWaypoint(new Waypoint(new Position(0,0,initialTheta-Math.PI/2), new Position(0,0,initialTheta), true));
         }
 

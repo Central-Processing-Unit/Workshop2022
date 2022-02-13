@@ -23,29 +23,35 @@ public class Drive extends Core {
     boolean turboMode;
     double clawPos;
     double armPower;
-    PIDCoefficients coeffs = new PIDCoefficients(0.005, 0, 0);
-    PID armController = new PID(coeffs);
+    PID armController = new PID(new PIDCoefficients(0.003, 0, 0));
     double armTarget;
 
-    public void loop()
-	{
+    public void loop() {
         carouselDirection = gamepad1.a ? 1 :
-                            gamepad1.x ? -1 :
-                                    0;
+                gamepad1.x ? -1 :
+                        0;
 
-        if (gamepad1.right_trigger > 0.5)
-            armTarget = -4800;
-        else
-            armTarget = 0;
-
-        armPower = armController.getOutput(armTarget - armMotor.getCurrentPosition(), 0);
+        if (gamepad1.right_trigger > 0.5 && armMotor.getCurrentPosition() > -4800) {
+            armPower = -1;
+            armTarget = armMotor.getCurrentPosition();
+        } else if (gamepad1.left_trigger > 0.5 && armMotor.getCurrentPosition() < 0){
+            armPower = 1;
+            armTarget = armMotor.getCurrentPosition();
+        } else {
+            if (armTarget < -4800) {
+                armTarget = -4800;
+            } else if (armTarget > 0) {
+                armTarget = 0;
+            }
+            armPower = armController.getOutput(armTarget - armMotor.getCurrentPosition(), 0);
+        }
 
         if (gamepad1.b && System.currentTimeMillis() - bLastPressed > 250) {
             bLastPressed = System.currentTimeMillis();
             isClawClosed = !isClawClosed;
         }
 
-        clawPos = isClawClosed ? 0.75 : 0.25;
+        clawPos = isClawClosed ? 0.75 : 0.35;
 
         if (gamepad1.y && System.currentTimeMillis() - yLastPressed > 250) {
             yLastPressed = System.currentTimeMillis();

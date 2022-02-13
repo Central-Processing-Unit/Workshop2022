@@ -11,6 +11,9 @@ public abstract class ContinuousAction extends Action {
 
     public abstract void initialize(Hardware hardware, Localization localization);
 
+    public boolean isFinished() {
+        return true;
+    }
     @Override
     public boolean isContinuous() {
         return true;

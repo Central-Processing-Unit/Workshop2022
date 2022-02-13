@@ -15,7 +15,7 @@ public class Localization {
     public double previousTime;
     private Position prevPosition;
 
-    public Localization(Hardware hardware, Telemetry telemetry, double xOffset, double yOffset, double initialTheta)
+    public Localization(Hardware hardware, double xOffset, double yOffset, double initialTheta)
     {
         //Robot hardware for passing to encoder and vision classes.
         if (Constants.IS_BLUE_TEAM) {
@@ -36,7 +36,7 @@ public class Localization {
         previousTime = currentTime;
     }
 
-    public Position getRobotPosition(Telemetry telem)
+    public Position getRobotPosition()
     {
         Position visionRobotPosition = null; //vision.getRobotPosition();
 
@@ -46,7 +46,7 @@ public class Localization {
             return visionRobotPosition;
         }
 
-        return encoder.getRobotPosition(newPosition, telem); //If we can't see vision targets, return encoder based location.
+        return encoder.getRobotPosition(newPosition); //If we can't see vision targets, return encoder based location.
     }
 
     public Velocity getRobotVelocity()

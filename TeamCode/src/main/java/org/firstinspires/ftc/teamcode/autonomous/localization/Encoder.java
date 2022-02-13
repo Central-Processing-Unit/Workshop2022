@@ -4,11 +4,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.teamcode.autonomous.AutonCore;
 import org.firstinspires.ftc.teamcode.autonomous.Constants;
 import org.firstinspires.ftc.teamcode.autonomous.hardware.Hardware;
 
 public class Encoder {
-    private final Hardware _hardware; //Contains robot hardware for measuring robot position using motor encoders.
+    private final Hardware hardware; //Contains robot hardware for measuring robot position using motor encoders.
 
 
 
@@ -18,20 +19,20 @@ public class Encoder {
 
     public Encoder(Hardware hardware, double initialTheta)
     {
-        _hardware = hardware;
+        this.hardware = hardware;
         this.initialTheta = initialTheta;
     }
 
-    public Position getRobotPosition(Position previousPosition, Telemetry telem)
+    public Position getRobotPosition(Position previousPosition)
     {
         //Encoder values. These are in ticks. We will later convert this to a usable distance.
         int lfPos, rfPos, rbPos, lbPos;
 
         //Record encoder values.
-        lfPos = _hardware.leftFrontMotor.getCurrentPosition();
-        rfPos = _hardware.rightFrontMotor.getCurrentPosition();
-        rbPos = _hardware.rightBackMotor.getCurrentPosition();
-        lbPos = _hardware.leftBackMotor.getCurrentPosition();
+        lfPos = hardware.leftFrontMotor.getCurrentPosition();
+        rfPos = hardware.rightFrontMotor.getCurrentPosition();
+        rbPos = hardware.rightBackMotor.getCurrentPosition();
+        lbPos = hardware.leftBackMotor.getCurrentPosition();
 
         //Displacement values
         double lfDisp, rfDisp, rbDisp, lbDisp;
@@ -74,13 +75,13 @@ public class Encoder {
         double theta;
 
         //Compute robot theta
-        theta = _hardware.gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle + initialTheta;
+        theta = hardware.gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle + initialTheta;
         if (theta > 2 * Math.PI) {
             theta -= 2 * Math.PI;
         } else if (theta < 0) {
             theta += 2 * Math.PI;
         }
-        telem.addData("T_e", theta);
+        AutonCore.telem.addData("T_e", theta);
 
         //Compute displacement in field reference frame.
         double deltaXf = deltaX * Math.cos(theta) - deltaY * Math.sin(theta);
@@ -102,10 +103,10 @@ public class Encoder {
         int lfPos, rfPos, rbPos, lbPos;
 
         //Record encoder values.
-        lfPos = _hardware.leftFrontMotor.getCurrentPosition();
-        rfPos = _hardware.rightFrontMotor.getCurrentPosition();
-        rbPos = _hardware.rightBackMotor.getCurrentPosition();
-        lbPos = _hardware.leftBackMotor.getCurrentPosition();
+        lfPos = hardware.leftFrontMotor.getCurrentPosition();
+        rfPos = hardware.rightFrontMotor.getCurrentPosition();
+        rbPos = hardware.rightBackMotor.getCurrentPosition();
+        lbPos = hardware.leftBackMotor.getCurrentPosition();
 
         return new Position((lfPos + rbPos)/2d, (rfPos + lbPos)/2d, 0);
     }

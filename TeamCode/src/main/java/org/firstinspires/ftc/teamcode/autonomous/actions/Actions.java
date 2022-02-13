@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.autonomous.actions;
 import org.firstinspires.ftc.teamcode.autonomous.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.autonomous.localization.Localization;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -59,7 +58,7 @@ public class Actions {
         for (int i = 0; i < actionMap.size(); i++) {
             Action action = actionMap.get(i);
             if (action == null) {
-                throw new RuntimeException("Invalid action priority: expected one priority for each value from 0 to " + (actionMap.size() - 1) + ", but instead found " + i);
+                throw new RuntimeException("Invalid action priority: expected one priority for each value from 0 to " + (actionMap.size() - 1) + ", but couldn't find an action with priority " + i);
             }
             action.execute(hardware, localization);
         }
@@ -67,6 +66,10 @@ public class Actions {
 
     public void reset() {
         actions.clear();
+    }
+
+    public List<ContinuousAction> getContinuousActions() {
+        return continuousActions;
     }
 
 }
