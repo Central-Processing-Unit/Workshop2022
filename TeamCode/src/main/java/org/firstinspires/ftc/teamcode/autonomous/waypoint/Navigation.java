@@ -31,6 +31,7 @@ public class Navigation {
 	private final SplineController splineController;
     private final Telemetry telem;
     public Position position = new Position();
+    double t;
 
     /*
     Holds waypoints that we can drive to. This allows for the robot to split a move up into
@@ -58,8 +59,8 @@ public class Navigation {
         _actions = actions;
         _hardware = hardware;
         _localization = localization;
-        PIDCoefficients coefficients = new PIDCoefficients(0.01, 0.00006, 0);
-        PIDCoefficients thetaCoefficients = new PIDCoefficients(0.2, 0.0006, 0);
+        PIDCoefficients coefficients = new PIDCoefficients(0.01, 0.00001, 0);
+        PIDCoefficients thetaCoefficients = new PIDCoefficients(0.2, 0.0003, 0);
 
         controller = new PID(coefficients);
         thetaController = new PID(thetaCoefficients);
@@ -89,17 +90,21 @@ public class Navigation {
     public void driveToTarget(Position destination, boolean isSpline, boolean onlyRotate) { driveToTarget(new Position(0,0,0), new Position(0,0,0), new Position(0,0,0), destination, isSpline, onlyRotate); }
 
     public boolean isTargetReached(Waypoint waypoint, boolean isErrorCorrectionMove) {
-        final Position target = isErrorCorrectionMove ? waypoint.startingPos : waypoint.targetPos;
-        boolean thetaFinished = false;
-        double thetaError = target.t - position.t;
-        if ((thetaError) < 0 && (thetaError < -Math.PI)) {
-            thetaError = target.t - position.t + (2 * Math.PI); // todo: might want to store theta error to an instance variable so we don't calculate it twice every iteration
-        }
+        if (waypoint.isSpline) {
+            return (t > 1);
+        } else {
+            final Position target = isErrorCorrectionMove ? waypoint.startingPos : waypoint.targetPos;
+            boolean thetaFinished = false;
+            double thetaError = target.t - position.t;
+            if ((thetaError) < 0 && (thetaError < -Math.PI)) {
+                thetaError = target.t - position.t + (2 * Math.PI); // todo: might want to store theta error to an instance variable so we don't calculate it twice every iteration
+            }
 
-        if (Math.abs(thetaError) < THETA_TOLERANCE){
-            thetaFinished = true;
+            if (Math.abs(thetaError) < THETA_TOLERANCE) {
+                thetaFinished = true;
+            }
+            return !(((Math.abs(target.x - position.x) > 5) || (Math.abs(target.y - position.y) > 5) || !thetaFinished) && (!waypoint.onlyRotate || !thetaFinished));
         }
-        return !(((Math.abs(target.x - position.x) > 5) || (Math.abs(target.y - position.y) > 5) || !thetaFinished) && (!waypoint.onlyRotate || !thetaFinished));
     }
 
 	public void driveToTarget(Position start, Position control1, Position control2, Position destination, boolean isSpline, boolean onlyRotate)
@@ -130,7 +135,7 @@ public class Navigation {
         _localization.increment(position);
 		Velocity velocity = _localization.getRobotVelocity();
 
-        double orientation, negOutput, posOutput, t;
+        double orientation, negOutput, posOutput;
 
         distAlongCurve += Math.sqrt(Math.pow(velocity.dx * (_localization.currentTime - _localization.previousTime), 2) + Math.pow(velocity.dy * (_localization.currentTime - _localization.previousTime), 2));
 
@@ -202,6 +207,7 @@ public class Navigation {
         telem.addData("Orientation", orientation);
         telem.addData("target T", waypointPos.t);
         telem.addData("Theta Error", thetaError);
+        telem.addData("ARM", Constants.ARM_TARGET);
 //        telem.addData("Raw Theta", _hardware.gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle);
 //        telem.addData("Init Theta", Constants.INIT_THETA);
 //        telem.addData("Velocity", Math.sqrt(Math.pow(velocity.dx, 2) + Math.pow(velocity.dy, 2)));

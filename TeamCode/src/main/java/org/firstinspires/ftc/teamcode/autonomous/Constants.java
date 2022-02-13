@@ -16,5 +16,5 @@ public final class Constants {
     public static final int WEBCAM_WIDTH = 1280;
     public static final int WEBCAM_HEIGHT = 720;
     public static final int WEBCAM_SECTION_WIDTH = 427;
-
+    public static double ARM_TARGET = 0;
 }

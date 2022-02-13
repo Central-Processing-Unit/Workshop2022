@@ -54,7 +54,7 @@ public class Drive extends Core {
 
         prevTime = System.currentTimeMillis();
         // Get all the info we from the gamepad
-        joystick_y = gamepad1.left_stick_y < 0 ? Math.pow(gamepad1.left_stick_y, 2) :
+        joystick_y = gamepad1.left_stick_y > 0 ? Math.pow(gamepad1.left_stick_y, 2) :
                     -Math.pow(gamepad1.left_stick_y, 2);
         joystick_x = (gamepad1.left_stick_x == 0) ? 0.000001 :
                 (gamepad1.left_stick_x > 0 ? Math.pow(gamepad1.left_stick_x, 2) :

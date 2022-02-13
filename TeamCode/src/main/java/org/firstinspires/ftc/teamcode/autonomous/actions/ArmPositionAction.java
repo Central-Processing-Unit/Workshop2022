@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.autonomous.actions;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 
 import org.firstinspires.ftc.teamcode.autonomous.AutonCore;
+import org.firstinspires.ftc.teamcode.autonomous.Constants;
 import org.firstinspires.ftc.teamcode.autonomous.control.PID;
 import org.firstinspires.ftc.teamcode.autonomous.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.autonomous.localization.Localization;
@@ -20,6 +21,7 @@ public class ArmPositionAction extends ContinuousAction {
 
     @Override
     public void execute(Hardware hardware, Localization localization) {
+        double targetArmPos = Constants.ARM_TARGET;
         double armPos = hardware.armMotor.getCurrentPosition();
         double armPosError = targetArmPos - armPos;
         double dArmPosError = (armPos - prevArmPos) / (System.currentTimeMillis() - prevTime);
@@ -37,9 +39,4 @@ public class ArmPositionAction extends ContinuousAction {
         prevArmPos = hardware.armMotor.getCurrentPosition();
         prevTime = System.currentTimeMillis();
     }
-
-    public void setTargetArmPos(double pos) {
-        targetArmPos = pos;
-    }
-
 }

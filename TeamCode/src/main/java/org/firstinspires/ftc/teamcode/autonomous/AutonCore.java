@@ -14,6 +14,7 @@ import java.io.IOException;
 public class AutonCore {
     public static ElapsedTime runtime;
     public static Telemetry telem;
+    public static Instructions instructions;
 
     public void runCore(double initialX, double initialY, double initialTheta, LinearOpMode opMode, Telemetry telemetry) {
         telem = telemetry;
@@ -37,7 +38,7 @@ public class AutonCore {
         runtime.reset();
 
 
-        Instructions instructions = new Instructions(hardware, localization, runtime, opMode.telemetry, opMode, initialX, initialY, initialTheta, objectDetector);
+        instructions = new Instructions(hardware, localization, runtime, opMode.telemetry, opMode, initialX, initialY, initialTheta, objectDetector);
 
         instructions.runTasks();
         opMode.stop();
