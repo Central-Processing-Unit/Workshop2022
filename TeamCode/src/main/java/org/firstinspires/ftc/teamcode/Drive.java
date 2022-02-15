@@ -53,10 +53,12 @@ public class Drive extends Core {
 
         clawPos = isClawClosed ? 0.75 : 0.35;
 
-        if (gamepad1.y && System.currentTimeMillis() - yLastPressed > 250) {
-            yLastPressed = System.currentTimeMillis();
-            turboMode = !turboMode;
-        }
+//        if (gamepad1.y && System.currentTimeMillis() - yLastPressed > 250) {
+//            yLastPressed = System.currentTimeMillis();
+//            turboMode = !turboMode;
+//        }
+
+        turboMode = gamepad1.y;
 
         prevTime = System.currentTimeMillis();
         // Get all the info we from the gamepad

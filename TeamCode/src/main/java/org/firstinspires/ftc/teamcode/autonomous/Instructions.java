@@ -76,7 +76,7 @@ public class Instructions {
 
         if (!Constants.IS_LEFT_OPMODE) {
 //            actions.addTask(new FullStopAction(3, 0));
-            actions.addAction(new SpinCarouselAction(2, 1));
+            actions.addAction(new SpinCarouselAction(3, 0));
         }
     }
 
@@ -87,8 +87,9 @@ public class Instructions {
         {
             waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
             waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX+700, initialY+630, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(initialX+700, initialY+630, initialTheta), new Position(initialX, initialY-800, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY-800, initialTheta), new Position(initialX+680, initialY-900, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(929, 1519, initialTheta), new Position(530, 1470, initialTheta), new Position(450, 1070, initialTheta), new Position(460, 580, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(460, 580, initialTheta), new Position(initialX+280, initialY-700, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(initialX+400, initialY-700, initialTheta), new Position(initialX+800, initialY-700, initialTheta)));
         }
         else{
             waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));

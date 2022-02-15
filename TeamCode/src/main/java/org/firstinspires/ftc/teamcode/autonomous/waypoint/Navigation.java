@@ -123,11 +123,11 @@ public class Navigation {
         else
             orientation = Math.atan(velocityVector.y / velocityVector.x) + Math.PI - Math.PI / 4 - position.t;
 
-        negOutput = 0.2 * Math.sin(orientation);
+        negOutput = 0.3 * Math.sin(orientation);
         if (orientation == 0)
             posOutput = negOutput;
         else
-            posOutput = 0.2 * Math.cos(orientation);
+            posOutput = 0.3 * Math.cos(orientation);
 
         telem.addData("X", position.x);
         telem.addData("Y", position.y);

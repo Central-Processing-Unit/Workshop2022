@@ -10,21 +10,13 @@ As we entered the 2021-2022 season we first established our goals for the season
 
 ## Physical Overview
 
-### Shared Physical Configurations
+The base upon which the robot is built is a drive train which consists of 4 omni-directional wheels in a square configuration 45 degrees off center. While this is not a popular configuration, it is functionally the same as the more popular mecanum drive. This is commonly called the holonomic drive, and it allows movement in any direction, even with simultaneous rotation. This allows us to perform advanced maneuvers in short periods of time. The two robots also share the same carousel-spinning wheel design, which consists of a single motor mounted vertically at the backs of the robots.
 
-While there are fundamental differences in the design of the teams' respective robots, the base upon which the robot is build ill finish this later. The two robots have identical drive trains which allows for consistency across team code bases. The drive train consists of 4 omni-directional wheels in a square configuration 45 degrees off center. While this is not a popular configuration, it is functionally the same as the more popular mecanum drive. This is commonly called the holonomic drive, and it allows movement in any direction, even with simultaneous rotation. This allows us to perform advanced maneuvers in short periods of time. The two robots also share the same carousel-spinning wheel design, which consists of a single motor mounted vertically at the backs of the robots.
+The Sigma robot features a linear slide as a lift mechanism, and an intake assembly consisting of a sheet metal scoop facing out the front of the robot, and a servo-powered finger to pull in and hold shipping elements.
 
-### CPU Robot Configuration
 
-The CPU robot features an active intake which picks up shipping elements without requiring any user input. A cascading linear lift system is then used to move shipping elements into the target areas. The active intake allows for simplicity in the inputs for the driver controlled portion.
 
-### Sigma Robot Configuration
-
-The Sigma robot features a single robotic arm and claw mechanism that acts as both intake and transport of shipping elements into the target areas. The fact that the entire lift and intake system is handled by just two motors allows for simplicity in our code.
-
-**Sigma robotics acknowledges and apologizes for the obvious inferiority of their robot when compared to the robot designed by CPU robotics**
-
-# include a picture :)
+*Image courtesy of Servo Magazine*
 
 ## Organizational Structure
 
@@ -35,11 +27,10 @@ The following table outlines the structure of the autonomous portion of our proj
 
 | Package | Function |
 | ---------------------------- | -------- |
-| hardware | Classes responsible for managing the physical components of the robot, including motors, servos (redundant), sensors, cameras (also redundant) and you're mother |
-| localization | Classes responsible for tracking the location of the robot through both integrated encoders in the motors driving the wheels on the robot (which go round and round) and vision-based localization through Vuforia (you're mother) |
-| vision | Contains the foundational class for Vuforia, the augmented reality (AR) engine used throughout our code for vision-based calculations |
+| hardware | Classes responsible for managing the physical components of the robot, including motors, servos, and cameras |
+| localization | Classes responsible for tracking the location of the robot through integrated encoders in the motors driving the wheels |
 | waypoint | Contains classes that drive the system through which we pass movement instructions to our control engine |
-| control | Contains the class responsible for determining the outputs of the control engine proportional to the robots distance from the target position |
+| control | Contains the classes responsible for generating motor output based on values from localization and our target position for precise and accurate movement |
 | actions | Contains the foundational code for the creation of all non-movement actions, as well as individual classes for each one of these actions |
 | opmodes | Contains instances of FTC's OpMode class to interface with the FTC Driver Station app
 
@@ -53,11 +44,9 @@ The following table details classes that do not reside in any of the previously 
 
 #### Localization
 
-The localization engine consists of two distinct methods of finding the robots position on the field, odometry, which determines the position of the robot based on data from the motors, and vision, which identifies navigation targets mounted to the walls of the field, and finds the position based on the distance between multiple targets in the camera frame. Since the navigation targets are not always usable, odometry is used for a majority of autonomous movement, with vision automatically taking over whenever it is applicable. Orientation is provided by the on-board internal measurement unit (IMU) in both cases.
+The localization engine consists of an algorithm for finding the robots position on the field, which determines the position of the robot based on data from the motors. The orientation is provided by the on-board internal measurement unit (IMU).
 
-##### Odometry
-
-The odometry algorithm finds position data from the wheels through the following algorithm:
+The odometry algorithm gathers position data from the wheels through the following algorithm:
 
 1. Gather information from the encoders integrated in the motors that drive the wheels. These values are measured in encoder ticks. There are a set number of encoder ticks per revolution of the motor.
 2. Find the displacement of each wheel by taking the difference between the values read by the encoders and the values stored from the last iteration of the cycle, and multiply by a known constant (distance in mm traveled per encoder tick) to convert these values to millimeters
@@ -69,25 +58,22 @@ The odometry algorithm finds position data from the wheels through the following
 
 This process repeats several times per second to give the control engine up-to-date and accurate information in real time.
 
-##### Vision
-
-The vision algorithm is comparatively simpler:
-
-1. Take a picture through the webcam mounted on the robot
-2. Determine whether any navigation targets are currently visible
-3. If a target is visible, use the integrated vuforia algorithm to identify which navigation target is visible, and determine its orientation and distance from the robot
-4. return the position values found by the vuforia engine
-
 #### Navigation
 
 The algorithm for navigation converts a start-point and target-point pair (a `Waypoint`) into motor instructions for moving towards the target. This algorithm repeatedly runs and recalculates based on its measured position on the field, as calculated in the localization algorithm. Once the navigation algorithm is given a waypoint to execute, the following procedure is run:
 
 1. Drive the robot to the starting point of the waypoint. This may seem redundant, but this is necessary for when the robot overshoots the previous waypoint, which could otherwise give rise to problems with accuracy
-2. Drive to the target waypoint
+2. Collect and store the robots current position from the Localization pipeline
+3. Pass that data into a PID controller, which adjusts the speed of the robot based on the distance between its position and the target. This accounts for the magnitude portion of our motion vector
+4. Use the slope of the two points (target, and current position) to find the direction portion of the motion vector
+5. Using the magnitude and direction values, calculate the power values for each motors
+6. Using another PID, calculate the magnitude and direction of our heading vector using an angle value from the IMU and a target value in radians
+7. Add the outputs from the linear movement function and the rotation function to get the final motor power
 
-#### Waypoints
+This process repeats several times per second to ensure that the robot moves as accurately and precisely as possible.
+
+The `Waypoint` class can also take 4 points as input, a start point, and end point, and 2 control points in between. Using these control points, we can calculate a cubic bezier curve for the robot to follow. In this case, the motion vector is calculated not by the distance and slope between two points. At the very beginning of the run, the approximate length of the curve is calculated. Then, at every iteration of the loop, the direction component of the motion vector is calculated by taking the derivative of the spline at a point `t` between 0 and 1. `t` is calculated at every iteration of the loop by dividing the total distance the robot has traveled since the beginning of the curve by the total arc length of the curve. Since this pipeline doesn't use a PID controller, its movements are only precise, but offer very little accuracy. To account for this, we add a linear move at the end of every spline to ensure we are exactly where we want to be before the next maneuver.
 
 ### Driver Control
 
-| shit goes here |
-| -------------- |
+The Driver Control pipeline is split into just 2 simple classes. `Core` handles all of the hardware devices, and includes methods to interface with those devices. `Drive` Includes the same algorithm we use for calculating motion vectors and motor powers as autonomous, but takes joystick values as input instead of a set of points. It also contains code for controlling different features and peripheral devices on the robot, including a switch for actuating the intake, a switch for activating "Turbo Mode" which doubles the speed of the robot, and a PID controller for holding the lift in whatever position it is stopped at.
