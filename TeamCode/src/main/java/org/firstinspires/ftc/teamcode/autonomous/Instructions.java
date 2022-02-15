@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.autonomous.actions.Actions;
 import org.firstinspires.ftc.teamcode.autonomous.actions.ArmPositionAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.ChangeArmTargetAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.CloseClawAction;
+import org.firstinspires.ftc.teamcode.autonomous.actions.DetectFreightAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.OpenClawAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.SpinCarouselAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.WaitForActionsAction;
@@ -68,15 +69,16 @@ public class Instructions {
                 break;
         }
         actions.addContinuousAction(armPositionAction);
-        actions.addAction(new CloseClawAction(0, 0));
-        actions.addAction(new ChangeArmTargetAction(0, 1, targetArmPos));
-        actions.addAction(new WaitForActionsAction(1, 0, actions));
-        actions.addAction(new OpenClawAction(1, 1));
-        actions.addAction(new ChangeArmTargetAction(2, 0, 0));
+//        actions.addAction(new CloseClawAction(0, 0));
+//        actions.addAction(new ChangeArmTargetAction(0, 1, targetArmPos));
+//        actions.addAction(new WaitForActionsAction(1, 0, actions));
+//        actions.addAction(new OpenClawAction(1, 1));
+//        actions.addAction(new ChangeArmTargetAction(2, 0, 0));
+        actions.addAction(new DetectFreightAction(0, 0, objectDetector));
 
         if (!Constants.IS_LEFT_OPMODE) {
 //            actions.addTask(new FullStopAction(3, 0));
-            actions.addAction(new SpinCarouselAction(3, 0));
+//            actions.addAction(new SpinCarouselAction(3, 0));
         }
     }
 
@@ -93,10 +95,11 @@ public class Instructions {
         }
         else{
             waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX+740, initialY-740, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(initialX+740, initialY-740, initialTheta), new Position(initialX+540, initialY-740, initialTheta-Math.PI/2), false));
-            waypointManager.addWaypoint(new Waypoint(new Position(initialX+540, initialY-740, initialTheta-Math.PI/2), new Position(144, 1320, initialTheta-Math.PI/2), new Position(-155, 2880, initialTheta-Math.PI/2), new Position(560, 3000, initialTheta-Math.PI/2)));
-            waypointManager.addWaypoint(new Waypoint(new Position(0,0,initialTheta-Math.PI/2), new Position(0,0,initialTheta), true));
+//            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
+//            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX+740, initialY-740, initialTheta)));
+//            waypointManager.addWaypoint(new Waypoint(new Position(initialX+740, initialY-740, initialTheta), new Position(initialX+540, initialY-740, initialTheta-Math.PI/2), false));
+//            waypointManager.addWaypoint(new Waypoint(new Position(initialX+540, initialY-740, initialTheta-Math.PI/2), new Position(144, 1320, initialTheta-Math.PI/2), new Position(-155, 2880, initialTheta-Math.PI/2), new Position(560, 3000, initialTheta-Math.PI/2)));
+//            waypointManager.addWaypoint(new Waypoint(new Position(0,0,initialTheta-Math.PI/2), new Position(0,0,initialTheta), true));
         }
 
 //          navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(429, 2283, initialTheta), new Position(629, 2483, initialTheta), new Position(829, 2683, initialTheta)));

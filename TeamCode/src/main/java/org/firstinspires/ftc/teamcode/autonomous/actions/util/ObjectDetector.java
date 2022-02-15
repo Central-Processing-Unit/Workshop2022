@@ -23,6 +23,7 @@ public class ObjectDetector {
     private TeamElementLocation teamElementLocation = TeamElementLocation.LOADING;
     public static TensorImageClassifier tic;
     private WebcamPipeline webcamPipeline;
+    private boolean isDetectingFreightLocation = false;
 
     public ObjectDetector(Hardware hardware)
     {
@@ -37,9 +38,50 @@ public class ObjectDetector {
         return output.get(0).getTitle().equals("TeamElement") ? output.get(0).getConfidence() : output.get(1).getConfidence();
     }
 
-    public void calculateState() {
+    public boolean isDetectingFreight() {
+        return isDetectingFreightLocation;
+    }
+
+    public void startFreightDetection() {
+        isDetectingFreightLocation = true;
+    }
+
+    public void findFreightLocation(Mat mat) {
         _hardware.cvCamera.stopStreaming();
-        _hardware.cvCamera.closeCameraDevice();
+        isDetectingFreightLocation = false;
+        Mat hsvMat = new Mat();
+        Imgproc.cvtColor(mat, hsvMat, Imgproc.COLOR_RGB2HSV);
+        hsvMat.
+        boolean[][] pixels = new boolean[hsvMat.rows()][hsvMat.cols()];
+        for (int i = 0; i < hsvMat.rows(); i++) {
+            for (int j = 0; j < hsvMat.cols(); j++) {
+                double[] bytes = hsvMat.get(i, j);
+//                if (bytes[0] > 190 && bytes[0] < 200 && bytes[1] > 140 && bytes[1] < 160 && bytes[2] < 25) {
+                if (bytes[0] > 170 && bytes[0] < 220 && bytes[1] > 120 && bytes[1] < 180 && bytes[2] < 50) {
+                    pixels[i][j] = true;
+                    throw new RuntimeException("i: " + i + ", j: " + j);
+                }
+            }
+        }
+        for (int i = hsvMat.rows() - 1; i >= 0; i--) {
+            pixel: for (int j = hsvMat.cols() - 1; j >= 0; j--) {
+                if (pixels[i][j]) {
+                    // Scan pixels above this pixel
+                    if (i < 10) {
+                        continue;
+                    }
+                    for (int k = 1; k < 10; k++) {
+                        if (!pixels[i-k][j]) {
+                            continue pixel;
+                        }
+                    }
+                    throw new RuntimeException("i: " + i + ", j: " + j);
+                }
+            }
+        }
+    }
+
+    public void calculateState() {
 
         System.out.println("handleMat");
         if (tic == null || webcamPipeline.getLastMat() == null) {
@@ -104,7 +146,7 @@ public class ObjectDetector {
 
     private void initializeObjectDetector()
     {
-        webcamPipeline = new WebcamPipeline();
+        webcamPipeline = new WebcamPipeline(this);
         _hardware.cvCamera.setPipeline(webcamPipeline);
         _hardware.cvCamera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -126,6 +168,6 @@ public class ObjectDetector {
 
     public enum TeamElementLocation
     {
-        LEFT, CENTER, RIGHT, INDETERMINATE, LOADING
+        LEFT, CENTER, RIGHT, LOADING
     }
 }

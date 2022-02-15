@@ -7,12 +7,22 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class WebcamPipeline extends OpenCvPipeline {
 
     private Mat lastMat;
+    private final ObjectDetector objectDetector;
+
+    public WebcamPipeline(ObjectDetector objectDetector) {
+        super();
+        this.objectDetector = objectDetector;
+    }
 
     @Override
     public Mat processFrame(Mat input) {
         lastMat = input;
-        AutonCore.telem.addLine("Webcam ready");
-        AutonCore.telem.update();
+        if (objectDetector.isDetectingFreight()) {
+            objectDetector.findFreightLocation(input);
+        } else {
+            AutonCore.telem.addLine("Webcam ready");
+            AutonCore.telem.update();
+        }
         System.out.println("new frame just dropped 0.0");
         return input;
     }
