@@ -14,7 +14,7 @@ The base upon which the robot is built is a drive train which consists of 4 omni
 
 The Sigma robot features a linear slide as a lift mechanism, and an intake assembly consisting of a sheet metal scoop facing out the front of the robot, and a servo-powered finger to pull in and hold shipping elements.
 
-
+![Alt text](https://github.com/gt74745/Sigma2022/blob/master/holonomicdiagram.jpg "a title")
 
 *Image courtesy of Servo Magazine*
 
