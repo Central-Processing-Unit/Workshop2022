@@ -141,6 +141,7 @@ public class Instructions {
                 break;
 
             actions.executeActions(taskIndex++);
+            while(true) {}
         }
     }
 

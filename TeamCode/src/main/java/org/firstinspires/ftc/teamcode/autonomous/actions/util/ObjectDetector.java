@@ -51,15 +51,17 @@ public class ObjectDetector {
         isDetectingFreightLocation = false;
         Mat hsvMat = new Mat();
         Imgproc.cvtColor(mat, hsvMat, Imgproc.COLOR_RGB2HSV);
-        hsvMat.
         boolean[][] pixels = new boolean[hsvMat.rows()][hsvMat.cols()];
+        AutonCore.telem.addLine("Running HSV detection...");
+        AutonCore.telem.update();
+        long t0 = System.currentTimeMillis();
+        while (System.currentTimeMillis() - t0 < 500) {}
         for (int i = 0; i < hsvMat.rows(); i++) {
             for (int j = 0; j < hsvMat.cols(); j++) {
                 double[] bytes = hsvMat.get(i, j);
 //                if (bytes[0] > 190 && bytes[0] < 200 && bytes[1] > 140 && bytes[1] < 160 && bytes[2] < 25) {
-                if (bytes[0] > 170 && bytes[0] < 220 && bytes[1] > 120 && bytes[1] < 180 && bytes[2] < 50) {
+                if (bytes[0] > 18 && bytes[0] < 30 && bytes[1] > 110 && bytes[2] > 108 && bytes[2] < 163) {
                     pixels[i][j] = true;
-                    throw new RuntimeException("i: " + i + ", j: " + j);
                 }
             }
         }
@@ -75,10 +77,16 @@ public class ObjectDetector {
                             continue pixel;
                         }
                     }
-                    throw new RuntimeException("i: " + i + ", j: " + j);
+                    AutonCore.telem.addLine("FOUND");
+                    AutonCore.telem.addData("i: ", i);
+                    AutonCore.telem.addData("j: ", j);
+                    AutonCore.telem.update();
+                    t0 = System.currentTimeMillis();
+                    while (System.currentTimeMillis() - t0 < 2000) {}
                 }
             }
         }
+        throw new RuntimeException("i got nothing");
     }
 
     public void calculateState() {

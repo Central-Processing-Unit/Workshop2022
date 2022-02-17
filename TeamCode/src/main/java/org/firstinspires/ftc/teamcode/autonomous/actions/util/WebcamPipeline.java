@@ -19,7 +19,7 @@ public class WebcamPipeline extends OpenCvPipeline {
         lastMat = input;
         if (objectDetector.isDetectingFreight()) {
             objectDetector.findFreightLocation(input);
-        } else {
+        } else if (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.LOADING) {
             AutonCore.telem.addLine("Webcam ready");
             AutonCore.telem.update();
         }
