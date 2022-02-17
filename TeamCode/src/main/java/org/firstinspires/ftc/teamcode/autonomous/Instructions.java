@@ -74,7 +74,7 @@ public class Instructions {
 //        actions.addAction(new WaitForActionsAction(1, 0, actions));
 //        actions.addAction(new OpenClawAction(1, 1));
 //        actions.addAction(new ChangeArmTargetAction(2, 0, 0));
-        actions.addAction(new DetectFreightAction(0, 0, objectDetector));
+//        actions.addAction(new DetectFreightAction(0, 0, objectDetector));
 
         if (!Constants.IS_LEFT_OPMODE) {
 //            actions.addTask(new FullStopAction(3, 0));
@@ -141,7 +141,7 @@ public class Instructions {
                 break;
 
             actions.executeActions(taskIndex++);
-            while(true) {}
+            while(!opMode.isStopRequested()) {}
         }
     }
 
