@@ -45,7 +45,7 @@ public class Navigation {
 
         _hardware = hardware;
         _localization = localization;
-        PIDCoefficients coefficients = new PIDCoefficients(0.008, 0.00001, 0);
+        PIDCoefficients coefficients = new PIDCoefficients(0.01, 0.00002, 0);
         PIDCoefficients thetaCoefficients = new PIDCoefficients(0.2, 0.0003, 0);
 
         controller = new PID(coefficients);

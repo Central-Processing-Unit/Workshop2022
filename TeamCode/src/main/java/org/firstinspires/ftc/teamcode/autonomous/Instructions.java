@@ -72,7 +72,10 @@ public class Instructions {
         actions.addAction(new ChangeArmTargetAction(0, 1, targetArmPos));
         actions.addAction(new WaitForActionsAction(1, 0, actions));
         actions.addAction(new OpenClawAction(1, 1));
-        actions.addAction(new ChangeArmTargetAction(2, 0, 0));
+        actions.addAction(new ChangeArmTargetAction(2, 0, -500));
+        // Run at end to lower arm to 0 for drive
+        actions.addAction(new ChangeArmTargetAction(4, 0, 0));
+        actions.addAction(new WaitForActionsAction(4, 1, actions));
 
         if (!Constants.IS_LEFT_OPMODE) {
 //            actions.addTask(new FullStopAction(3, 0));
@@ -88,7 +91,7 @@ public class Instructions {
             waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
             waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX+700, initialY+630, initialTheta)));
             waypointManager.addWaypoint(new Waypoint(new Position(929, 1519, initialTheta), new Position(530, 1470, initialTheta), new Position(450, 1070, initialTheta), new Position(460, 580, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(460, 580, initialTheta), new Position(initialX+280, initialY-700, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(460, 580, initialTheta), new Position(initialX+250, initialY-720, initialTheta)));
             waypointManager.addWaypoint(new Waypoint(new Position(initialX+400, initialY-700, initialTheta), new Position(initialX+800, initialY-700, initialTheta)));
         }
         else{
