@@ -1,0 +1,320 @@
+From 439a5bf491b72fa9aff67dd424155fd9b0476a00 Mon Sep 17 00:00:00 2001
+From: Cal Kestis <cmacfarlane@firstinspires.org>
+Date: Thu, 23 Dec 2021 12:41:34 -0800
+Subject: [PATCH] FtcRobotController v7.1
+
+---
+ .../src/main/AndroidManifest.xml              |   4 +-
+ .../samples/BasicOmniOpMode_Linear.java       | 158 ++++++++++++++++++
+ .../main/res/menu/ftc_robot_controller.xml    |  19 ++-
+ README.md                                     |  24 ++-
+ build.dependencies.gradle                     |  16 +-
+ 5 files changed, 200 insertions(+), 21 deletions(-)
+ create mode 100644 FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/BasicOmniOpMode_Linear.java
+
+diff --git a/FtcRobotController/src/main/AndroidManifest.xml b/FtcRobotController/src/main/AndroidManifest.xml
+index 127ef3f7ca0..5da443eb00f 100644
+--- a/FtcRobotController/src/main/AndroidManifest.xml
++++ b/FtcRobotController/src/main/AndroidManifest.xml
+@@ -2,8 +2,8 @@
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+           xmlns:tools="http://schemas.android.com/tools"
+           package="com.qualcomm.ftcrobotcontroller"
+-          android:versionCode="42"
+-          android:versionName="7.0">
++          android:versionCode="44"
++          android:versionName="7.1">
+ 
+   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+ 
+diff --git a/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/BasicOmniOpMode_Linear.java b/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/BasicOmniOpMode_Linear.java
+new file mode 100644
+index 00000000000..205a882385c
+--- /dev/null
++++ b/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/BasicOmniOpMode_Linear.java
+@@ -0,0 +1,158 @@
++/* Copyright (c) 2021 FIRST. All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without modification,
++ * are permitted (subject to the limitations in the disclaimer below) provided that
++ * the following conditions are met:
++ *
++ * Redistributions of source code must retain the above copyright notice, this list
++ * of conditions and the following disclaimer.
++ *
++ * Redistributions in binary form must reproduce the above copyright notice, this
++ * list of conditions and the following disclaimer in the documentation and/or
++ * other materials provided with the distribution.
++ *
++ * Neither the name of FIRST nor the names of its contributors may be used to endorse or
++ * promote products derived from this software without specific prior written permission.
++ *
++ * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
++ * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
++ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
++ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
++ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
++ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
++ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
++ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ */
++
++package org.firstinspires.ftc.robotcontroller.external.samples;
++
++import com.qualcomm.robotcore.eventloop.opmode.Disabled;
++import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
++import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
++import com.qualcomm.robotcore.hardware.DcMotor;
++import com.qualcomm.robotcore.util.ElapsedTime;
++
++/**
++ * This file contains an example of a Linear "OpMode".
++ * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
++ * The names of OpModes appear on the menu of the FTC Driver Station.
++ * When a selection is made from the menu, the corresponding OpMode is executed.
++ *
++ * This particular OpMode illustrates driving a 4-motor Omni-Directional (or Holonomic) robot.
++ * This code will work with either a Mecanum-Drive or an X-Drive train.
++ * Both of these drives are illustrated at https://gm0.org/en/latest/docs/robot-design/drivetrains/holonomic.html
++ * Note that a Mecanum drive must display an X roller-pattern when viewed from above.
++ *
++ * Holonomic drives provide the ability for the robot to move in three axes (directions) simultaneously.
++ * Each motion axis is controlled by one Joystick axis.
++ *
++ * 1) Axial:    Driving forward and backwards               Left-joystick Forward/Backwards
++ * 2) Lateral:  Strafing right and left                     Left-joystick Right and Left
++ * 3) Yaw:      Rotating Clockwise and counter clockwise    Right-joystick Right and Left
++ *
++ * This code is written assuming that the right-side motors need to be reversed for the robot to drive forward.
++ * When you first test your robot, if it moves backwards when you push the left stick forward, then you must flip
++ * the direction of all 4 motors (see code below).
++ *
++ * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
++ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
++ */
++
++@TeleOp(name="Basic: Omni Linear OpMode", group="Linear Opmode")
++@Disabled
++public class BasicOmniOpMode_Linear extends LinearOpMode {
++
++    // Declare OpMode members for each of the 4 motors.
++    private ElapsedTime runtime = new ElapsedTime();
++    private DcMotor leftFrontDrive = null;
++    private DcMotor leftBackDrive = null;
++    private DcMotor rightFrontDrive = null;
++    private DcMotor rightBackDrive = null;
++
++    @Override
++    public void runOpMode() {
++
++        // Initialize the hardware variables. Note that the strings used here must correspond
++        // to the names assigned during the robot configuration step on the DS or RC devices.
++        leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive");
++        leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
++        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
++        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
++
++        // Most robots need the motors on one side to be reversed to drive forward.
++        // When you first test your robot, push the left joystick forward
++        // and flip the direction ( FORWARD <-> REVERSE ) of any wheel that runs backwards
++        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
++        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
++        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
++        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
++
++        // Wait for the game to start (driver presses PLAY)
++        telemetry.addData("Status", "Initialized");
++        telemetry.update();
++
++        waitForStart();
++        runtime.reset();
++
++        // run until the end of the match (driver presses STOP)
++        while (opModeIsActive()) {
++            double max;
++
++            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
++            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
++            double lateral =  gamepad1.left_stick_x;
++            double yaw     =  gamepad1.right_stick_x;
++
++            // Combine the joystick requests for each axis-motion to determine each wheel's power.
++            // Set up a variable for each drive wheel to save the power level for telemetry.
++            double leftFrontPower  = axial + lateral + yaw;
++            double rightFrontPower = axial - lateral - yaw;
++            double leftBackPower   = axial - lateral + yaw;
++            double rightBackPower  = axial + lateral - yaw;
++
++            // Normalize the values so no wheel power exceeds 100%
++            // This ensures that the robot maintains the desired motion.
++            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
++            max = Math.max(max, Math.abs(leftBackPower));
++            max = Math.max(max, Math.abs(rightBackPower));
++
++            if (max > 1.0) {
++                leftFrontPower  /= max;
++                rightFrontPower /= max;
++                leftBackPower   /= max;
++                rightBackPower  /= max;
++            }
++
++            // This is test code:
++            //
++            // Uncomment the following code to test your motor directions.
++            // Each button should make the corresponding motor run FORWARD.
++            //   1) First get all the motors to take to correct positions on the robot
++            //      by adjusting your Robot Configuration if necessary.
++            //   2) Then make sure they run in the correct direction by modifying the
++            //      the setDirection() calls above.
++            // Once the correct motors move in the correct direction re-comment this code.
++
++            /*
++            leftFrontPower  = gamepad1.x ? 1.0 : 0.0;  // X gamepad
++            leftBackPower   = gamepad1.a ? 1.0 : 0.0;  // A gamepad
++            rightFrontPower = gamepad1.y ? 1.0 : 0.0;  // Y gamepad
++            rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
++            */
++
++            // Send calculated power to wheels
++            leftFrontDrive.setPower(leftFrontPower);
++            rightFrontDrive.setPower(rightFrontPower);
++            leftBackDrive.setPower(leftBackPower);
++            rightBackDrive.setPower(rightBackPower);
++
++            // Show the elapsed game time and wheel power.
++            telemetry.addData("Status", "Run Time: " + runtime.toString());
++            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
++            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
++            telemetry.update();
++        }
++    }}
+diff --git a/FtcRobotController/src/main/res/menu/ftc_robot_controller.xml b/FtcRobotController/src/main/res/menu/ftc_robot_controller.xml
+index d14a89f2ee1..657c1aaca1c 100644
+--- a/FtcRobotController/src/main/res/menu/ftc_robot_controller.xml
++++ b/FtcRobotController/src/main/res/menu/ftc_robot_controller.xml
+@@ -31,36 +31,37 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ -->
+ 
+-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
++<menu xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto">
+ 
+   <item
+     android:id="@+id/action_settings"
+     android:orderInCategory="100"
+-    android:showAsAction="never"
++    app:showAsAction="never"
+     android:title="@string/settings_menu_item"/>
+   <item
+     android:id="@+id/action_restart_robot"
+     android:orderInCategory="200"
+-    android:showAsAction="never"
++    app:showAsAction="never"
+     android:title="@string/restart_robot_menu_item"/>
+ 
+   <item
+     android:id="@+id/action_configure_robot"
+     android:orderInCategory="300"
+-    android:showAsAction="never"
++    app:showAsAction="never"
+     android:title="@string/configure_robot_menu_item"/>
+ 
+   <item
+     android:id="@+id/action_program_and_manage"
+     android:orderInCategory="550"
+-    android:showAsAction="never"
++    app:showAsAction="never"
+     android:title="@string/program_and_manage_menu_item"/>
+ 
+   <item
+-      android:id="@+id/action_inspection_mode"
+-      android:orderInCategory="600"
+-      android:showAsAction="never"
+-      android:title="@string/inspection_mode_menu_item"/>
++    android:id="@+id/action_inspection_mode"
++    android:orderInCategory="600"
++    app:showAsAction="never"
++    android:title="@string/inspection_mode_menu_item"/>
+ 
+   <item
+     android:id="@+id/action_about"
+diff --git a/README.md b/README.md
+index 4b7069829d9..0fbe5420517 100644
+--- a/README.md
++++ b/README.md
+@@ -38,7 +38,7 @@ Note that the online documentation is an "evergreen" document that is constantly
+ ### Javadoc Reference Material
+ The Javadoc reference documentation for the FTC SDK is now available online.  Click on the following link to view the FTC SDK Javadoc documentation as a live website:
+ 
+-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[FTC Javadoc Documentation](https://javadoc.io/org.firstinspires.ftc)
++&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[FTC Javadoc Documentation](https://javadoc.io/doc/org.firstinspires.ftc)
+ 
+ ### Online User Forum
+ For technical questions regarding the Control System or the FTC SDK, please visit the FTC Technology forum:
+@@ -54,6 +54,26 @@ The readme.md file located in the [/TeamCode/src/main/java/org/firstinspires/ftc
+ 
+ # Release Information
+ 
++## Version 7.1 (20211223-120805)
++
++* Fixes crash when calling `isPwmEnabled()` ([issue #223](https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/233))
++* Fixes lint error ([issue #4](https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/4))
++* Fixes Driver Station crash when attempting to use DualShock4 v1 gamepad with Advanced Gamepad Features enabled ([issue #173](https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/173))
++* Fixes possible (but unlikely) Driver Station crash when connecting gamepads of any type
++* Fixes bug where Driver Station would use generic 20% deadzone for Xbox360 and Logitech F310 gamepads when Advanced Gamepad Features was disabled
++* Added SimpleOmniDrive sample OpMode
++* Adds UVC white balance control API
++* Fixes [issue 259](https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/259) Most blocks samples for TensorFlow can't be used for a different model
++    * The blocks previously labeled TensorFlowObjectDetectionFreightFrenzy (from the subcategory named "Optimized for Freight Frenzy") and TensorFlowObjectDetectionCustomModel (from the subcategory named "Custom Model") have been replaced with blocks labeled TensorFlowObjectDetection. Blocks in existing opmodes will be automatically updated to the new blocks when opened in the blocks editor.
++* Fixes [issue 260](https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/260) Blocks can't call java method that has a VuforiaLocalizer parameter
++    * Blocks now has a block labeled VuforiaFreightFrenzy.getVuforiaLocalizer for this.
++* Added a page to manage the TensorFlow Lite models in /sdcard/FIRST/tflitemodels. To get to the TFLite Models page:
++    * You can click on the link at the bottom of the the Manage page.
++    * You can click on the link at the upper-right the Blocks project page.
++* Fixes logspam when `isBusy()` is called on a motor not in RTP mode
++* Hides the "RC Password" item on the inspection screen for phone-based Robot Controllers. (It is only applicable for Control Hubs)
++* Adds channel 165 to Wi-Fi Direct channel selection menu in the settings screen. (165 was previously available through the web UI, but not locally in the app)
++
+ ## Version 7.0 (20210915-141025)
+ 
+ ### Enhancements and New Features
+@@ -96,7 +116,7 @@ The readme.md file located in the [/TeamCode/src/main/java/org/firstinspires/ftc
+     * To see the full improvement, you must update both the Robot Controller and Driver Station apps
+ * Updates samples located at [/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples](FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples)
+     * Added ConceptGamepadRumble and ConceptGamepadTouchpad samples to illustrtate the use of these new gampad capabilities.
+-    * Condensed existing Vuforia samples into just 2 samples (ConceptVuforiaFieldNavigation & ConceptVuforiaFieldNavigationWebcam) showing how to determine the robot's location on the field using Vuforia. These both use the current season's Target images.  
++    * Condensed existing Vuforia samples into just 2 samples (ConceptVuforiaFieldNavigation & ConceptVuforiaFieldNavigationWebcam) showing how to determine the robot's location on the field using Vuforia. These both use the current season's Target images.
+     * Added ConceptVuforiaDriveToTargetWebcam to illustrate an easy way to drive directly to any visible Vuforia target.
+ * Makes many improvements to the warning system and individual warnings
+     * Warnings are now much more spaced out, so that they are easier to read
+diff --git a/build.dependencies.gradle b/build.dependencies.gradle
+index 85153aa5f01..743d2a68a16 100644
+--- a/build.dependencies.gradle
++++ b/build.dependencies.gradle
+@@ -8,14 +8,14 @@ repositories {
+ }
+ 
+ dependencies {
+-    implementation 'org.firstinspires.ftc:Inspection:7.0.0'
+-    implementation 'org.firstinspires.ftc:Blocks:7.0.0'
+-    implementation 'org.firstinspires.ftc:Tfod:7.0.0'
+-    implementation 'org.firstinspires.ftc:RobotCore:7.0.0'
+-    implementation 'org.firstinspires.ftc:RobotServer:7.0.0'
+-    implementation 'org.firstinspires.ftc:OnBotJava:7.0.0'
+-    implementation 'org.firstinspires.ftc:Hardware:7.0.0'
+-    implementation 'org.firstinspires.ftc:FtcCommon:7.0.0'
++    implementation 'org.firstinspires.ftc:Inspection:7.1.0'
++    implementation 'org.firstinspires.ftc:Blocks:7.1.0'
++    implementation 'org.firstinspires.ftc:Tfod:7.1.0'
++    implementation 'org.firstinspires.ftc:RobotCore:7.1.0'
++    implementation 'org.firstinspires.ftc:RobotServer:7.1.0'
++    implementation 'org.firstinspires.ftc:OnBotJava:7.1.0'
++    implementation 'org.firstinspires.ftc:Hardware:7.1.0'
++    implementation 'org.firstinspires.ftc:FtcCommon:7.1.0'
+     implementation 'org.tensorflow:tensorflow-lite-task-vision:0.2.0'
+     implementation 'androidx.appcompat:appcompat:1.2.0'
+     implementation 'org.firstinspires.ftc:gameAssets-FreightFrenzy:1.0.0'

@@ -75,7 +75,8 @@ public class Instructions {
         actions.addAction(new ChangeArmTargetAction(2, 0, -500));
         // Run at end to lower arm to 0 for drive
         actions.addAction(new ChangeArmTargetAction(4, 0, 0));
-        actions.addAction(new WaitForActionsAction(4, 1, actions));
+        actions.addAction(new CloseClawAction(4, 1));
+        actions.addAction(new WaitForActionsAction(4, 2, actions));
 
         if (!Constants.IS_LEFT_OPMODE) {
 //            actions.addTask(new FullStopAction(3, 0));
@@ -88,16 +89,16 @@ public class Instructions {
     {
         if (!Constants.IS_LEFT_OPMODE)
         {
-            waypointManager.addWaypoint(new Waypoint(new Position(229, 889, initialTheta), new Position(229, 889, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(229, 889, initialTheta), new Position(900, 1520, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(900, 1520, initialTheta), new Position(450, 1650, initialTheta), new Position(405, 1190, initialTheta), new Position(420, 760, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(420, 760, initialTheta), new Position(500, 125, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(500, 125, initialTheta), new Position(1000, 125, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(910, 1520, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(910, 1520, initialTheta), new Position(610, 1500, initialTheta), new Position(450, 1330, initialTheta), new Position(530, 850, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(420, 760, initialTheta), new Position(490, 75, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(500, 75, initialTheta), new Position(1000, 125, initialTheta)));
         }
         else{
-            waypointManager.addWaypoint(new Waypoint(new Position(229, 2083, initialTheta), new Position(229, 2083, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(229, 2083, initialTheta), new Position(900, 1520, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(900, 1520, initialTheta), new Position(720, 1520, initialTheta-Math.PI/2), false));
+            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(910, 1520, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(910, 1520, initialTheta), new Position(720, 1520, initialTheta-Math.PI/2), false));
             waypointManager.addWaypoint(new Waypoint(new Position(720, 1520, initialTheta-Math.PI/2), new Position(10, 1790, initialTheta-Math.PI/2), new Position(160, 2770, initialTheta-Math.PI/2), new Position(230, 2850, initialTheta-Math.PI/2)));
             waypointManager.addWaypoint(new Waypoint(new Position(230,2850,initialTheta-Math.PI/2), new Position(230,2850, initialTheta), true));
         }
