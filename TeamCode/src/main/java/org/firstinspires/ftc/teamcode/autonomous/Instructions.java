@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.autonomous.actions.Actions;
 import org.firstinspires.ftc.teamcode.autonomous.actions.ArmPositionAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.ChangeArmTargetAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.CloseClawAction;
+import org.firstinspires.ftc.teamcode.autonomous.actions.DriveToFreightAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.OpenClawAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.SpinCarouselAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.WaitForActionsAction;
@@ -67,15 +68,16 @@ public class Instructions {
                 targetArmPos = -4800;
                 break;
         }
-       actions.addContinuousAction(armPositionAction);
-        actions.addAction(new CloseClawAction(0, 0));
-        actions.addAction(new ChangeArmTargetAction(0, 1, targetArmPos));
+        actions.addAction(new DriveToFreightAction(hardware, this, 0,0, objectDetector));
+        /*actions.addContinuousAction(armPositionAction);
+        actions.addAction(new CloseClawAction(hardware, this, 0, 0));
+        actions.addAction(new ChangeArmTargetAction(hardware, this, 0, 1, targetArmPos));
         if (Constants.IS_LEFT_OPMODE) {
-            actions.addAction(new WaitForActionsAction(0, 2, actions));
+            actions.addAction(new WaitForActionsAction(hardware, this, 0, 2, actions));
         }
-        actions.addAction(new WaitForActionsAction(1, 0, actions));
-        actions.addAction(new OpenClawAction(1, 1));
-        actions.addAction(new ChangeArmTargetAction(2, 0, -500));
+        actions.addAction(new WaitForActionsAction(hardware, this, 1, 0, actions));
+        actions.addAction(new OpenClawAction(hardware, this, 1, 1));
+        actions.addAction(new ChangeArmTargetAction(hardware, this, 2, 0, -500));
         // Run at end to lower arm to 0 for drive
         actions.addAction(new ChangeArmTargetAction(hardware, this, 4, 0, 0));
         actions.addAction(new CloseClawAction(hardware, this, 4, 1));
@@ -84,7 +86,7 @@ public class Instructions {
         if (!Constants.IS_LEFT_OPMODE) {
 //            actions.addTask(new FullStopAction(3, 0));
             actions.addAction(new SpinCarouselAction(hardware, this, 3, 0));
-        }
+        }*/
     }
 
     //Enter initial navigation waypoints here.
@@ -93,10 +95,10 @@ public class Instructions {
         if (!Constants.IS_LEFT_OPMODE)
         {
             waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282, 7*Math.PI/4)));
-            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282), new Position(564, 1250), new Position(340, 1040), new Position(345, 464)));
-            waypointManager.addWaypoint(new Waypoint(new Position(345, 345, 7*Math.PI/4)));
-            waypointManager.addWaypoint(new Waypoint(new Position(911, 304, 3*Math.PI/2)));
+//            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282, 7*Math.PI/4)));
+//            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282), new Position(564, 1250), new Position(340, 1040), new Position(345, 464)));
+//            waypointManager.addWaypoint(new Waypoint(new Position(345, 345, 7*Math.PI/4)));
+//            waypointManager.addWaypoint(new Waypoint(new Position(911, 304, 3*Math.PI/2)));
         }
         else{
             waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta)));

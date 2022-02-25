@@ -12,6 +12,7 @@ public class Waypoint {
 
     public Waypoint(Position targetPosition)
     {
+        startingPos = new Position();
         targetPos = targetPosition;
         isSpline = false;
     }
