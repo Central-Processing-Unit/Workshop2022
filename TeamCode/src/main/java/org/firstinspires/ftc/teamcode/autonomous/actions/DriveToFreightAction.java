@@ -22,6 +22,6 @@ public class DriveToFreightAction extends Action {
         AutonCore.telem.addData("py: ", pixelVals[1]);
         AutonCore.telem.update();
         Position targetPos = Homography.convertCameraPointToWorldPoint(pixelVals[0], pixelVals[1], instructions.navigation._localization.getRobotPosition());
-        instructions.loopToWaypoint(new Waypoint(targetPos), false);
+        instructions.loopToWaypoint(new Waypoint(targetPos));
     }
 }
