@@ -78,7 +78,7 @@ public class Navigation {
             if (Math.abs(thetaError) < THETA_TOLERANCE) {
                 thetaFinished = true;
             }
-            return !(((Math.abs(waypoint.targetPos.t - position.x) > 5) || (Math.abs(waypoint.targetPos.t - position.y) > 5) || !thetaFinished) && (!waypoint.onlyRotate || !thetaFinished));
+            return !(((Math.abs(waypoint.targetPos.x - position.x) > 5) || (Math.abs(waypoint.targetPos.y - position.y) > 5) || !thetaFinished) && (!waypoint.onlyRotate || !thetaFinished));
         }
     }
 

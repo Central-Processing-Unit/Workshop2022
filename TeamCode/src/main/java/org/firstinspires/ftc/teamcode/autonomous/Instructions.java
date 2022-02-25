@@ -68,14 +68,14 @@ public class Instructions {
                 break;
         }
        actions.addContinuousAction(armPositionAction);
-        actions.addAction(new CloseClawAction(0, 0));
-        actions.addAction(new ChangeArmTargetAction(0, 1, targetArmPos));
+        actions.addAction(new CloseClawAction(hardware, this, 0, 0));
+        actions.addAction(new ChangeArmTargetAction(hardware, this, 0, 1, targetArmPos));
         if (Constants.IS_LEFT_OPMODE) {
-            actions.addAction(new WaitForActionsAction(0, 2, actions));
+            actions.addAction(new WaitForActionsAction(hardware, this, 0, 2, actions));
         }
-        actions.addAction(new WaitForActionsAction(1, 0, actions));
-        actions.addAction(new OpenClawAction(1, 1));
-        actions.addAction(new ChangeArmTargetAction(2, 0, -500));
+        actions.addAction(new WaitForActionsAction(hardware, this, 1, 0, actions));
+        actions.addAction(new OpenClawAction(hardware, this, 1, 1));
+        actions.addAction(new ChangeArmTargetAction(hardware, this, 2, 0, -500));
         // Run at end to lower arm to 0 for drive
         actions.addAction(new ChangeArmTargetAction(hardware, this, 4, 0, 0));
         actions.addAction(new CloseClawAction(hardware, this, 4, 1));
@@ -93,7 +93,7 @@ public class Instructions {
         if (!Constants.IS_LEFT_OPMODE)
         {
             waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282, initialTheta + Math.PI/4)));
             waypointManager.addWaypoint(new Waypoint(new Position(973, 1282), new Position(564, 1250), new Position(340, 1040), new Position(345, 464)));
             waypointManager.addWaypoint(new Waypoint(new Position(345, 345, initialTheta)));
             waypointManager.addWaypoint(new Waypoint(new Position(911, 304, initialTheta)));
@@ -125,9 +125,6 @@ public class Instructions {
             {
                 //nothing
             }
-
-            AutonCore.telem.addData("starting T", waypoint.startingPos.t);
-            AutonCore.telem.addData("target T", waypoint.targetPos.t);
 
             loopToWaypoint(waypoint);
 

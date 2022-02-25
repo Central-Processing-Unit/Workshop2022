@@ -27,13 +27,12 @@ public class WaypointManager {
 
     public void addWaypoint(Waypoint waypoint) {
         if (!Constants.IS_BLUE_TEAM) {
-            waypoint.startingPos.x *= -1;
             waypoint.targetPos.x *= -1;
             if (waypoint.isSpline) {
+                waypoint.startingPos.x *= -1;
                 waypoint.splinePos1.x *= -1;
                 waypoint.splinePos2.x *= -1;
             }
-            waypoint.targetPos.t -= Math.PI;
         }
         waypoints.add(waypoint);
     }
