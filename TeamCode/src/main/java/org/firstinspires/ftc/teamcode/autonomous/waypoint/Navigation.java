@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 public class Navigation {
     private final Hardware _hardware;
-    private final Localization _localization;
+    public final Localization _localization;
     private final PID controller;
     private final PID thetaController;
 	private final SplineController splineController;
