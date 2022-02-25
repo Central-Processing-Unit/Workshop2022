@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.autonomous.actions;
 
+import org.firstinspires.ftc.teamcode.autonomous.Instructions;
 import org.firstinspires.ftc.teamcode.autonomous.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.autonomous.localization.Localization;
 
 public class CloseClawAction extends Action{
-    public CloseClawAction(int index, int priority) {super(index, priority);}
+    public CloseClawAction(Hardware hardware, Instructions instructions, int index, int priority) {super(hardware, instructions, index, priority);}
 
-    public void execute(Hardware hardware, Localization localization)
+    public void execute()
     {
         hardware.clawServo.setPosition(0.75);
     }

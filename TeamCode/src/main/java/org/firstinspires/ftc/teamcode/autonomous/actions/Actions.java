@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous.actions;
 
+import org.firstinspires.ftc.teamcode.autonomous.Instructions;
 import org.firstinspires.ftc.teamcode.autonomous.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.autonomous.localization.Localization;
 
@@ -11,13 +12,9 @@ import java.util.Map;
 public class Actions {
     private final Map<Integer, Map<Integer, Action>> actions = new HashMap<>();
     private final List<ContinuousAction> continuousActions = new LinkedList<>();
-    private final Hardware hardware;
-    private final Localization localization;
 
-    public Actions(Hardware hardware, Localization localization)
+    public Actions()
     {
-        this.hardware = hardware;
-        this.localization = localization;
     }
 
     public void addAction(Action action)
@@ -37,14 +34,14 @@ public class Actions {
 
     public void executeContinuousActions() {
         for (ContinuousAction a : continuousActions) {
-            a.execute(hardware, localization);
+            a.execute();
         }
     }
 
     // Should be run right before autonomous movement starts
     public void initialize() {
         for (ContinuousAction a : continuousActions) {
-            a.initialize(hardware, localization);
+            a.initialize();
         }
     }
 
@@ -60,7 +57,7 @@ public class Actions {
             if (action == null) {
                 throw new RuntimeException("Invalid action priority: expected one priority for each value from 0 to " + (actionMap.size() - 1) + ", but couldn't find an action with priority " + i);
             }
-            action.execute(hardware, localization);
+            action.execute();
         }
     }
 
