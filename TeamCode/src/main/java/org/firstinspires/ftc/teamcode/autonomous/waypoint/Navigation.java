@@ -65,21 +65,20 @@ public class Navigation {
 
     public void driveToTarget(Position destination, boolean isSpline, boolean onlyRotate) { driveToTarget(new Position(0,0,0), new Position(0,0,0), new Position(0,0,0), destination, isSpline, onlyRotate); }
 
-    public boolean isTargetReached(Waypoint waypoint, boolean isErrorCorrectionMove) {
-        if (waypoint.isSpline && !isErrorCorrectionMove) {
+    public boolean isTargetReached(Waypoint waypoint) {
+        if (waypoint.isSpline) {
             return t > 1;
         } else {
-            final Position target = isErrorCorrectionMove ? waypoint.startingPos : waypoint.targetPos;
             boolean thetaFinished = false;
-            double thetaError = target.t - position.t;
+            double thetaError = waypoint.targetPos.t - position.t;
             if ((thetaError) < 0 && (thetaError < -Math.PI)) {
-                thetaError = target.t - position.t + (2 * Math.PI); // todo: might want to store theta error to an instance variable so we don't calculate it twice every iteration
+                thetaError = waypoint.targetPos.t - position.t + (2 * Math.PI); // todo: might want to store theta error to an instance variable so we don't calculate it twice every iteration
             }
 
             if (Math.abs(thetaError) < THETA_TOLERANCE) {
                 thetaFinished = true;
             }
-            return !(((Math.abs(target.x - position.x) > 5) || (Math.abs(target.y - position.y) > 5) || !thetaFinished) && (!waypoint.onlyRotate || !thetaFinished));
+            return !(((Math.abs(waypoint.targetPos.t - position.x) > 5) || (Math.abs(waypoint.targetPos.t - position.y) > 5) || !thetaFinished) && (!waypoint.onlyRotate || !thetaFinished));
         }
     }
 

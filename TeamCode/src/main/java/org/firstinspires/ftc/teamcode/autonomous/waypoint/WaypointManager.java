@@ -33,7 +33,7 @@ public class WaypointManager {
                 waypoint.splinePos1.x *= -1;
                 waypoint.splinePos2.x *= -1;
             }
-            waypoint.targetPos.t *= -1;
+            waypoint.targetPos.t -= Math.PI;
         }
         waypoints.add(waypoint);
     }

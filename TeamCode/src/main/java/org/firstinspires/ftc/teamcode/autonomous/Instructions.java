@@ -131,15 +131,7 @@ public class Instructions {
             AutonCore.telem.addData("starting T", waypoint.startingPos.t);
             AutonCore.telem.addData("target T", waypoint.targetPos.t);
 
-            // Ignore whether the waypoint is a spline for error correction
-            loopToWaypoint(waypoint, true);
-
-            navigation.clear();
-
-            if (opMode.isStopRequested())
-                break;
-
-            loopToWaypoint(waypoint, false);
+            loopToWaypoint(waypoint);
 
             navigation.clear();
 
@@ -150,12 +142,10 @@ public class Instructions {
         }
     }
 
-    public void loopToWaypoint(Waypoint waypoint, boolean isErrorCorrectionMove) {
-        while (!navigation.isTargetReached(waypoint, isErrorCorrectionMove) && !opMode.isStopRequested()) {
+    private void loopToWaypoint(Waypoint waypoint) {
+        while (!navigation.isTargetReached(waypoint) && !opMode.isStopRequested()) {
             actions.executeContinuousActions();
-            if (isErrorCorrectionMove) {
-                navigation.driveToTarget(waypoint.startingPos, false,  waypoint.onlyRotate);
-            } else if (waypoint.isSpline) {
+            if (waypoint.isSpline) {
                 navigation.driveToTarget(waypoint.startingPos, waypoint.splinePos1, waypoint.splinePos2, waypoint.targetPos, true, waypoint.onlyRotate);
             } else {
                 navigation.driveToTarget(waypoint.targetPos, false, waypoint.onlyRotate);
