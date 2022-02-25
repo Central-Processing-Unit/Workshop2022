@@ -45,7 +45,7 @@ public class Navigation {
 
         _hardware = hardware;
         _localization = localization;
-        PIDCoefficients coefficients = new PIDCoefficients(0.01, 0.00002, 0);
+        PIDCoefficients coefficients = new PIDCoefficients(0.02, 0.00008, 0);
         PIDCoefficients thetaCoefficients = new PIDCoefficients(0.22, 0.0005, 0);
 
         controller = new PID(coefficients);
@@ -111,7 +111,7 @@ public class Navigation {
         _localization.increment(position);
 		Velocity velocity = _localization.getRobotVelocity();
 
-        double orientation, negOutput, posOutput;
+        double orientation, negOutput, posOutput, magnitude;
 
         distAlongCurve += Math.sqrt(Math.pow(velocity.dx * (_localization.currentTime - _localization.previousTime), 2) + Math.pow(velocity.dy * (_localization.currentTime - _localization.previousTime), 2));
 
@@ -123,11 +123,13 @@ public class Navigation {
         else
             orientation = Math.atan(velocityVector.y / velocityVector.x) + Math.PI - Math.PI / 4 - position.t;
 
-        negOutput = 0.3 * Math.sin(orientation);
+        magnitude = controller.getOutput(arcLength - distAlongCurve, 0);
+
+        negOutput = magnitude * Math.sin(orientation);
         if (orientation == 0)
             posOutput = negOutput;
         else
-            posOutput = 0.3 * Math.cos(orientation);
+            posOutput = magnitude * Math.cos(orientation);
 
         telem.addData("X", position.x);
         telem.addData("Y", position.y);

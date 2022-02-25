@@ -7,12 +7,14 @@ public final class Constants {
     public static double INIT_THETA = 0; //Value used to subtract from gyro to fix error. This  value is temporary until root problem can be solved.
     public static Boolean IS_LEFT_OPMODE = false;
     public static Boolean IS_BLUE_TEAM = false;
-    public static final double LEFT_INITIAL_Y = 2082.2;
-    public static final double RIGHT_INITIAL_Y = 838.2;
-    public static final double INITIAL_X = 229;
+    public static final double BLUE_LEFT_INITIAL_Y = 2053;
+    public static final double BLUE_RIGHT_INITIAL_Y = 835;
+    public static final double RED_LEFT_INITIAL_Y = 2213;
+    public static final double RED_RIGHT_INITIAL_Y = 995;
+    public static final double INITIAL_X = 215;
     public static final double BLUE_INITIAL_THETA = 3 * Math.PI / 2;
     public static final double RED_INITIAL_THETA = Math.PI / 2;
     public static final int WEBCAM_WIDTH = 1280;
     public static final int WEBCAM_HEIGHT = 720;
-    public static final int WEBCAM_SECTION_WIDTH = 427;
+    public static final int WEBCAM_SECTION_WIDTH = 527;
 }

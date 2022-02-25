@@ -10,16 +10,14 @@ public class Waypoint {
     public boolean onlyRotate;
     public boolean isSpline;
 
-    public Waypoint(Position startingPosition, Position targetPosition)
+    public Waypoint(Position targetPosition)
     {
-        startingPos = startingPosition;
         targetPos = targetPosition;
         isSpline = false;
     }
 
-    public Waypoint(Position startingPosition, Position targetPosition, boolean onlyRotate)
+    public Waypoint(Position targetPosition, boolean onlyRotate)
     {
-        startingPos = startingPosition;
         targetPos = targetPosition;
         this.onlyRotate = onlyRotate;
         isSpline = false;
