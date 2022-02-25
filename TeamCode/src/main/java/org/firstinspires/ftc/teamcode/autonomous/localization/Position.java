@@ -12,4 +12,11 @@ public class Position {
         this.y = y;
         this.t = t;
     }
+
+    public Position(double x, double y)
+    {
+        this.x = x;
+        this.y = y;
+        this.t = 0;
+    }
 }

@@ -10,7 +10,7 @@ public class LeftBlueOpMode extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Constants.IS_LEFT_OPMODE = true;
         Constants.IS_BLUE_TEAM = true;
-        new AutonCore().runCore(Constants.INITIAL_X, Constants.LEFT_INITIAL_Y, Constants.BLUE_INITIAL_THETA, this, telemetry);
+        new AutonCore().runCore(Constants.INITIAL_X, Constants.BLUE_LEFT_INITIAL_Y, Constants.BLUE_INITIAL_THETA, this, telemetry);
     }
 
 }

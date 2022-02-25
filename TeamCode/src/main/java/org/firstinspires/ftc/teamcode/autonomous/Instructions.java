@@ -58,18 +58,21 @@ public class Instructions {
         double targetArmPos = 0;
         switch (objectDetector.getTeamElementLocation()) {
             case LEFT:
-                targetArmPos = -4800;
+                targetArmPos = -1200;
                 break;
             case CENTER:
                 targetArmPos = -3100;
                 break;
             case RIGHT:
-                targetArmPos = -1200;
+                targetArmPos = -4800;
                 break;
         }
-        actions.addContinuousAction(armPositionAction);
+       actions.addContinuousAction(armPositionAction);
         actions.addAction(new CloseClawAction(0, 0));
         actions.addAction(new ChangeArmTargetAction(0, 1, targetArmPos));
+        if (Constants.IS_LEFT_OPMODE) {
+            actions.addAction(new WaitForActionsAction(0, 2, actions));
+        }
         actions.addAction(new WaitForActionsAction(1, 0, actions));
         actions.addAction(new OpenClawAction(1, 1));
         actions.addAction(new ChangeArmTargetAction(2, 0, -500));
@@ -89,20 +92,21 @@ public class Instructions {
     {
         if (!Constants.IS_LEFT_OPMODE)
         {
-            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(910, 1520, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(910, 1520, initialTheta), new Position(610, 1500, initialTheta), new Position(450, 1330, initialTheta), new Position(530, 850, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(420, 760, initialTheta), new Position(490, 75, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(500, 75, initialTheta), new Position(1000, 125, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282, 7*Math.PI/4)));
+            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282), new Position(564, 1250), new Position(340, 1040), new Position(345, 464)));
+            waypointManager.addWaypoint(new Waypoint(new Position(345, 345, 7*Math.PI/4)));
+            waypointManager.addWaypoint(new Waypoint(new Position(911, 304, 3*Math.PI/2)));
         }
         else{
-            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(initialX, initialY, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(910, 1520, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(910, 1520, initialTheta), new Position(720, 1520, initialTheta-Math.PI/2), false));
-            waypointManager.addWaypoint(new Waypoint(new Position(720, 1520, initialTheta-Math.PI/2), new Position(10, 1790, initialTheta-Math.PI/2), new Position(160, 2770, initialTheta-Math.PI/2), new Position(230, 2850, initialTheta-Math.PI/2)));
-            waypointManager.addWaypoint(new Waypoint(new Position(230,2850,initialTheta-Math.PI/2), new Position(230,2850, initialTheta), true));
+            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta)));
+//            double targetX = 910 + (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.LEFT && Constants.IS_BLUE_TEAM ? 40 : 0);
+//            double targetY = 1520 + (Constants.IS_BLUE_TEAM ? 0 : -30);
+//            waypointManager.addWaypoint(new Waypoint(new Position(targetX, targetY, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(720, 1520, 0), false));
+            waypointManager.addWaypoint(new Waypoint(new Position(720, 1520), new Position(10, 1790), new Position(160, 2770), new Position(230, 2850)));
+            waypointManager.addWaypoint(new Waypoint(new Position(230,2850, Math.PI/2), true));
         }
-//          navigation.addWayPointToQueue(new Waypoint(new Position(initialX, initialY, initialTheta), new Position(429, 2283, initialTheta), new Position(629, 2483, initialTheta), new Position(829, 2683, initialTheta)));
     }
 
     public void runTasks()

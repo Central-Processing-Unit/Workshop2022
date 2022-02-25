@@ -60,7 +60,7 @@ public class ObjectDetector {
             AutonCore.telem.update();
             return;
         }
-        Mat rawCenterMat = mat.submat(new Rect(Constants.WEBCAM_SECTION_WIDTH, 0, Constants.WEBCAM_SECTION_WIDTH, Constants.WEBCAM_HEIGHT));
+        Mat rawCenterMat = mat.submat(new Rect(Constants.WEBCAM_SECTION_WIDTH, 0, mat.width() - 2 * Constants.WEBCAM_SECTION_WIDTH, Constants.WEBCAM_HEIGHT));
         Mat centerMat = new Mat();
         Imgproc.resize(rawCenterMat, centerMat, new Size(224, 224));
         List<TensorImageClassifier.Recognition> centerOutput = tic.recognize(centerMat);
@@ -72,7 +72,7 @@ public class ObjectDetector {
             return;
         }
         if (leftConfidence > 0.2 || centerConfidence > 0.2) {
-            Mat rawRightMat = mat.submat(new Rect(2 * Constants.WEBCAM_SECTION_WIDTH, 0, mat.width() - 2 * Constants.WEBCAM_SECTION_WIDTH, Constants.WEBCAM_HEIGHT));
+            Mat rawRightMat = mat.submat(new Rect(mat.width() - Constants.WEBCAM_SECTION_WIDTH, 0, Constants.WEBCAM_SECTION_WIDTH, Constants.WEBCAM_HEIGHT));
             Mat rightMat = new Mat();
             Imgproc.resize(rawRightMat, rightMat, new Size(224, 224));
             List<TensorImageClassifier.Recognition> rightOutput = tic.recognize(rightMat);
