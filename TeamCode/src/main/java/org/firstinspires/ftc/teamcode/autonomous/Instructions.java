@@ -46,15 +46,15 @@ public class Instructions {
         this.waypointManager = new WaypointManager();
         this.opMode = opMode;
         navigation = new Navigation(hardware, localization);
-        armPositionAction = new ArmPositionAction();
-        registerActions(hardware, localization);
+        armPositionAction = new ArmPositionAction(hardware, this);
+        registerActions(hardware);
         registerNav(initialX, initialY, initialTheta);
     }
 
     //Enter robot actions into this class.
-    private void registerActions(Hardware hardware, Localization localization)
+    private void registerActions(Hardware hardware)
     {
-        actions = new Actions(hardware, localization);
+        actions = new Actions();
         double targetArmPos = 0;
         switch (objectDetector.getTeamElementLocation()) {
             case LEFT:
@@ -68,19 +68,19 @@ public class Instructions {
                 break;
         }
         actions.addContinuousAction(armPositionAction);
-        actions.addAction(new CloseClawAction(0, 0));
-        actions.addAction(new ChangeArmTargetAction(0, 1, targetArmPos));
-        actions.addAction(new WaitForActionsAction(1, 0, actions));
-        actions.addAction(new OpenClawAction(1, 1));
-        actions.addAction(new ChangeArmTargetAction(2, 0, -500));
+        actions.addAction(new CloseClawAction(hardware, this, 0, 0));
+        actions.addAction(new ChangeArmTargetAction(hardware, this, 0, 1, targetArmPos));
+        actions.addAction(new WaitForActionsAction(hardware, this, 1, 0, actions));
+        actions.addAction(new OpenClawAction(hardware, this, 1, 1));
+        actions.addAction(new ChangeArmTargetAction(hardware, this, 2, 0, -500));
         // Run at end to lower arm to 0 for drive
-        actions.addAction(new ChangeArmTargetAction(4, 0, 0));
-        actions.addAction(new CloseClawAction(4, 1));
-        actions.addAction(new WaitForActionsAction(4, 2, actions));
+        actions.addAction(new ChangeArmTargetAction(hardware, this, 4, 0, 0));
+        actions.addAction(new CloseClawAction(hardware, this, 4, 1));
+        actions.addAction(new WaitForActionsAction(hardware, this, 4, 2, actions));
 
         if (!Constants.IS_LEFT_OPMODE) {
 //            actions.addTask(new FullStopAction(3, 0));
-            actions.addAction(new SpinCarouselAction(3, 0));
+            actions.addAction(new SpinCarouselAction(hardware, this, 3, 0));
         }
     }
 
@@ -144,7 +144,7 @@ public class Instructions {
         }
     }
 
-    private void loopToWaypoint(Waypoint waypoint, boolean isErrorCorrectionMove) {
+    public void loopToWaypoint(Waypoint waypoint, boolean isErrorCorrectionMove) {
         while (!navigation.isTargetReached(waypoint, isErrorCorrectionMove) && !opMode.isStopRequested()) {
             actions.executeContinuousActions();
             if (isErrorCorrectionMove) {
