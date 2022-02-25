@@ -93,8 +93,8 @@ public class Instructions {
         if (!Constants.IS_LEFT_OPMODE)
         {
             waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282, initialTheta + Math.PI/4)));
-            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282), new Position(564, 1250), new Position(340, 1040), new Position(345, 464)));
+            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282, initialTheta - Math.PI/4)));
+            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282), new Position(564, 1250), new Position(390, 1040), new Position(345, 464)));
             waypointManager.addWaypoint(new Waypoint(new Position(345, 345, initialTheta)));
             waypointManager.addWaypoint(new Waypoint(new Position(911, 304, initialTheta)));
         }
