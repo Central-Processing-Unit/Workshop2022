@@ -6,8 +6,11 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.autonomous.AutonCore;
 import org.firstinspires.ftc.teamcode.autonomous.Constants;
 import org.firstinspires.ftc.teamcode.autonomous.hardware.Hardware;
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -30,6 +33,28 @@ public class ObjectDetector {
         initializeObjectDetector();
     }
 
+    public int[] getFreightPixelPosition() {
+        Mat mat = webcamPipeline.getLastMat();
+        Mat hsvMat = new Mat();
+        Imgproc.cvtColor(mat, hsvMat, Imgproc.COLOR_RGB2HSV);
+        Mat output = new Mat();
+        Core.inRange(hsvMat, new Scalar(20, 50, 100), new Scalar(150, 350, 500), output);
+        int mi = -1, mj = -1;
+        outer: for (int j = output.rows() - 1; j >= 10; j -= 5) {
+            pixelloop: for (int i = 0; i < output.cols(); i += 5) {
+                for (int k = 0; k < 50; k++) {
+                    if (output.get(j, i - k)[0] == 0) {
+                        continue pixelloop;
+                    }
+                }
+                mi = i;
+                mj = j;
+                break outer;
+            }
+        }
+        return new int[]{mi, mj};
+    }
+
     private static float getConfidence(List<TensorImageClassifier.Recognition> output) {
         if (output.size() < 2) {
             return -1;
@@ -38,9 +63,6 @@ public class ObjectDetector {
     }
 
     public void calculateState() {
-        _hardware.cvCamera.stopStreaming();
-        _hardware.cvCamera.closeCameraDevice();
-
         System.out.println("handleMat");
         if (tic == null || webcamPipeline.getLastMat() == null) {
             AutonCore.telem.addLine("Last mat: " + webcamPipeline.getLastMat());

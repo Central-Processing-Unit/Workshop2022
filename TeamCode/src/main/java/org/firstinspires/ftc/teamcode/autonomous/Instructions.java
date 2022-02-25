@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.autonomous.actions.Actions;
 import org.firstinspires.ftc.teamcode.autonomous.actions.ArmPositionAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.ChangeArmTargetAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.CloseClawAction;
+import org.firstinspires.ftc.teamcode.autonomous.actions.DriveToFreightAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.OpenClawAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.SpinCarouselAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.WaitForActionsAction;
@@ -67,7 +68,9 @@ public class Instructions {
                 targetArmPos = -4800;
                 break;
         }
-       actions.addContinuousAction(armPositionAction);
+
+        actions.addAction(new DriveToFreightAction(hardware, this, 0,0, objectDetector));
+        /*actions.addContinuousAction(armPositionAction);
         actions.addAction(new CloseClawAction(hardware, this, 0, 0));
         actions.addAction(new ChangeArmTargetAction(hardware, this, 0, 1, targetArmPos));
         if (Constants.IS_LEFT_OPMODE) {
@@ -84,7 +87,7 @@ public class Instructions {
         if (!Constants.IS_LEFT_OPMODE) {
 //            actions.addTask(new FullStopAction(3, 0));
             actions.addAction(new SpinCarouselAction(hardware, this, 3, 0));
-        }
+        }*/
     }
 
     //Enter initial navigation waypoints here.
@@ -137,7 +140,7 @@ public class Instructions {
         }
     }
 
-    private void loopToWaypoint(Waypoint waypoint) {
+    public void loopToWaypoint(Waypoint waypoint) {
         while (!navigation.isTargetReached(waypoint) && !opMode.isStopRequested()) {
             actions.executeContinuousActions();
             if (waypoint.isSpline) {
