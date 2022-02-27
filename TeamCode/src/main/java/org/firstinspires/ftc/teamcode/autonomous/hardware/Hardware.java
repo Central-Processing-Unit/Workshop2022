@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.revextensions2.ExpansionHubEx;
 
 public class Hardware {
     public DcMotor leftFrontMotor, rightFrontMotor, leftBackMotor, rightBackMotor;
@@ -20,6 +21,7 @@ public class Hardware {
     public WebcamName camera;
     public OpenCvCamera cvCamera;
     public HardwareMap map;
+    public ExpansionHubEx expansionHub;
 
     public Hardware (HardwareMap hardware)
     {
@@ -28,6 +30,7 @@ public class Hardware {
         initializeDriveMotors(hardware);
         initializeAccessoryMotors(hardware);
         initializeWebcam(hardware);
+        initializeExpansionHub(hardware);
     }
 
     private void initializeDriveMotors(HardwareMap hardware)
@@ -113,4 +116,9 @@ public class Hardware {
         WebcamName webcamName = hardware.get(WebcamName.class, "PrimaryWebcam");
         cvCamera = OpenCvCameraFactory.getInstance().createWebcam(webcamName);
     }
+
+    private void initializeExpansionHub(HardwareMap hardware) {
+        expansionHub = hardware.get(ExpansionHubEx.class, "Expansion Hub 1");
+    }
+
 }

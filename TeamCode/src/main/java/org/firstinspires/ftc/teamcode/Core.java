@@ -6,11 +6,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.openftc.revextensions2.ExpansionHubEx;
+
 public class Core extends OpMode {
     DcMotor leftfront, rightfront, leftback, rightback, armMotor, carousel;
     Servo clawServo;
     BNO055IMU imu;
     BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+    ExpansionHubEx expansionHub;
 
     public void loop(){}
 
@@ -45,6 +48,8 @@ public class Core extends OpMode {
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+
+        expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
     }
 
         public void move(double posinput, double neginput, double rotinput)
