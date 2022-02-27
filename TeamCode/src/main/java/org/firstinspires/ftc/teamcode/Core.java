@@ -38,6 +38,7 @@ public class Core extends OpMode {
 
         carousel = hardwareMap.dcMotor.get("carouselMotor");
         carousel.setDirection(DcMotorSimple.Direction.FORWARD);
+        carousel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         parameters.mode = BNO055IMU.SensorMode.IMU;
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;

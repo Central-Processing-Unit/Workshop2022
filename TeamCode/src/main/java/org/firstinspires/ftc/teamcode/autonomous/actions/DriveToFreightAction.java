@@ -10,14 +10,17 @@ import org.firstinspires.ftc.teamcode.autonomous.waypoint.Waypoint;
 
 public class DriveToFreightAction extends Action {
     private final ObjectDetector objectDetector;
-    public DriveToFreightAction(Hardware hardware, Instructions instructions, int index, int priority, ObjectDetector objectDetector) {
+    private final boolean isDuck;
+
+    public DriveToFreightAction(Hardware hardware, Instructions instructions, int index, int priority, ObjectDetector objectDetector, boolean isDuck) {
         super(hardware, instructions, index, priority);
         this.objectDetector = objectDetector;
+        this.isDuck = isDuck;
     }
 
     @Override
     public void execute() {
-        int[] pixelVals = objectDetector.getFreightPixelPosition();
+        int[] pixelVals = objectDetector.getFreightPixelPosition(isDuck);
         Position targetPos = Homography.convertCameraPointToWorldPoint(pixelVals[0], pixelVals[1], instructions.navigation._localization.getRobotPosition());
         AutonCore.telem.addData("tx: ", pixelVals[0]);
         AutonCore.telem.addData("ty: ", pixelVals[1]);

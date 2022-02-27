@@ -27,9 +27,12 @@ public class Drive extends Core {
     double armTarget;
 
     public void loop() {
-        carouselDirection = gamepad1.a ? 1 :
-                gamepad1.x ? -1 :
-                        0;
+
+        if (gamepad1.a) {
+            spinCarousel(1);
+        } else if (gamepad1.x) {
+            spinCarousel(-1);
+        }
 
         if (gamepad1.right_trigger > 0.5 && armMotor.getCurrentPosition() > -4800) {
             armPower = -1;
@@ -101,5 +104,16 @@ public class Drive extends Core {
         moveCarousel(carouselDirection * 0.18);
         setClawPos(clawPos);
         moveArm(armPower);
+    }
+
+    private void spinCarousel(int direction)
+    {
+        long startTime = System.currentTimeMillis();
+
+        while (System.currentTimeMillis() - startTime < 2000)
+        {
+            moveCarousel(direction * (System.currentTimeMillis() - startTime < 1500 ? 0.18 : 0.5));
+        }
+        moveCarousel(0);
     }
 }

@@ -46,7 +46,7 @@ public class Navigation {
         _hardware = hardware;
         _localization = localization;
         PIDCoefficients coefficients = new PIDCoefficients(0.011, 0.000021, 0);
-        PIDCoefficients thetaCoefficients = new PIDCoefficients(0.22, 0.0005, 0);
+        PIDCoefficients thetaCoefficients = new PIDCoefficients(0.25, 0.0004, 0);
         controller = new PID(coefficients);
         thetaController = new PID(thetaCoefficients);
 		splineController = new SplineController();
@@ -117,11 +117,11 @@ public class Navigation {
         else
             orientation = Math.atan(velocityVector.y / velocityVector.x) + Math.PI - Math.PI / 4 - position.t;
 
-        negOutput = 0.4 * Math.sin(orientation);
+        negOutput = 0.5 * Math.sin(orientation);
         if (orientation == 0)
             posOutput = negOutput;
         else
-            posOutput = 0.4 * Math.cos(orientation);
+            posOutput = 0.5 * Math.cos(orientation);
 
         telem.addData("X", position.x);
         telem.addData("Y", position.y);

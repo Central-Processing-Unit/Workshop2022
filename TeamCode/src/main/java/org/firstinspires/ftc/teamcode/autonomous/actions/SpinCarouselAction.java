@@ -17,7 +17,7 @@ public class SpinCarouselAction extends Action {
     {
         long time = System.currentTimeMillis();
         hardware.carouselMotor.setPower(Constants.IS_BLUE_TEAM ? 0.2 : -0.2);
-        while(System.currentTimeMillis() - time < 4000)
+        while(System.currentTimeMillis() - time < 2000)
         {
         }
         hardware.carouselMotor.setPower(0);

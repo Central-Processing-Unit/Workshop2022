@@ -32,8 +32,8 @@ public class Homography {
         PYE = (FZ + (FY * FZ) / (imageTop - FY) - CAM_OFFSET_Z + mf_neg_reciprocal * CAM_OFFSET_Y) / ((FZ / (imageTop - FY)) + mf_neg_reciprocal);
         PZ_PYS = mf_neg_reciprocal * (PYS - CAM_OFFSET_Y) + CAM_OFFSET_Z;
         PZ_PYE = mf_neg_reciprocal * (PYE - CAM_OFFSET_Y) + CAM_OFFSET_Z;
-        QY = (imageBottomWidth / 2d) * ((imageTop - imageBottom) / ((imageBottomWidth / 2d) - (imageTopWidth / 2d))) + imageBottom;
-        RL = 2 * (((imageTopWidth/2d - imageBottomWidth/2d) / (imageTop - imageBottom)) * (CAM_OFFSET_Y - imageBottom) + (imageBottomWidth / 2d));
+        QY = (imageBottomWidth / 2) * ((imageTop - imageBottom) / ((imageBottomWidth / 2) - (imageTopWidth / 2))) + imageBottom;
+        RL = 2 * (((imageTopWidth/2 - imageBottomWidth/2) / (imageTop - imageBottom)) * (CAM_OFFSET_Y - imageBottom) + (imageBottomWidth / 2));
     }
 
     public static Position convertCameraPointToWorldPoint(double x, double y, Position robotPos) {
@@ -43,8 +43,19 @@ public class Homography {
         double worldYRelativeToRobot = -FZ * ((FY - ppy) / (FZ - ppz)) + FY;
         double rx = RL * (((x/CAM_PIXEL_WIDTH)) - (1/2d));
         double worldXRelativeToRobot = ((-rx) / (QY - CAM_OFFSET_Y)) * (worldYRelativeToRobot - QY);
-        worldYRelativeToRobot += 1.5;
+        AutonCore.telem.addData("wxf: ", worldXRelativeToRobot);
+        AutonCore.telem.addData("wyf: ", worldYRelativeToRobot);
+        AutonCore.telem.addData("x", x);
+        AutonCore.telem.addData("y", y);
+        AutonCore.telem.update();
+        long t = System.currentTimeMillis();
+        while (System.currentTimeMillis() - t < 5000) {
 
+        }
+        worldYRelativeToRobot += 7;
+        if (worldXRelativeToRobot < 0) {
+            worldXRelativeToRobot += 3;
+        }
         // todo: when the bobit has to move to the left, it undershoots the x amount. it seems to work fine when it moves right - probs bc of the camera offset
         // (worldYRelativeToRobot, worldXRelativeToRobot) is a coordinate relative to the robot, with the y-axis being in line with the direction that the robot is facing (aka theta is forward)
         // in this coordinate space, (0, 0) is the position of the camera
@@ -56,8 +67,13 @@ public class Homography {
 
         AutonCore.telem.addData("dxf: ", deltaXf);
         AutonCore.telem.addData("dyf: ", deltaYf);
+        AutonCore.telem.addData("x", x);
+        AutonCore.telem.addData("y", y);
         AutonCore.telem.update();
+        t = System.currentTimeMillis();
+        while (System.currentTimeMillis() - t < 5000) {
 
+        }
         return new Position(robotPos.x + 25.4 * deltaXf, robotPos.y + 25.4 * deltaYf, theta);
     }
 
