@@ -8,7 +8,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.autonomous.control.PID;
-import org.openftc.revextensions2.ExpansionHubEx;
 
 @TeleOp
 public class Drive extends Core {
@@ -86,7 +85,9 @@ public class Drive extends Core {
 
         telemetry.addData("theta", theta);
         telemetry.addData("orientation", orientation);
-        telemetry.addData("current", expansionHub.getServoBusCurrentDraw(ExpansionHubEx.CurrentDrawUnits.MILLIAMPS));
+        telemetry.addData("r", colorSensor.red());
+        telemetry.addData("g", colorSensor.green());
+        telemetry.addData("b", colorSensor.blue());
         telemetry.update();
 
         // Pass that angle through a pair of wave functions to get the power for each corresponding pair of parallel wheels

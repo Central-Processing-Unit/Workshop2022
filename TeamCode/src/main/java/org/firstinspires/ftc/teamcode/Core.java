@@ -2,18 +2,18 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.openftc.revextensions2.ExpansionHubEx;
 
 public class Core extends OpMode {
     DcMotor leftfront, rightfront, leftback, rightback, armMotor, carousel;
     Servo clawServo;
     BNO055IMU imu;
     BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-    ExpansionHubEx expansionHub;
+    ColorSensor colorSensor;
 
     public void loop(){}
 
@@ -50,7 +50,7 @@ public class Core extends OpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
+        colorSensor = hardwareMap.colorSensor.get("color");
     }
 
         public void move(double posinput, double neginput, double rotinput)
