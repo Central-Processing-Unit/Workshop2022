@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.autonomous.actions.Actions;
 import org.firstinspires.ftc.teamcode.autonomous.actions.ArmPositionAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.ChangeArmTargetAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.CloseClawAction;
+import org.firstinspires.ftc.teamcode.autonomous.actions.DriveToFreightAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.OpenClawAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.SpinCarouselAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.WaitForActionsAction;
@@ -67,7 +68,7 @@ public class Instructions {
                 targetArmPos = -4800;
                 break;
         }
-       actions.addContinuousAction(armPositionAction);
+        actions.addContinuousAction(armPositionAction);
         actions.addAction(new CloseClawAction(hardware, this, 0, 0));
         actions.addAction(new ChangeArmTargetAction(hardware, this, 0, 1, targetArmPos));
         if (Constants.IS_LEFT_OPMODE) {
