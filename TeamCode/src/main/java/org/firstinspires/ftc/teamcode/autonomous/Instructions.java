@@ -33,7 +33,7 @@ public class Instructions {
     public Navigation navigation;
     public Actions actions;
     public ObjectDetector objectDetector;
-    private final WaypointManager waypointManager;
+    public final WaypointManager waypointManager;
     private final LinearOpMode opMode;
     public ArmPositionAction armPositionAction;
 

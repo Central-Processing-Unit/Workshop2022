@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous.hardware;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -11,7 +12,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.revextensions2.ExpansionHubEx;
 
 public class Hardware {
     public DcMotor leftFrontMotor, rightFrontMotor, leftBackMotor, rightBackMotor;
@@ -21,7 +21,7 @@ public class Hardware {
     public WebcamName camera;
     public OpenCvCamera cvCamera;
     public HardwareMap map;
-    public ExpansionHubEx expansionHub;
+    public ColorSensor colorSensor;
 
     public Hardware (HardwareMap hardware)
     {
@@ -30,7 +30,7 @@ public class Hardware {
         initializeDriveMotors(hardware);
         initializeAccessoryMotors(hardware);
         initializeWebcam(hardware);
-        initializeExpansionHub(hardware);
+        initializeColorSensor(hardware);
     }
 
     private void initializeDriveMotors(HardwareMap hardware)
@@ -117,8 +117,8 @@ public class Hardware {
         cvCamera = OpenCvCameraFactory.getInstance().createWebcam(webcamName);
     }
 
-    private void initializeExpansionHub(HardwareMap hardware) {
-        expansionHub = hardware.get(ExpansionHubEx.class, "Expansion Hub 1");
+    private void initializeColorSensor(HardwareMap hardware) {
+        colorSensor = hardware.colorSensor.get("color");
     }
 
 }
