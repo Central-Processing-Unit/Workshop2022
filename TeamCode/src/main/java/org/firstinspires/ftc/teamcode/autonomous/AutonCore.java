@@ -20,11 +20,6 @@ public class AutonCore {
         telem = telemetry;
         runtime = new ElapsedTime();
         Hardware hardware = new Hardware(opMode.hardwareMap);
-        try {
-            ObjectDetector.tic = new TFICBuilder(opMode.hardwareMap, "model.tflite", "NoTeamElement", "TeamElement").setQuantized(true).build();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         Localization localization = new Localization(hardware, initialX, initialY, initialTheta);
         ObjectDetector objectDetector = new ObjectDetector(hardware);
 
