@@ -18,10 +18,12 @@ public class DriveToFreightAction extends Action {
     @Override
     public void execute() {
         int[] pixelVals = objectDetector.getFreightPixelPosition();
-        AutonCore.telem.addData("px: ", pixelVals[0]);
-        AutonCore.telem.addData("py: ", pixelVals[1]);
-        AutonCore.telem.update();
         Position targetPos = Homography.convertCameraPointToWorldPoint(pixelVals[0], pixelVals[1], instructions.navigation._localization.getRobotPosition());
-        instructions.loopToWaypoint(new Waypoint(targetPos), false);
+        AutonCore.telem.addData("tx: ", pixelVals[0]);
+        AutonCore.telem.addData("ty: ", pixelVals[1]);
+        AutonCore.telem.update();
+        if (pixelVals[0] != -1 && pixelVals[1] != -1) {
+            instructions.loopToWaypoint(new Waypoint(targetPos));
+        }
     }
 }

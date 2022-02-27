@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous.actions.util;
 
+import org.firstinspires.ftc.teamcode.autonomous.AutonCore;
 import org.firstinspires.ftc.teamcode.autonomous.localization.Position;
 
 public class Homography {
@@ -42,7 +43,9 @@ public class Homography {
         double worldYRelativeToRobot = -FZ * ((FY - ppy) / (FZ - ppz)) + FY;
         double rx = RL * (((x/CAM_PIXEL_WIDTH)) - (1/2d));
         double worldXRelativeToRobot = ((-rx) / (QY - CAM_OFFSET_Y)) * (worldYRelativeToRobot - QY);
+        worldYRelativeToRobot += 1.5;
 
+        // todo: when the bobit has to move to the left, it undershoots the x amount. it seems to work fine when it moves right - probs bc of the camera offset
         // (worldYRelativeToRobot, worldXRelativeToRobot) is a coordinate relative to the robot, with the y-axis being in line with the direction that the robot is facing (aka theta is forward)
         // in this coordinate space, (0, 0) is the position of the camera
 
@@ -51,8 +54,11 @@ public class Homography {
         double deltaXf = worldXRelativeToRobot * Math.cos(theta) - worldYRelativeToRobot * Math.sin(theta);
         double deltaYf = worldYRelativeToRobot * Math.cos(theta) + worldXRelativeToRobot * Math.sin(theta);
 
-        // todo: these minus signs might have to be changed to plus signs
-        return new Position(robotPos.x - deltaXf, robotPos.y - deltaYf, 0);
+        AutonCore.telem.addData("dxf: ", deltaXf);
+        AutonCore.telem.addData("dyf: ", deltaYf);
+        AutonCore.telem.update();
+
+        return new Position(robotPos.x + 25.4 * deltaXf, robotPos.y + 25.4 * deltaYf, theta);
     }
 
 }

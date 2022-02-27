@@ -138,7 +138,7 @@ public class Instructions {
         }
     }
 
-    private void loopToWaypoint(Waypoint waypoint) {
+    public void loopToWaypoint(Waypoint waypoint) {
         while (!navigation.isTargetReached(waypoint) && !opMode.isStopRequested()) {
             actions.executeContinuousActions();
             if (waypoint.isSpline) {

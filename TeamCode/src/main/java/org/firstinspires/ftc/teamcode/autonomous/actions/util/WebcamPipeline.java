@@ -10,9 +10,11 @@ public class WebcamPipeline extends OpenCvPipeline {
 
     @Override
     public Mat processFrame(Mat input) {
+        if (lastMat == null) {
+            AutonCore.telem.addLine("Webcam ready");
+            AutonCore.telem.update();
+        }
         lastMat = input;
-        AutonCore.telem.addLine("Webcam ready");
-        AutonCore.telem.update();
         System.out.println("new frame just dropped 0.0");
         return input;
     }
