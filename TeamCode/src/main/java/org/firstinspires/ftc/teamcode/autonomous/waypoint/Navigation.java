@@ -47,7 +47,6 @@ public class Navigation {
         _localization = localization;
         PIDCoefficients coefficients = new PIDCoefficients(0.011, 0.000021, 0);
         PIDCoefficients thetaCoefficients = new PIDCoefficients(0.22, 0.0005, 0);
-
         controller = new PID(coefficients);
         thetaController = new PID(thetaCoefficients);
 		splineController = new SplineController();
@@ -66,20 +65,16 @@ public class Navigation {
     public void driveToTarget(Position destination, boolean isSpline, boolean onlyRotate) { driveToTarget(new Position(0,0,0), new Position(0,0,0), new Position(0,0,0), destination, isSpline, onlyRotate); }
 
     public boolean isTargetReached(Waypoint waypoint) {
-        if (waypoint.isSpline) {
-            return t > 1;
-        } else {
-            boolean thetaFinished = false;
-            double thetaError = waypoint.targetPos.t - position.t;
-            if ((thetaError) < 0 && (thetaError < -Math.PI)) {
-                thetaError = waypoint.targetPos.t - position.t + (2 * Math.PI); // todo: might want to store theta error to an instance variable so we don't calculate it twice every iteration
-            }
-
-            if (Math.abs(thetaError) < THETA_TOLERANCE) {
-                thetaFinished = true;
-            }
-            return !(((Math.abs(waypoint.targetPos.x - position.x) > 5) || (Math.abs(waypoint.targetPos.y - position.y) > 5) || !thetaFinished) && (!waypoint.onlyRotate || !thetaFinished));
+        boolean thetaFinished = false;
+        double thetaError = waypoint.targetPos.t - position.t;
+        if ((thetaError) < 0 && (thetaError < -Math.PI)) {
+            thetaError = waypoint.targetPos.t - position.t + (2 * Math.PI); // todo: might want to store theta error to an instance variable so we don't calculate it twice every iteration
         }
+
+        if (Math.abs(thetaError) < THETA_TOLERANCE) {
+            thetaFinished = true;
+        }
+        return !(((Math.abs(waypoint.targetPos.x - position.x) > 5) || (Math.abs(waypoint.targetPos.y - position.y) > 5) || !thetaFinished) && (!waypoint.onlyRotate || !thetaFinished)) && (!waypoint.isSpline || t > 1);
     }
 
 	public void driveToTarget(Position start, Position control1, Position control2, Position destination, boolean isSpline, boolean onlyRotate)
@@ -96,7 +91,7 @@ public class Navigation {
             thetaError = destination.t - position.t + (2 * Math.PI);
         }
 
-        if (isSpline) {
+        if (isSpline && t < 1) {
             splineToTarget(start, control1, control2, destination);
         } else {
             moveToTarget(destination, thetaError, isCounterClockwise, onlyRotate);

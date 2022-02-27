@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous.waypoint;
 
 import org.firstinspires.ftc.teamcode.autonomous.Constants;
+import org.firstinspires.ftc.teamcode.autonomous.Instructions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,8 @@ public class WaypointManager {
                 waypoint.splinePos2.x *= -1;
             }
         }
+        waypoint.targetPos.t = Instructions.initialTheta + (Constants.IS_BLUE_TEAM ? 1 : -1) * waypoint.targetPos.t;
+
         waypoints.add(waypoint);
     }
 

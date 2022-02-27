@@ -93,20 +93,21 @@ public class Instructions {
     {
         if (!Constants.IS_LEFT_OPMODE)
         {
-            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282, initialTheta + Math.PI/4)));
-            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282), new Position(564, 1250), new Position(340, 1040), new Position(345, 464)));
-            waypointManager.addWaypoint(new Waypoint(new Position(345, 345, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(911, 304, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, 0)));
+            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282,  Math.PI/4)));
+            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282), new Position(564, 1250), new Position(340, 1040), new Position(345, 464, Math.PI/4)));
+            waypointManager.addWaypoint(new Waypoint(new Position(345, 345, 0)));
+            waypointManager.addWaypoint(new Waypoint(new Position(911, 304, 0)));
         }
         else{
-            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta)));
+            waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, 0)));
 //            double targetX = 910 + (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.LEFT && Constants.IS_BLUE_TEAM ? 40 : 0);
 //            double targetY = 1520 + (Constants.IS_BLUE_TEAM ? 0 : -30);
 //            waypointManager.addWaypoint(new Waypoint(new Position(targetX, targetY, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(720, 1520, 0), false));
-            waypointManager.addWaypoint(new Waypoint(new Position(720, 1520), new Position(10, 1790), new Position(160, 2770), new Position(230, 2850)));
-            waypointManager.addWaypoint(new Waypoint(new Position(230,2850, Math.PI/2), true));
+            waypointManager.addWaypoint(new Waypoint(new Position(973, 1780, -Math.PI/4)));
+            waypointManager.addWaypoint(new Waypoint(new Position(773, 1780, -Math.PI/2)));
+            waypointManager.addWaypoint(new Waypoint(new Position(773, 1780), new Position(-80, 1686), new Position(160, 2770), new Position(230, 2850)));
+            waypointManager.addWaypoint(new Waypoint(new Position(230,2850, 0)));
         }
     }
 
