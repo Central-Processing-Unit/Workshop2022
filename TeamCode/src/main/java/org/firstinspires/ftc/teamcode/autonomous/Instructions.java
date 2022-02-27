@@ -68,9 +68,7 @@ public class Instructions {
                 targetArmPos = -4800;
                 break;
         }
-
-        actions.addAction(new DriveToFreightAction(hardware, this, 0,0, objectDetector));
-        /*actions.addContinuousAction(armPositionAction);
+        actions.addContinuousAction(armPositionAction);
         actions.addAction(new CloseClawAction(hardware, this, 0, 0));
         actions.addAction(new ChangeArmTargetAction(hardware, this, 0, 1, targetArmPos));
         if (Constants.IS_LEFT_OPMODE) {
@@ -87,7 +85,7 @@ public class Instructions {
         if (!Constants.IS_LEFT_OPMODE) {
 //            actions.addTask(new FullStopAction(3, 0));
             actions.addAction(new SpinCarouselAction(hardware, this, 3, 0));
-        }*/
+        }
     }
 
     //Enter initial navigation waypoints here.
@@ -96,8 +94,8 @@ public class Instructions {
         if (!Constants.IS_LEFT_OPMODE)
         {
             waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, initialTheta)));
-            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282, initialTheta - Math.PI/4)));
-            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282), new Position(564, 1250), new Position(390, 1040), new Position(345, 464)));
+            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282, initialTheta + Math.PI/4)));
+            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282), new Position(564, 1250), new Position(340, 1040), new Position(345, 464)));
             waypointManager.addWaypoint(new Waypoint(new Position(345, 345, initialTheta)));
             waypointManager.addWaypoint(new Waypoint(new Position(911, 304, initialTheta)));
         }
