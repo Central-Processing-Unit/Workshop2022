@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.autonomous.hardware.Hardware;
 public class ColorWaypointJumpAction extends Action {
 
     private int waypointIndex;
+    private boolean isInClaw;
 
     public ColorWaypointJumpAction(Hardware hardware, Instructions instructions, int index, int priority, int waypointIndex) {
         super(hardware, instructions, index, priority);
@@ -14,8 +15,14 @@ public class ColorWaypointJumpAction extends Action {
 
     @Override
     public void execute() {
-        if (hardware.colorSensor.green() < 80) { // >=80 means that the block/ball/duck is in the claw
-            instructions.waypointManager.setIndex(waypointIndex);
+        isInClaw = hardware.colorSensor.green() >= 80;
+        if (!isInClaw) { // >=80 means that the block/ball/duck is in the claw
+            instructions.waypointManager.setIndex(waypointIndex - 1);
         }
+    }
+
+    @Override
+    public boolean shouldContinueExecutingActionsAtCurrentIndex() {
+        return isInClaw;
     }
 }

@@ -30,6 +30,10 @@ public class WaypointManager {
         waypointIndex = i;
     }
 
+    public int getIndex() {
+        return waypointIndex;
+    }
+
     public void addWaypoint(Waypoint waypoint) {
         if (!Constants.IS_BLUE_TEAM) {
             waypoint.targetPos.x *= -1;

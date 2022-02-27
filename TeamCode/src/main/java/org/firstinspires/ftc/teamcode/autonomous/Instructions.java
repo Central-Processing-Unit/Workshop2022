@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.autonomous.actions.Actions;
 import org.firstinspires.ftc.teamcode.autonomous.actions.ArmPositionAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.ChangeArmTargetAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.CloseClawAction;
+import org.firstinspires.ftc.teamcode.autonomous.actions.ColorWaypointJumpAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.DriveToFreightAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.OpenClawAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.SpinCarouselAction;
@@ -68,31 +69,33 @@ public class Instructions {
                 targetArmPos = -4800;
                 break;
         }
-        actions.addAction(new DriveToFreightAction(hardware, this, 0, 0, objectDetector, true));
-        actions.addAction(new CloseClawAction(hardware, this, 0, 1));
-//        actions.addContinuousAction(armPositionAction);
-//        actions.addAction(new CloseClawAction(hardware, this, 0, 0));
-//        actions.addAction(new ChangeArmTargetAction(hardware, this, 0, 1, targetArmPos));
+//        actions.addAction(new DriveToFreightAction(hardware, this, 0, 0, objectDetector, true));
+//        actions.addAction(new CloseClawAction(hardware, this, 0, 1));
+        actions.addContinuousAction(armPositionAction);
+        actions.addAction(new CloseClawAction(hardware, this, 0, 0));
+        actions.addAction(new ChangeArmTargetAction(hardware, this, 0, 1, targetArmPos));
         if (Constants.IS_LEFT_OPMODE) {
             actions.addAction(new WaitForActionsAction(hardware, this, 0, 2, actions));
         }
-//        actions.addAction(new WaitForActionsAction(hardware, this, 1, 0, actions));
-//        actions.addAction(new OpenClawAction(hardware, this, 1, 1));
-//        actions.addAction(new ChangeArmTargetAction(hardware, this, 2, 0, -500));
+        actions.addAction(new WaitForActionsAction(hardware, this, 1, 0, actions));
+        actions.addAction(new OpenClawAction(hardware, this, 1, 1));
+        actions.addAction(new ChangeArmTargetAction(hardware, this, 2, 0, -500));
         // Run at end to lower arm to 0 for drive
-//        actions.addAction(new ChangeArmTargetAction(hardware, this, 4, 0, 0));
-//        actions.addAction(new WaitForActionsAction(hardware, this, 4, 1, actions));
-//        actions.addAction(new DriveToFreightAction(hardware, this, 4, 2, objectDetector));
-//        actions.addAction(new CloseClawAction(hardware, this, 4, 3));
-//        actions.addAction(new ChangeArmTargetAction(hardware, this, 4, 4, -4800));
+        actions.addAction(new ChangeArmTargetAction(hardware, this, 3, 0, 0));
+        actions.addAction(new SpinCarouselAction(hardware, this, 3, 1));
+        actions.addAction(new WaitForActionsAction(hardware, this, 3, 2, actions));
+        actions.addAction(new DriveToFreightAction(hardware, this, 4, 0, objectDetector, true));
+        actions.addAction(new CloseClawAction(hardware, this, 4, 1));
+        actions.addAction(new ColorWaypointJumpAction(hardware, this, 4, 2, 6));
+        actions.addAction(new ChangeArmTargetAction(hardware, this, 4, 3, -4800));
 
         // Load duck into top level
-//        actions.addAction(new WaitForActionsAction(hardware, this, 5, 0, actions));
-//        actions.addAction(new OpenClawAction(hardware, this, 5, 1));
+        actions.addAction(new WaitForActionsAction(hardware, this, 5, 0, actions));
+        actions.addAction(new OpenClawAction(hardware, this, 5, 1));
 
         if (!Constants.IS_LEFT_OPMODE) {
 //            actions.addTask(new FullStopAction(3, 0));
-            actions.addAction(new SpinCarouselAction(hardware, this, 3, 0));
+//            actions.addAction(new SpinCarouselAction(hardware, this, 3, 0));
         }
     }
 
@@ -102,12 +105,12 @@ public class Instructions {
         if (!Constants.IS_LEFT_OPMODE)
         {
             waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, 0)));
-//            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282,  Math.PI/4)));
-//            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282), new Position(564, 1250), new Position(340, 1040), new Position(345, 464, Math.PI/4)));
-//            waypointManager.addWaypoint(new Waypoint(new Position(345, 345, 0)));
-//            waypointManager.addWaypoint(new Waypoint(new Position(1000, 545, -Math.PI)));
-//            waypointManager.addWaypoint(new Waypoint(new Position( 973, 1282, Math.PI/4)));
-//            waypointManager.addWaypoint(new Waypoint(new Position(911, 304, 0)));
+            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282,  Math.PI/4)));
+            waypointManager.addWaypoint(new Waypoint(new Position(973, 1282), new Position(564, 1250), new Position(340, 1040), new Position(345, 464, Math.PI/4)));
+            waypointManager.addWaypoint(new Waypoint(new Position(345, 345, 0)));
+            waypointManager.addWaypoint(new Waypoint(new Position(1000, 545, -Math.PI)));
+            waypointManager.addWaypoint(new Waypoint(new Position( 973, 1282, Math.PI/4)));
+            waypointManager.addWaypoint(new Waypoint(new Position(911, 304, 0)));
         }
         else{
             waypointManager.addWaypoint(new Waypoint(new Position(initialX, initialY, 0)));
@@ -145,7 +148,8 @@ public class Instructions {
             if (opMode.isStopRequested())
                 break;
 
-            actions.executeActions(taskIndex++);
+            actions.executeActions(taskIndex);
+            taskIndex = waypointManager.getIndex() + 1;
         }
     }
 

@@ -58,6 +58,9 @@ public class Actions {
                 throw new RuntimeException("Invalid action priority: expected one priority for each value from 0 to " + (actionMap.size() - 1) + ", but couldn't find an action with priority " + i);
             }
             action.execute();
+            if (!action.shouldContinueExecutingActionsAtCurrentIndex()) {
+                break;
+            }
         }
     }
 

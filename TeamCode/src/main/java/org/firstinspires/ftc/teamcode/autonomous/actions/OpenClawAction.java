@@ -9,6 +9,6 @@ public class OpenClawAction extends Action{
 
     public void execute()
     {
-        hardware.clawServo.setPosition(0.35);
+        hardware.clawServo.setPosition(0.25);
     }
 }

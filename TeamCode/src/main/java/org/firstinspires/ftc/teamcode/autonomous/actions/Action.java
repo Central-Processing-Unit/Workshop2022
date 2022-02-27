@@ -33,6 +33,10 @@ public abstract class Action {
 
     public abstract void execute();
 
+    public boolean shouldContinueExecutingActionsAtCurrentIndex() {
+        return true;
+    }
+
     public boolean isContinuous() {
         return false;
     }

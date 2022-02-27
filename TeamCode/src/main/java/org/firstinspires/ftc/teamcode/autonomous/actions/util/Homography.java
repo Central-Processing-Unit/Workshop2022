@@ -48,11 +48,7 @@ public class Homography {
         AutonCore.telem.addData("x", x);
         AutonCore.telem.addData("y", y);
         AutonCore.telem.update();
-        long t = System.currentTimeMillis();
-        while (System.currentTimeMillis() - t < 5000) {
-
-        }
-        worldYRelativeToRobot += 7;
+        worldYRelativeToRobot += 8;
         if (worldXRelativeToRobot < 0) {
             worldXRelativeToRobot += 3;
         }
@@ -70,10 +66,6 @@ public class Homography {
         AutonCore.telem.addData("x", x);
         AutonCore.telem.addData("y", y);
         AutonCore.telem.update();
-        t = System.currentTimeMillis();
-        while (System.currentTimeMillis() - t < 5000) {
-
-        }
         return new Position(robotPos.x + 25.4 * deltaXf, robotPos.y + 25.4 * deltaYf, theta);
     }
 
