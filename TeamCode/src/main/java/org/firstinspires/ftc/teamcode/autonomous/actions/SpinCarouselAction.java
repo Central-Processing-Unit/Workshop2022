@@ -7,6 +7,11 @@ import org.firstinspires.ftc.teamcode.autonomous.localization.Localization;
 
 public class SpinCarouselAction extends Action {
 
+    public SpinCarouselAction()
+    {
+        super();
+    }
+
     public SpinCarouselAction(Hardware hardware, Instructions instructions, int index, int priority)
     {
         super(hardware, instructions, index, priority);

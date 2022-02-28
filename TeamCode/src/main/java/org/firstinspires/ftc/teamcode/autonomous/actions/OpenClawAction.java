@@ -5,7 +5,13 @@ import org.firstinspires.ftc.teamcode.autonomous.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.autonomous.localization.Localization;
 
 public class OpenClawAction extends Action{
-    public OpenClawAction(Hardware hardware, Instructions instructions, int index, int priority) {super(hardware, instructions, index, priority);}
+    public OpenClawAction() {
+        super();
+    }
+
+    public OpenClawAction(Hardware hardware, Instructions instructions, int index, int priority) {
+        super(hardware, instructions, index, priority);
+    }
 
     public void execute()
     {

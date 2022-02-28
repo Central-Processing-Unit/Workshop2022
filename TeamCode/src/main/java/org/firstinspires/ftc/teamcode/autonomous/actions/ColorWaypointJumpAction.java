@@ -8,6 +8,11 @@ public class ColorWaypointJumpAction extends Action {
     private int waypointIndex;
     private boolean isInClaw;
 
+    public ColorWaypointJumpAction(int waypointIndex) {
+        super();
+        this.waypointIndex = waypointIndex;
+    }
+
     public ColorWaypointJumpAction(Hardware hardware, Instructions instructions, int index, int priority, int waypointIndex) {
         super(hardware, instructions, index, priority);
         this.waypointIndex = waypointIndex;

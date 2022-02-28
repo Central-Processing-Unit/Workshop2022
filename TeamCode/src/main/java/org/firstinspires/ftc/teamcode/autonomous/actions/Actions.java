@@ -19,12 +19,12 @@ public class Actions {
 
     public void addAction(Action action)
     {
-        if (actions.containsKey(action.index)) {
-            actions.get(action.index).put(action.priority, action);
+        if (actions.containsKey(action.getIndex())) {
+            actions.get(action.getIndex()).put(action.getPriority(), action);
         } else {
             Map<Integer, Action> actionMap = new HashMap<>();
-            actionMap.put(action.priority, action);
-            actions.put(action.index, actionMap);
+            actionMap.put(action.getPriority(), action);
+            actions.put(action.getIndex(), actionMap);
         }
     }
 

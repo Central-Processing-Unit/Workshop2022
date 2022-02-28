@@ -12,6 +12,12 @@ public class DriveToFreightAction extends Action {
     private final ObjectDetector objectDetector;
     private final boolean isDuck;
 
+    public DriveToFreightAction(ObjectDetector objectDetector, boolean isDuck) {
+        super();
+        this.objectDetector = objectDetector;
+        this.isDuck = isDuck;
+    }
+
     public DriveToFreightAction(Hardware hardware, Instructions instructions, int index, int priority, ObjectDetector objectDetector, boolean isDuck) {
         super(hardware, instructions, index, priority);
         this.objectDetector = objectDetector;

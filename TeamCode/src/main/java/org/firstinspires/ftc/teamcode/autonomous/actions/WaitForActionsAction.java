@@ -10,6 +10,11 @@ public class WaitForActionsAction extends Action {
 
     private final List<ContinuousAction> continuousActions;
 
+    public WaitForActionsAction(Actions actions) {
+        super();
+        continuousActions = actions.getContinuousActions();
+    }
+
     public WaitForActionsAction(Hardware hardware, Instructions instructions, int index, int priority, Actions actions) {
         super(hardware, instructions, index, priority);
         continuousActions = actions.getContinuousActions();
