@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.autonomous.actions.Actions;
 import org.firstinspires.ftc.teamcode.autonomous.actions.ArmPositionAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.ChangeArmTargetAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.CloseClawAction;
+import org.firstinspires.ftc.teamcode.autonomous.actions.CloseClawSyncAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.ColorWaypointJumpAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.DriveToFreightAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.OpenClawAction;
@@ -71,32 +72,36 @@ public class Instructions {
                 break;
         }
         if (!Constants.IS_LEFT_OPMODE) {
+//            waypointBuilder
+//                    .move(new Position(initialX, initialY, 0))
+//                        .run(new DriveToFreightAction(objectDetector, true))
+//                        .run(new CloseClawSyncAction());
             waypointBuilder
                     .runContinuously(armPositionAction)
                     .move(new Position(initialX, initialY, 0))
-                        .run(new CloseClawAction()) // todo: would prefer to not have to pass hardware and this into every action constructor
+                        .run(new CloseClawAction())
                         .run(new ChangeArmTargetAction(targetArmPos))
                     .move(new Position(973, 1282, Math.PI/4))
                         .run(new WaitForActionsAction(actions))
                         .run(new OpenClawAction())
-                    .move(new Position(973, 1282), new Position(564, 1250), new Position(340, 1040), new Position(345, 464, Math.PI/4))
+                    .move(new Position(973, 1282), new Position(564, 1250), new Position(440, 1040), new Position(445, 464, Math.PI/4))
                         .run(new ChangeArmTargetAction(-500))
-                    .move(new Position(345, 345, 0))
+                    .move(new Position(345, 145, 0))
                         .run(new ChangeArmTargetAction(0))
                         .run(new SpinCarouselAction())
                         .run(new WaitForActionsAction(actions))
-                    .move(new Position(1000, 545, -Math.PI))
+                    .move(new Position(1000, 245, -Math.PI))
                         .run(new DriveToFreightAction(objectDetector, true))
-                        .run(new CloseClawAction())
+                        .run(new CloseClawSyncAction())
                         .run(new ColorWaypointJumpAction(6))
                         .run(new ChangeArmTargetAction(-4800))
                     .move(new Position(973, 1282, Math.PI/4))
                         .run(new WaitForActionsAction(actions))
                         .run(new OpenClawAction())
-                    .move(new Position(911, 304, 0))
                         .run(new ChangeArmTargetAction(0))
-                        .run(new CloseClawAction())
-                        .run(new WaitForActionsAction(actions));
+                    .move(new Position(911, 304, 0))
+                        .run(new WaitForActionsAction(actions))
+                        .run(new CloseClawSyncAction());
         } else{
             waypointBuilder
                     .runContinuously(armPositionAction)

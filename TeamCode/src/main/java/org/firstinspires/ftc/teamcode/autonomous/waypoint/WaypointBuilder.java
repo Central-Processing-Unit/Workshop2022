@@ -14,7 +14,7 @@ public class WaypointBuilder {
     private final Hardware hardware;
     private final Instructions instructions;
 
-    private int index = 0;
+    private int index = -1;
     private int priority = 0;
 
     public WaypointBuilder(WaypointManager waypointManager, Actions actions, Hardware hardware, Instructions instructions) {

@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.autonomous.actions.util;
 
+import android.icu.text.SymbolTable;
+
 import org.firstinspires.ftc.teamcode.autonomous.AutonCore;
+import org.firstinspires.ftc.teamcode.autonomous.Instructions;
 import org.firstinspires.ftc.teamcode.autonomous.localization.Position;
 
 public class Homography {
@@ -48,11 +51,10 @@ public class Homography {
         AutonCore.telem.addData("x", x);
         AutonCore.telem.addData("y", y);
         AutonCore.telem.update();
-        worldYRelativeToRobot += 8;
-        if (worldXRelativeToRobot < 0) {
-            worldXRelativeToRobot += 3;
-        }
-        // todo: when the bobit has to move to the left, it undershoots the x amount. it seems to work fine when it moves right - probs bc of the camera offset
+        worldYRelativeToRobot += 3;
+        worldXRelativeToRobot -= 3;
+        worldXRelativeToRobot *= 1;
+
         // (worldYRelativeToRobot, worldXRelativeToRobot) is a coordinate relative to the robot, with the y-axis being in line with the direction that the robot is facing (aka theta is forward)
         // in this coordinate space, (0, 0) is the position of the camera
 
@@ -66,7 +68,14 @@ public class Homography {
         AutonCore.telem.addData("x", x);
         AutonCore.telem.addData("y", y);
         AutonCore.telem.update();
-        return new Position(robotPos.x + 25.4 * deltaXf, robotPos.y + 25.4 * deltaYf, theta);
+
+        double newTheta = Math.atan(deltaYf / deltaXf) + /*(deltaXf < 0 ? Math.PI : 0) - Math.PI / 2*/ - Math.PI + Instructions.initialTheta;
+//        if (newTheta > 2 * Math.PI) {
+//            newTheta -= 2 * Math.PI;
+//        } else if (theta < 0) {
+//            newTheta += 2 * Math.PI;
+//        }
+        return new Position(robotPos.x + 25.4 * deltaXf, robotPos.y + 25.4 * deltaYf, newTheta);
     }
 
 }
