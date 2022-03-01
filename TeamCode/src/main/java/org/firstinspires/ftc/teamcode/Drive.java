@@ -25,6 +25,8 @@ public class Drive extends Core {
     double armPower;
     PID armController = new PID(new PIDCoefficients(0.003, 0, 0));
     double armTarget;
+    long colorTimeout = -1;
+    long goDownTimeout = -1;
 
     public void loop() {
 
@@ -34,24 +36,46 @@ public class Drive extends Core {
             spinCarousel(-1);
         }
 
-        if (gamepad1.right_trigger > 0.5 && armMotor.getCurrentPosition() > -4800) {
+        if (gamepad1.right_trigger > 0.5 && armMotor.getCurrentPosition() > -4600) {
             armPower = -1;
             armTarget = armMotor.getCurrentPosition();
         } else if (gamepad1.left_trigger > 0.5 && armMotor.getCurrentPosition() < 0){
             armPower = 1;
             armTarget = armMotor.getCurrentPosition();
         } else {
-            if (armTarget < -4800) {
-                armTarget = -4800;
-            } else if (armTarget > 0) {
-                armTarget = 0;
-            }
             armPower = armController.getOutput(armTarget - armMotor.getCurrentPosition(), 0);
         }
+
+        if (armTarget < -4600) {
+            armTarget = -4600;
+        } else if (armTarget > 0) {
+            armTarget = 0;
+        }
+
+        clawPos = isClawClosed ? 0.75 : 0.35;
 
         if (gamepad1.b && System.currentTimeMillis() - bLastPressed > 250) {
             bLastPressed = System.currentTimeMillis();
             isClawClosed = !isClawClosed;
+            if (isClawClosed) {
+                colorTimeout = System.currentTimeMillis();
+            } else {
+                goDownTimeout = System.currentTimeMillis();
+            }
+        }
+
+        if (goDownTimeout > 0 && System.currentTimeMillis() - goDownTimeout > 1250) {
+            goDownTimeout = -1;
+            armTarget = 0;
+        }
+
+        if (colorTimeout > 0 && System.currentTimeMillis() - colorTimeout > 500) {
+            colorTimeout = -1;
+            if (colorSensor.green() >= 110 && colorSensor.red() >= 80)
+                armTarget = -4600;
+            else {
+                armTarget = 0;
+            }
         }
 
         clawPos = isClawClosed ? 0.75 : 0.35;
@@ -88,6 +112,8 @@ public class Drive extends Core {
         telemetry.addData("r", colorSensor.red());
         telemetry.addData("g", colorSensor.green());
         telemetry.addData("b", colorSensor.blue());
+        telemetry.addData("armTarget", armTarget);
+        telemetry.addData("armPos", armMotor.getCurrentPosition());
         telemetry.update();
 
         // Pass that angle through a pair of wave functions to get the power for each corresponding pair of parallel wheels
