@@ -45,7 +45,8 @@ public class Navigation {
 
         _hardware = hardware;
         _localization = localization;
-        PIDCoefficients coefficients = new PIDCoefficients(0.011, 0.000021, 0);
+        PIDCoefficients coefficients = new PIDCoefficients(0.019, 0.00003
+                , 0);
         PIDCoefficients thetaCoefficients = new PIDCoefficients(0.25, 0.0004, 0);
         controller = new PID(coefficients);
         thetaController = new PID(thetaCoefficients);
@@ -74,7 +75,7 @@ public class Navigation {
         if (Math.abs(thetaError) < THETA_TOLERANCE) {
             thetaFinished = true;
         }
-        return !(((Math.abs(waypoint.targetPos.x - position.x) > 5) || (Math.abs(waypoint.targetPos.y - position.y) > 5) || !thetaFinished) && (!waypoint.onlyRotate || !thetaFinished)) && (!waypoint.isSpline || t > 1);
+        return !(((Math.abs(waypoint.targetPos.x - position.x) > 10) || (Math.abs(waypoint.targetPos.y - position.y) > 10) || !thetaFinished) && (!waypoint.onlyRotate || !thetaFinished)) && (!waypoint.isSpline || t > 1);
     }
 
 	public void driveToTarget(Position start, Position control1, Position control2, Position destination, boolean isSpline, boolean onlyRotate, boolean isForDuck)

@@ -69,7 +69,7 @@ public class Instructions {
                 targetArmPos = -2800;
                 break;
             case RIGHT:
-                targetArmPos = -3800;
+                targetArmPos = -4500;
                 break;
         }
         if (!Constants.IS_LEFT_OPMODE) {
@@ -78,34 +78,34 @@ public class Instructions {
 //                        .run(new OpenClawWideAction())
 //                        .run(new DriveToFreightAction(objectDetector, true))
 //                        .run(new CloseClawSyncAction());
-            double shippingHubX = 1030 + (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT ? 0 : 0);
-            double shippingHubY = 1350 + (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT ? 50 : 0);
+            double shippingHubX = 1080 + (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT ? 0 : 0);
+            double shippingHubY = 1680 + (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT ? 50 : 0);
             waypointBuilder
                     .runContinuously(armPositionAction)
                     .move(new Position(initialX, initialY, 0))
                         .run(new CloseClawAction())
                         .run(new ChangeArmTargetAction(targetArmPos))
-                    .move(new Position(initialX + 500, shippingHubY, Math.PI/4))
+                    .move(new Position(initialX + 0.8 * (shippingHubX - initialX), initialY + 0.8 * (shippingHubY - initialY)))
                         .run(new WaitForActionsAction(actions))
-                    .move(new Position(shippingHubX, shippingHubY, Math.PI/4))
+                    .move(new Position(shippingHubX, shippingHubY, 0))
                         .run(new OpenClawAction())
-                    .move(new Position(shippingHubX, shippingHubY), new Position(664, 1250), new Position(540, 1040), new Position(545, 464, Math.PI/4))
+                    .move(new Position(shippingHubX, shippingHubY), new Position(664, 1250), new Position(600, 1040), new Position(575, 664, 0))
                         .run(new ChangeArmTargetAction(-500))
-                    .move(new Position(345, 445, 0))
+                    .move(new Position(575, 444, 0))
                         .run(new ChangeArmTargetAction(0))
                         .run(new OpenClawWideAction())
                         .run(new SpinCarouselAction())
                         .run(new WaitForActionsAction(actions))
-                    .move(new Position(1000, 345, -Math.PI))
+                    .move(new Position(1500, 345, -Math.PI))
                         .run(new DriveToFreightAction(objectDetector, true))
                         .run(new CloseClawSyncAction())
                         .run(new ColorWaypointJumpAction(7))
                         .run(new ChangeArmTargetAction(-3800))
-                    .move(new Position(973, 1282, Math.PI/4))
+                    .move(new Position(1500, 1400, Math.PI/4))
                         .run(new WaitForActionsAction(actions))
                         .run(new OpenClawAction())
                         .run(new ChangeArmTargetAction(0))
-                    .move(new Position(911, 304, 0))
+                    .move(new Position(1100, 304, 0))
                         .run(new WaitForActionsAction(actions))
                         .run(new CloseClawSyncAction());
         } else{

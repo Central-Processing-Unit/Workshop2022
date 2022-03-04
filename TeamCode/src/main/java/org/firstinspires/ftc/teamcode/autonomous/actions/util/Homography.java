@@ -47,7 +47,6 @@ public class Homography {
         double worldYRelativeToRobot = -FZ * ((FY - ppy) / (FZ - ppz)) + FY;
         double rx = RL * (((x/CAM_PIXEL_WIDTH)) - (1/2d));
         double worldXRelativeToRobot = ((-rx) / (QY - CAM_OFFSET_Y)) * (worldYRelativeToRobot - QY);
-//        double worldXRelativeToRobot = worldYRelativeToRobot * ((x - CAM_PIXEL_WIDTH/2) / CAM_PIXEL_WIDTH) * 0.5;
         AutonCore.telem.addData("wxf: ", worldXRelativeToRobot);
         AutonCore.telem.addData("wyf: ", worldYRelativeToRobot);
         AutonCore.telem.addData("x", x);
@@ -55,7 +54,7 @@ public class Homography {
         AutonCore.telem.update();
 //        worldYRelativeToRobot += 3;//3;
 //        worldXRelativeToRobot *= 1.1;
-        worldXRelativeToRobot -= 3;
+        worldXRelativeToRobot -= 2.5;
 
         // (worldYRelativeToRobot, worldXRelativeToRobot) is a coordinate relative to the robot, with the y-axis being in line with the direction that the robot is facing (aka theta is forward)
         // in this coordinate space, (0, 0) is the position of the camera
