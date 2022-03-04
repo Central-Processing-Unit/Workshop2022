@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.autonomous.actions.CloseClawSyncAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.ColorWaypointJumpAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.DriveToFreightAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.OpenClawAction;
+import org.firstinspires.ftc.teamcode.autonomous.actions.OpenClawWideAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.SpinCarouselAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.WaitForActionsAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.util.ObjectDetector;
@@ -65,36 +66,41 @@ public class Instructions {
                 targetArmPos = -1200;
                 break;
             case CENTER:
-                targetArmPos = -3100;
+                targetArmPos = -2800;
                 break;
             case RIGHT:
-                targetArmPos = -4800;
+                targetArmPos = -3800;
                 break;
         }
         if (!Constants.IS_LEFT_OPMODE) {
 //            waypointBuilder
 //                    .move(new Position(initialX, initialY, 0))
+//                        .run(new OpenClawWideAction())
 //                        .run(new DriveToFreightAction(objectDetector, true))
 //                        .run(new CloseClawSyncAction());
+            double shippingHubX = 1030 + (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT ? 0 : 0);
+            double shippingHubY = 1350 + (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT ? 50 : 0);
             waypointBuilder
                     .runContinuously(armPositionAction)
                     .move(new Position(initialX, initialY, 0))
                         .run(new CloseClawAction())
                         .run(new ChangeArmTargetAction(targetArmPos))
-                    .move(new Position(973, 1282, Math.PI/4))
+                    .move(new Position(initialX + 500, shippingHubY, Math.PI/4))
                         .run(new WaitForActionsAction(actions))
+                    .move(new Position(shippingHubX, shippingHubY, Math.PI/4))
                         .run(new OpenClawAction())
-                    .move(new Position(973, 1282), new Position(564, 1250), new Position(440, 1040), new Position(445, 464, Math.PI/4))
+                    .move(new Position(shippingHubX, shippingHubY), new Position(664, 1250), new Position(540, 1040), new Position(545, 464, Math.PI/4))
                         .run(new ChangeArmTargetAction(-500))
-                    .move(new Position(345, 145, 0))
+                    .move(new Position(345, 445, 0))
                         .run(new ChangeArmTargetAction(0))
+                        .run(new OpenClawWideAction())
                         .run(new SpinCarouselAction())
                         .run(new WaitForActionsAction(actions))
-                    .move(new Position(1000, 245, -Math.PI))
+                    .move(new Position(1000, 345, -Math.PI))
                         .run(new DriveToFreightAction(objectDetector, true))
                         .run(new CloseClawSyncAction())
-                        .run(new ColorWaypointJumpAction(6))
-                        .run(new ChangeArmTargetAction(-4800))
+                        .run(new ColorWaypointJumpAction(7))
+                        .run(new ChangeArmTargetAction(-3800))
                     .move(new Position(973, 1282, Math.PI/4))
                         .run(new WaitForActionsAction(actions))
                         .run(new OpenClawAction())
@@ -137,7 +143,7 @@ public class Instructions {
                 //nothing
             }
 
-            loopToWaypoint(waypoint);
+            loopToWaypoint(waypoint, false);
 
             navigation.clear();
 
@@ -148,13 +154,13 @@ public class Instructions {
         }
     }
 
-    public void loopToWaypoint(Waypoint waypoint) {
+    public void loopToWaypoint(Waypoint waypoint, boolean isForDuck) {
         while (!navigation.isTargetReached(waypoint) && !opMode.isStopRequested()) {
             actions.executeContinuousActions();
             if (waypoint.isSpline) {
-                navigation.driveToTarget(waypoint.startingPos, waypoint.splinePos1, waypoint.splinePos2, waypoint.targetPos, true, waypoint.onlyRotate);
+                navigation.driveToTarget(waypoint.startingPos, waypoint.splinePos1, waypoint.splinePos2, waypoint.targetPos, true, waypoint.onlyRotate, isForDuck);
             } else {
-                navigation.driveToTarget(waypoint.targetPos, false, waypoint.onlyRotate);
+                navigation.driveToTarget(waypoint.targetPos, false, waypoint.onlyRotate, isForDuck);
             }
         }
     }

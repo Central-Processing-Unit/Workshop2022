@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.autonomous.actions.util;
 import android.icu.text.SymbolTable;
 
 import org.firstinspires.ftc.teamcode.autonomous.AutonCore;
+import org.firstinspires.ftc.teamcode.autonomous.Constants;
 import org.firstinspires.ftc.teamcode.autonomous.Instructions;
 import org.firstinspires.ftc.teamcode.autonomous.localization.Position;
 
@@ -46,14 +47,15 @@ public class Homography {
         double worldYRelativeToRobot = -FZ * ((FY - ppy) / (FZ - ppz)) + FY;
         double rx = RL * (((x/CAM_PIXEL_WIDTH)) - (1/2d));
         double worldXRelativeToRobot = ((-rx) / (QY - CAM_OFFSET_Y)) * (worldYRelativeToRobot - QY);
+//        double worldXRelativeToRobot = worldYRelativeToRobot * ((x - CAM_PIXEL_WIDTH/2) / CAM_PIXEL_WIDTH) * 0.5;
         AutonCore.telem.addData("wxf: ", worldXRelativeToRobot);
         AutonCore.telem.addData("wyf: ", worldYRelativeToRobot);
         AutonCore.telem.addData("x", x);
         AutonCore.telem.addData("y", y);
         AutonCore.telem.update();
-        worldYRelativeToRobot += 3;
+//        worldYRelativeToRobot += 3;//3;
+//        worldXRelativeToRobot *= 1.1;
         worldXRelativeToRobot -= 3;
-        worldXRelativeToRobot *= 1;
 
         // (worldYRelativeToRobot, worldXRelativeToRobot) is a coordinate relative to the robot, with the y-axis being in line with the direction that the robot is facing (aka theta is forward)
         // in this coordinate space, (0, 0) is the position of the camera
@@ -62,19 +64,25 @@ public class Homography {
         double theta = robotPos.t;
         double deltaXf = worldXRelativeToRobot * Math.cos(theta) - worldYRelativeToRobot * Math.sin(theta);
         double deltaYf = worldYRelativeToRobot * Math.cos(theta) + worldXRelativeToRobot * Math.sin(theta);
+//        deltaXf *= 0.95;
+//        deltaYf *= 0.95;
 
-        AutonCore.telem.addData("dxf: ", deltaXf);
-        AutonCore.telem.addData("dyf: ", deltaYf);
+
+        double fieldTheta = -Math.atan(deltaYf / deltaXf) - Math.PI;
+        double newTheta = Instructions.initialTheta + (Constants.IS_BLUE_TEAM ? 1 : -1) * fieldTheta;
+        AutonCore.telem.addData("dxf", deltaXf);
+        AutonCore.telem.addData("dyf", deltaYf);
         AutonCore.telem.addData("x", x);
         AutonCore.telem.addData("y", y);
+        AutonCore.telem.addData("initialTheta", fieldTheta);
+        AutonCore.telem.addData("fieldTheta", fieldTheta);
+        AutonCore.telem.addData("newTheta", newTheta);
         AutonCore.telem.update();
-
-        double newTheta = Math.atan(deltaYf / deltaXf) + /*(deltaXf < 0 ? Math.PI : 0) - Math.PI / 2*/ - Math.PI + Instructions.initialTheta;
-//        if (newTheta > 2 * Math.PI) {
-//            newTheta -= 2 * Math.PI;
-//        } else if (theta < 0) {
-//            newTheta += 2 * Math.PI;
-//        }
+        if (newTheta > 2 * Math.PI) {
+            newTheta -= 2 * Math.PI;
+        } else if (newTheta < 0) {
+            newTheta += 2 * Math.PI;
+        }
         return new Position(robotPos.x + 25.4 * deltaXf, robotPos.y + 25.4 * deltaYf, newTheta);
     }
 

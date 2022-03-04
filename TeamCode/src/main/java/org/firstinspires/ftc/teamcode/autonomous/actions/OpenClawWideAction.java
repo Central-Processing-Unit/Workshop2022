@@ -2,19 +2,18 @@ package org.firstinspires.ftc.teamcode.autonomous.actions;
 
 import org.firstinspires.ftc.teamcode.autonomous.Instructions;
 import org.firstinspires.ftc.teamcode.autonomous.hardware.Hardware;
-import org.firstinspires.ftc.teamcode.autonomous.localization.Localization;
 
-public class OpenClawAction extends Action{
-    public OpenClawAction() {
+public class OpenClawWideAction extends Action {
+    public OpenClawWideAction() {
         super();
     }
 
-    public OpenClawAction(Hardware hardware, Instructions instructions, int index, int priority) {
+    public OpenClawWideAction(Hardware hardware, Instructions instructions, int index, int priority) {
         super(hardware, instructions, index, priority);
     }
 
     public void execute()
     {
-        hardware.clawServo.setPosition(0.45);
+        hardware.clawServo.setPosition(0.25);
     }
 }

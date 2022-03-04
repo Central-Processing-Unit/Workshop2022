@@ -81,7 +81,6 @@ public class Encoder {
         } else if (theta < 0) {
             theta += 2 * Math.PI;
         }
-        AutonCore.telem.addData("T_e", theta);
 
         //Compute displacement in field reference frame.
         double deltaXf = deltaX * Math.cos(theta) - deltaY * Math.sin(theta);

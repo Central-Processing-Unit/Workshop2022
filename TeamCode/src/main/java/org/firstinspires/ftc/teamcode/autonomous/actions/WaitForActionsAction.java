@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous.actions;
 
+import org.firstinspires.ftc.teamcode.autonomous.AutonCore;
 import org.firstinspires.ftc.teamcode.autonomous.Instructions;
 import org.firstinspires.ftc.teamcode.autonomous.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.autonomous.localization.Localization;
@@ -28,8 +29,8 @@ public class WaitForActionsAction extends Action {
             for (ContinuousAction ca : continuousActions) {
                 if (!ca.isFinished()) {
                     areAllFinished = false;
-                    ca.execute();
                 }
+                ca.execute();
             }
         }
     }

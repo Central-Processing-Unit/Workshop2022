@@ -26,7 +26,7 @@ public class ObjectDetector {
         Mat hsvMat = new Mat();
         Imgproc.cvtColor(mat, hsvMat, Imgproc.COLOR_RGB2HSV);
         Mat output = new Mat();
-        Core.inRange(hsvMat, new Scalar(20, isDuck ? 150 : 50, 100), new Scalar(150, 350, 500), output);
+        Core.inRange(hsvMat, new Scalar(20, isDuck ? 100 : 50, 100), new Scalar(150, 350, 500), output);
         int mi = -1, mj = -1;
         outer: for (int j = output.rows() - 1; j >= 10; j -= 5) {
             pixelloop: for (int i = 0; i < output.cols(); i += 5) {

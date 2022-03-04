@@ -29,9 +29,10 @@ public class ArmPositionAction extends ContinuousAction {
         hardware.armMotor.setPower(output);
         prevArmPos = armPos;
         prevTime = System.currentTimeMillis();
-        AutonCore.telem.addLine("armOutput: " + output);
-        AutonCore.telem.addLine("armError: " + armPosError);
-        AutonCore.telem.addLine("armPos: " + armPos);
+//        AutonCore.telem.addLine("armOutput: " + output);
+//        AutonCore.telem.addLine("armError: " + armPosError);
+//        AutonCore.telem.addLine("armPos: " + armPos);
+//        AutonCore.telem.update();
     }
 
     @Override

@@ -58,11 +58,11 @@ public class Navigation {
         waypoints.clear();
     }
 
-    public void driveToTarget(Position destination) {
-        driveToTarget(destination, false, false);
+    public void driveToTarget(Position destination, boolean isForDuck) {
+        driveToTarget(destination, false, false, isForDuck);
     }
 
-    public void driveToTarget(Position destination, boolean isSpline, boolean onlyRotate) { driveToTarget(new Position(0,0,0), new Position(0,0,0), new Position(0,0,0), destination, isSpline, onlyRotate); }
+    public void driveToTarget(Position destination, boolean isSpline, boolean onlyRotate, boolean isForDuck) { driveToTarget(new Position(0,0,0), new Position(0,0,0), new Position(0,0,0), destination, isSpline, onlyRotate, isForDuck); }
 
     public boolean isTargetReached(Waypoint waypoint) {
         boolean thetaFinished = false;
@@ -77,7 +77,7 @@ public class Navigation {
         return !(((Math.abs(waypoint.targetPos.x - position.x) > 5) || (Math.abs(waypoint.targetPos.y - position.y) > 5) || !thetaFinished) && (!waypoint.onlyRotate || !thetaFinished)) && (!waypoint.isSpline || t > 1);
     }
 
-	public void driveToTarget(Position start, Position control1, Position control2, Position destination, boolean isSpline, boolean onlyRotate)
+	public void driveToTarget(Position start, Position control1, Position control2, Position destination, boolean isSpline, boolean onlyRotate, boolean isForDuck)
     {
         arcLength = splineController.getArcLength(start, control1, control2, destination);
         double thetaError = destination.t - position.t;
@@ -94,7 +94,7 @@ public class Navigation {
         if (isSpline && t < 1) {
             splineToTarget(start, control1, control2, destination);
         } else {
-            moveToTarget(destination, thetaError, isCounterClockwise, onlyRotate);
+            moveToTarget(destination, thetaError, isCounterClockwise, onlyRotate, isForDuck);
         }
 
     }
@@ -123,18 +123,18 @@ public class Navigation {
         else
             posOutput = 0.5 * Math.cos(orientation);
 
-        telem.addData("X", position.x);
-        telem.addData("Y", position.y);
-        telem.addData("T", position.t);
-        telem.addData("t: ", t);
-        telem.addData("VelocityVector.x: ", velocityVector.x);
-        telem.addData("VelocityVector.y: ", velocityVector.y);
-        telem.addData("orientation: ", orientation);
-        telem.addData("arcLength: ", arcLength);
-        telem.addData("distAlongCurve: ", distAlongCurve);
-        telem.addData("negOutput: ", negOutput);
-        telem.addData("posOutput: ", posOutput);
-        telem.update();
+//        telem.addData("X", position.x);
+//        telem.addData("Y", position.y);
+//        telem.addData("T", position.t);
+//        telem.addData("t: ", t);
+//        telem.addData("VelocityVector.x: ", velocityVector.x);
+//        telem.addData("VelocityVector.y: ", velocityVector.y);
+//        telem.addData("orientation: ", orientation);
+//        telem.addData("arcLength: ", arcLength);
+//        telem.addData("distAlongCurve: ", distAlongCurve);
+//        telem.addData("negOutput: ", negOutput);
+//        telem.addData("posOutput: ", posOutput);
+//        telem.update();
 
         if (t < 1)
             _hardware.setMotorValues(posOutput, negOutput);
@@ -142,7 +142,7 @@ public class Navigation {
             _hardware.setMotorValues(0, 0);
     }
 
-    public void moveToTarget(Position waypointPos, double thetaError, boolean isCounterClockwise, boolean onlyRotate)
+    public void moveToTarget(Position waypointPos, double thetaError, boolean isCounterClockwise, boolean onlyRotate, boolean isForDuck)
     {
         position = _localization.getRobotPosition();
         _localization.increment(position);
@@ -158,6 +158,9 @@ public class Navigation {
             orientation = Math.PI / 2;
 
         double error = Math.sqrt(Math.pow(waypointPos.y - position.y, 2) + Math.pow(waypointPos.x - position.x, 2));
+        if (isForDuck && error < 35) {
+            _hardware.clawServo.setPosition(0.75);
+        }
         double speed = Math.sqrt(Math.pow(velocity.dy, 2) + Math.pow(velocity.dx, 2));
 
         magnitude = controller.getOutput(error, speed);
@@ -171,17 +174,17 @@ public class Navigation {
         else
             posOutput = magnitude * Math.cos(orientation);
 //
-        telem.addData("X", position.x);
-        telem.addData("Y", position.y);
-        telem.addData("T", position.t);
-        telem.addData("Orientation", orientation);
-        telem.addData("target T", waypointPos.t);
-        telem.addData("Theta Error", thetaError);
-        telem.addData("ARM", ArmPositionAction.targetArmPos);
+//        telem.addData("X", position.x);
+//        telem.addData("Y", position.y);
+//        telem.addData("T", position.t);
+//        telem.addData("Orientation", orientation);
+//        telem.addData("target T", waypointPos.t);
+//        telem.addData("Theta Error", thetaError);
+//        telem.addData("ARM", _hardware.armMotor.getCurrentPosition());
 //        telem.addData("Raw Theta", _hardware.gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle);
 //        telem.addData("Init Theta", Constants.INIT_THETA);
 //        telem.addData("Velocity", Math.sqrt(Math.pow(velocity.dx, 2) + Math.pow(velocity.dy, 2)));
-        telem.update();
+//        telem.update();
 
 
         double thetaOutput = thetaController.getOutput(Math.abs(thetaError), 0);
