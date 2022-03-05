@@ -36,7 +36,7 @@ public class Drive extends Core {
             spinCarousel(-1);
         }
 
-        if (gamepad1.right_trigger > 0.5 && armMotor.getCurrentPosition() > -4600) {
+        if (gamepad1.right_trigger > 0.5 && armMotor.getCurrentPosition() > -4800) {
             armPower = -1;
             armTarget = armMotor.getCurrentPosition();
         } else if (gamepad1.left_trigger > 0.5 && armMotor.getCurrentPosition() < 0){
@@ -46,8 +46,8 @@ public class Drive extends Core {
             armPower = armController.getOutput(armTarget - armMotor.getCurrentPosition(), 0);
         }
 
-        if (armTarget < -4600) {
-            armTarget = -4600;
+        if (armTarget < -4800) {
+            armTarget = -4800;
         } else if (armTarget > 0) {
             armTarget = 0;
         }
@@ -72,7 +72,7 @@ public class Drive extends Core {
         if (colorTimeout > 0 && System.currentTimeMillis() - colorTimeout > 500) {
             colorTimeout = -1;
             if (colorSensor.green() >= 110 && colorSensor.red() >= 80)
-                armTarget = -4600;
+                armTarget = -4800;
             else {
                 armTarget = 0;
             }
