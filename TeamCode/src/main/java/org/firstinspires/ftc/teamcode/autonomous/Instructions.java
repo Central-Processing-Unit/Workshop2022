@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.autonomous.actions.ColorWaypointJumpAction
 import org.firstinspires.ftc.teamcode.autonomous.actions.DriveToFreightAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.OpenClawAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.OpenClawWideAction;
+import org.firstinspires.ftc.teamcode.autonomous.actions.OverridePositionAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.SpinCarouselAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.WaitForActionsAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.util.ObjectDetector;
@@ -101,6 +102,7 @@ public class Instructions {
                         .run(new WaitForActionsAction(actions))
 //                        .run(new OpenClawWideAction())
                         .run(new SpinCarouselAction())
+                        .run(new OverridePositionAction(new Position(305, 305)))
 //                    .move(new Position(1500, 545, -Math.PI))
 //                        .run(new DriveToFreightAction(objectDetector, true))
 //                        .run(new CloseClawSyncAction())
