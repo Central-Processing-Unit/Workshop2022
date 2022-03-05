@@ -28,6 +28,8 @@ public class DriveToFreightAction extends Action {
     public void execute() {
         int[] pixelVals = objectDetector.getFreightPixelPosition(isDuck);
         Position targetPos = Homography.convertCameraPointToWorldPoint(pixelVals[0], pixelVals[1], instructions.navigation._localization.getRobotPosition());
+        long t = System.currentTimeMillis();
+//        while (System.currentTimeMillis() - t < 10000) {}
         if (pixelVals[0] != -1 && pixelVals[1] != -1) {
             instructions.loopToWaypoint(new Waypoint(targetPos), true);
             AutonCore.telem.addLine("drove to freight");

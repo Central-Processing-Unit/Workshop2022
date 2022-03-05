@@ -73,14 +73,12 @@ public class Instructions {
                 break;
         }
         if (!Constants.IS_LEFT_OPMODE) {
-//            waypointBuilder
-//                    .move(new Position(initialX, initialY, 0))
-//                        .run(new OpenClawWideAction())
-//                        .run(new DriveToFreightAction(objectDetector, true))
-//                        .run(new CloseClawSyncAction());
-//            double shippingHubX = 1250 + (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT ? 0 : 0);
-//            double shippingHubY = 1440 + (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT ? 50 : 0);
-            double shippingHubX = 870;
+            waypointBuilder
+                    .move(new Position(initialX, initialY, 0))
+                        .run(new OpenClawWideAction())
+                        .run(new DriveToFreightAction(objectDetector, true))
+                        .run(new CloseClawSyncAction());
+            /*double shippingHubX = 870;
             if (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.CENTER) {
                 shippingHubX += 20;
             } else if (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT) {
@@ -114,8 +112,13 @@ public class Instructions {
 //                        .run(new ChangeArmTargetAction(0))
                     .move(new Position(1200, 100, 0))
                         .run(new WaitForActionsAction(actions))
-                        .run(new CloseClawSyncAction());
-        } else{
+                        .run(new CloseClawSyncAction());*/
+        } else {
+//            waypointBuilder
+//                    .move(new Position(initialX, initialY, Math.PI / 2))
+//                        .run(new OpenClawWideAction())
+//                        .run(new DriveToFreightAction(objectDetector, false))
+//                        .run(new CloseClawSyncAction());
             double shippingHubX = 1020;
             if (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.CENTER) {
                 shippingHubX += 20;
@@ -131,12 +134,25 @@ public class Instructions {
                         .run(new WaitForActionsAction(actions))
                     .move(new Position(shippingHubX, shippingHubY, 0))
                         .run(new OpenClawAction())
-                    .move(new Position(773, 1780, -Math.PI/2))
+                    .move(new Position(773, 1780, -3 * Math.PI/2))
                         .run(new ChangeArmTargetAction(-500))
-                    .move(new Position(773, 1780), new Position(-80, 1686), new Position(160, 2770), new Position(230, 2850))
-                    .move(new Position(230, 2850, 0))
+                    .move(new Position(initialX - 100, 1780, -3 * Math.PI/2))
                         .run(new ChangeArmTargetAction(0))
+                        .run(new OpenClawWideAction())
+                    .move(new Position(initialX - 100, 2400,  -3 * Math.PI/2))
+                        .run(new DriveToFreightAction(objectDetector, false))
+                        .run(new CloseClawSyncAction())
+                        .run(new ColorWaypointJumpAction(9))
+                        .run(new ChangeArmTargetAction(-4500))
+                    .move(new Position(initialX - 100, 1780, -3 * Math.PI/2))
+                    .move(new Position(shippingHubX, shippingHubY, 0))
+                        .run(new OpenClawAction())
+                    .move(new Position(initialX - 100, 1780, -3 * Math.PI/2))
+                        .run(new ChangeArmTargetAction(-100))
                         .run(new CloseClawAction())
+                    .move(new Position(initialX - 100, 2400, -3 * Math.PI/2))
+                        .run(new ChangeArmTargetAction(0))
+                    .move(new Position(initialX + 100, 2400, 0))
                         .run(new WaitForActionsAction(actions));
         }
     }
