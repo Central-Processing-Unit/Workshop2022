@@ -73,13 +73,11 @@ public class Instructions {
                 break;
         }
         if (!Constants.IS_LEFT_OPMODE) {
-//            waypointBuilder
-//                    .move(new Position(initialX, initialY, 0))
-//                        .run(new OpenClawWideAction())
-//                        .run(new DriveToFreightAction(objectDetector, true))
-//                        .run(new CloseClawSyncAction());
-//            double shippingHubX = 1250 + (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT ? 0 : 0);
-//            double shippingHubY = 1440 + (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT ? 50 : 0);
+            /*waypointBuilder
+                    .move(new Position(initialX, initialY, 0))
+                        .run(new OpenClawWideAction())
+                        .run(new DriveToFreightAction(objectDetector, true))
+                        .run(new CloseClawSyncAction());*/
             double shippingHubX = 870;
             if (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.CENTER) {
                 shippingHubX += 20;
@@ -103,15 +101,15 @@ public class Instructions {
                         .run(new WaitForActionsAction(actions))
 //                        .run(new OpenClawWideAction())
                         .run(new SpinCarouselAction())
-                    .move(new Position(1500, 545, -Math.PI))
-                        .run(new DriveToFreightAction(objectDetector, true))
-                        .run(new CloseClawSyncAction())
-                        .run(new ColorWaypointJumpAction(7))
-                        .run(new ChangeArmTargetAction(-3800))
-                    .move(new Position(1300, 1600, Math.PI/4))
-                        .run(new WaitForActionsAction(actions))
-                        .run(new OpenClawAction())
-                        .run(new ChangeArmTargetAction(0))
+//                    .move(new Position(1500, 545, -Math.PI))
+//                        .run(new DriveToFreightAction(objectDetector, true))
+//                        .run(new CloseClawSyncAction())
+//                        .run(new ColorWaypointJumpAction(7))
+//                        .run(new ChangeArmTargetAction(-3800))
+//                    .move(new Position(1300, 1600, Math.PI/4))
+//                        .run(new WaitForActionsAction(actions))
+//                        .run(new OpenClawAction())
+//                        .run(new ChangeArmTargetAction(0))
                     .move(new Position(1200, 100, 0))
                         .run(new WaitForActionsAction(actions))
                         .run(new CloseClawSyncAction());
