@@ -44,6 +44,13 @@ public class Drive extends Core {
             armTarget = armMotor.getCurrentPosition();
         } else {
             armPower = armController.getOutput(armTarget - armMotor.getCurrentPosition(), 0);
+            // todo: arm motor goes slower in PID. solution: override PID when it's mildly far from it's target
+            // current problem: manual lift and then claw open leads to arm continuing to go up
+//            if (armTarget - armMotor.getCurrentPosition() > 150) {
+//                armPower = -1;
+//            } else if (armTarget == 0 && armMotor.getCurrentPosition() > 150) {
+//                armPower = 1;
+//            }
         }
 
         if (armTarget < -4600) {
@@ -123,8 +130,8 @@ public class Drive extends Core {
 
         if (!turboMode)
         {
-            negative_power *= 0.5;
-            positive_power *= 0.5;
+            negative_power *= 0.6;
+            positive_power *= 0.6;
             rot_power *= 0.6;
         }
 
