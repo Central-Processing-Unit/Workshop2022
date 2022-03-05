@@ -78,8 +78,15 @@ public class Instructions {
 //                        .run(new OpenClawWideAction())
 //                        .run(new DriveToFreightAction(objectDetector, true))
 //                        .run(new CloseClawSyncAction());
-            double shippingHubX = 1080 + (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT ? 0 : 0);
-            double shippingHubY = 1680 + (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT ? 50 : 0);
+//            double shippingHubX = 1250 + (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT ? 0 : 0);
+//            double shippingHubY = 1440 + (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT ? 50 : 0);
+            double shippingHubX = 870;
+            if (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.CENTER) {
+                shippingHubX += 20;
+            } else if (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT) {
+                shippingHubX += 60;
+            }
+            double shippingHubY = 1540;
             waypointBuilder
                     .runContinuously(armPositionAction)
                     .move(new Position(initialX, initialY, 0))
@@ -90,32 +97,39 @@ public class Instructions {
                     .move(new Position(shippingHubX, shippingHubY, 0))
                         .run(new OpenClawAction())
                     .move(new Position(shippingHubX, shippingHubY), new Position(664, 1250), new Position(600, 1040), new Position(575, 664, 0))
-                        .run(new ChangeArmTargetAction(-500))
-                    .move(new Position(575, 444, 0))
                         .run(new ChangeArmTargetAction(0))
-                        .run(new OpenClawWideAction())
+                    .move(new Position(575, 100, 0))
+//                        .run(new ChangeArmTargetAction(0))
+                        .run(new WaitForActionsAction(actions))
+//                        .run(new OpenClawWideAction())
                         .run(new SpinCarouselAction())
-                        .run(new WaitForActionsAction(actions))
-                    .move(new Position(1500, 345, -Math.PI))
-                        .run(new DriveToFreightAction(objectDetector, true))
-                        .run(new CloseClawSyncAction())
-                        .run(new ColorWaypointJumpAction(7))
-                        .run(new ChangeArmTargetAction(-3800))
-                    .move(new Position(1500, 1400, Math.PI/4))
-                        .run(new WaitForActionsAction(actions))
-                        .run(new OpenClawAction())
-                        .run(new ChangeArmTargetAction(0))
-                    .move(new Position(1100, 304, 0))
+//                    .move(new Position(1500, 545, -Math.PI))
+//                        .run(new DriveToFreightAction(objectDetector, true))
+//                        .run(new CloseClawSyncAction())
+//                        .run(new ColorWaypointJumpAction(7))
+//                        .run(new ChangeArmTargetAction(-3800))
+//                    .move(new Position(1300, 1600, Math.PI/4))
+//                        .run(new WaitForActionsAction(actions))
+//                        .run(new OpenClawAction())
+//                        .run(new ChangeArmTargetAction(0))
+                    .move(new Position(1200, 100, 0))
                         .run(new WaitForActionsAction(actions))
                         .run(new CloseClawSyncAction());
         } else{
+            double shippingHubX = 1020;
+            if (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.CENTER) {
+                shippingHubX += 20;
+            } else if (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT) {
+                shippingHubX += 60;
+            }
+            double shippingHubY = 1240;
             waypointBuilder
                     .runContinuously(armPositionAction)
                     .move(new Position(initialX, initialY, 0))
                         .run(new CloseClawAction())
                         .run(new ChangeArmTargetAction(targetArmPos))
                         .run(new WaitForActionsAction(actions))
-                    .move(new Position(973, 1780, -Math.PI/4))
+                    .move(new Position(shippingHubX, shippingHubY, 0))
                         .run(new OpenClawAction())
                     .move(new Position(773, 1780, -Math.PI/2))
                         .run(new ChangeArmTargetAction(-500))

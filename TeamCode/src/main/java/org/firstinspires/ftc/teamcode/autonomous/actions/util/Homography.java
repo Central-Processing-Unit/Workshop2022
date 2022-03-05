@@ -54,7 +54,7 @@ public class Homography {
         AutonCore.telem.update();
 //        worldYRelativeToRobot += 3;//3;
 //        worldXRelativeToRobot *= 1.1;
-        worldXRelativeToRobot -= 2.5;
+        worldXRelativeToRobot -= 3;
 
         // (worldYRelativeToRobot, worldXRelativeToRobot) is a coordinate relative to the robot, with the y-axis being in line with the direction that the robot is facing (aka theta is forward)
         // in this coordinate space, (0, 0) is the position of the camera
