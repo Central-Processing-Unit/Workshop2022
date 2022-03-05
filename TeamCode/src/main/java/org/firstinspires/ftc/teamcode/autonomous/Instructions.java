@@ -74,12 +74,12 @@ public class Instructions {
                 break;
         }
         if (!Constants.IS_LEFT_OPMODE) {
-            waypointBuilder
-                    .move(new Position(initialX, initialY, 0))
-                        .run(new OpenClawWideAction())
-                        .run(new DriveToFreightAction(objectDetector, true))
-                        .run(new CloseClawSyncAction());
-            /*double shippingHubX = 870;
+//            waypointBuilder
+//                    .move(new Position(initialX, initialY, 0))
+//                        .run(new OpenClawWideAction())
+//                        .run(new DriveToFreightAction(objectDetector, true))
+//                        .run(new CloseClawSyncAction());
+            double shippingHubX = 870;
             if (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.CENTER) {
                 shippingHubX += 20;
             } else if (objectDetector.getTeamElementLocation() == ObjectDetector.TeamElementLocation.RIGHT) {
@@ -97,7 +97,7 @@ public class Instructions {
                         .run(new OpenClawAction())
                     .move(new Position(shippingHubX, shippingHubY), new Position(664, 1250), new Position(600, 1040), new Position(575, 664, 0))
                         .run(new ChangeArmTargetAction(0))
-                    .move(new Position(575, 100, 0))
+                    .move(new Position(525, 100, 0))
 //                        .run(new ChangeArmTargetAction(0))
                         .run(new WaitForActionsAction(actions))
 //                        .run(new OpenClawWideAction())
@@ -111,9 +111,9 @@ public class Instructions {
 //                        .run(new WaitForActionsAction(actions))
 //                        .run(new OpenClawAction())
 //                        .run(new ChangeArmTargetAction(0))
-                    .move(new Position(1200, 100, 0))
+                    .move(new Position(1050, 100, 0))
                         .run(new WaitForActionsAction(actions))
-                        .run(new CloseClawSyncAction());*/
+                        .run(new CloseClawSyncAction());
         } else {
 //            waypointBuilder
 //                    .move(new Position(initialX, initialY, Math.PI / 2))

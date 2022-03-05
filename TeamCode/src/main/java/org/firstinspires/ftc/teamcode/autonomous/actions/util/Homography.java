@@ -84,7 +84,7 @@ public class Homography {
         } else if (newTheta < 0) {
             newTheta += 2 * Math.PI;
         }
-        return new Position(robotPos.x + 25.4 * deltaXf, robotPos.y + 25.4 * deltaYf, robotPos.t);
+        return new Position(robotPos.x + 25.4 * deltaXf, robotPos.y + 25.4 * deltaYf, 0);
     }
 
 }
