@@ -102,6 +102,7 @@ public class Instructions {
                         .run(new WaitForActionsAction(actions))
 //                        .run(new OpenClawWideAction())
                         .run(new SpinCarouselAction())
+                        .run(new OverridePositionAction(new Position(305, 305)))
 //                    .move(new Position(1500, 545, -Math.PI))
 //                        .run(new DriveToFreightAction(objectDetector, true))
 //                        .run(new CloseClawSyncAction())
