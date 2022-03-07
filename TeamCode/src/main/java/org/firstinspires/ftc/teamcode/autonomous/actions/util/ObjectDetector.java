@@ -23,14 +23,15 @@ public class ObjectDetector {
 
     public int[] getFreightPixelPosition(boolean isDuck) {
         Mat mat = webcamPipeline.getLastMat();
+        Mat sm = mat.submat(0, mat.rows(), mat.cols() / 3, 2 * mat.cols() / 3);
         Mat hsvMat = new Mat();
-        Imgproc.cvtColor(mat, hsvMat, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(sm, hsvMat, Imgproc.COLOR_RGB2HSV);
         Mat output = new Mat();
         Core.inRange(hsvMat, new Scalar(20, isDuck ? 100 : 50, 100), new Scalar(150, 350, 500), output);
         int mi = -1, mj = -1;
         outer: for (int j = output.rows() - 1; j >= 10; j -= 5) {
             pixelloop: for (int i = 0; i < output.cols(); i += 5) {
-                for (int k = 0; k < 50; k++) {
+                for (int k = 0; k < 25; k++) {
                     if (output.get(j, i - k)[0] == 0) {
                         continue pixelloop;
                     }
@@ -40,7 +41,7 @@ public class ObjectDetector {
                 break outer;
             }
         }
-        return new int[]{mi, mj};
+        return new int[]{mi + mat.cols() / 3, mj};
     }
 
     public void calculateState() {

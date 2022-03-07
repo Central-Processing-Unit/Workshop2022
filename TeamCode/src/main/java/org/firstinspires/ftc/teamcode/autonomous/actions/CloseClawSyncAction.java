@@ -14,7 +14,7 @@ public class CloseClawSyncAction extends Action {
     {
         hardware.clawServo.setPosition(0.75);
         long t = System.currentTimeMillis();
-        while (System.currentTimeMillis() - t < 1000) {
+        while (System.currentTimeMillis() - t < 1500) {
         }
     }
 }

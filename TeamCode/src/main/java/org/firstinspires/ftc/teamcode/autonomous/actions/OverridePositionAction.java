@@ -4,24 +4,26 @@ import org.firstinspires.ftc.teamcode.autonomous.Instructions;
 import org.firstinspires.ftc.teamcode.autonomous.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.autonomous.localization.Position;
 
-public class OverridePositionAction extends Action
-{
-    Position pos;
+public class OverridePositionAction extends Action {
+    private final Double tx;
+    private final Double ty;
 
-    public OverridePositionAction(Position pos)
+    public OverridePositionAction(Double x, Double y)
     {
         super();
-        this.pos = pos;
-    }
-    public OverridePositionAction(Hardware hardware, Instructions instructions, int index, int priority, Position pos)
-    {
-        super(hardware, instructions, index, priority);
-        this.pos = pos;
+        this.tx = x;
+        this.ty = y;
     }
 
-    @Override
-    public void execute()
+    public OverridePositionAction(Hardware hardware, Instructions instructions, int index, int priority, Double x, Double y)
     {
-        instructions.navigation.position = pos;
+        super(hardware, instructions, index, priority);
+        this.tx = x;
+        this.ty = y;
+    }
+    @Override
+    public void execute() {
+        instructions.navigation._localization.increment(new Position(tx != null ? tx : instructions.navigation._localization.getRobotPosition().x, ty != null ? ty : instructions.navigation._localization.getRobotPosition().y, instructions.navigation._localization.getRobotPosition().t));
+        instructions.navigation._localization.increment(new Position(tx != null ? tx : instructions.navigation._localization.getRobotPosition().x, ty != null ? ty : instructions.navigation._localization.getRobotPosition().y, instructions.navigation._localization.getRobotPosition().t));
     }
 }

@@ -9,8 +9,8 @@ public final class Constants {
     public static Boolean IS_BLUE_TEAM = false;
     public static final double BLUE_LEFT_INITIAL_Y = 2053;
     public static final double BLUE_RIGHT_INITIAL_Y = 835;
-    public static final double RED_LEFT_INITIAL_Y = 2213;
-    public static final double RED_RIGHT_INITIAL_Y = 995;
+    public static final double RED_LEFT_INITIAL_Y = 2013;//2213;
+    public static final double RED_RIGHT_INITIAL_Y = 895;//995;
     public static final double INITIAL_X = 215;
     public static final double BLUE_INITIAL_THETA = 3 * Math.PI / 2;
     public static final double RED_INITIAL_THETA = Math.PI / 2;

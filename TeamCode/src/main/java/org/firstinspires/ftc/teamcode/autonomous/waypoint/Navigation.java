@@ -5,7 +5,11 @@ import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.autonomous.AutonCore;
+import org.firstinspires.ftc.teamcode.autonomous.Constants;
 import org.firstinspires.ftc.teamcode.autonomous.actions.ArmPositionAction;
 import org.firstinspires.ftc.teamcode.autonomous.actions.util.ObjectDetector;
 import org.firstinspires.ftc.teamcode.autonomous.control.PID;
@@ -45,7 +49,7 @@ public class Navigation {
 
         _hardware = hardware;
         _localization = localization;
-        PIDCoefficients coefficients = new PIDCoefficients(0.009, 0.00003, 0);
+        PIDCoefficients coefficients = new PIDCoefficients(/*0.019*/ 0.01, 0.00003, 0);
         PIDCoefficients thetaCoefficients = new PIDCoefficients(0.25, 0.0004, 0);
         controller = new PID(coefficients);
         thetaController = new PID(thetaCoefficients);
@@ -67,9 +71,15 @@ public class Navigation {
     public boolean isTargetReached(Waypoint waypoint) {
         boolean thetaFinished = false;
         double thetaError = waypoint.targetPos.t - position.t;
-        if ((thetaError) < 0 && (thetaError < -Math.PI)) {
-            thetaError = waypoint.targetPos.t - position.t + (2 * Math.PI); // todo: might want to store theta error to an instance variable so we don't calculate it twice every iteration
+        if (Math.abs(waypoint.targetPos.t - (position.t - 2 * Math.PI)) < Math.abs(thetaError)) {
+            thetaError = waypoint.targetPos.t - (position.t - 2 * Math.PI);
         }
+        if (Math.abs(waypoint.targetPos.t - (position.t + 2 * Math.PI)) < Math.abs(thetaError)) {
+            thetaError = waypoint.targetPos.t - (position.t + 2 * Math.PI);
+        }
+//        if ((thetaError) < 0 && (thetaError < -Math.PI)) {
+//            thetaError = waypoint.targetPos.t - position.t + (2 * Math.PI); // todo: might want to store theta error to an instance variable so we don't calculate it twice every iteration
+//        }
 
         if (Math.abs(thetaError) < THETA_TOLERANCE) {
             thetaFinished = true;
@@ -80,8 +90,16 @@ public class Navigation {
 	public void driveToTarget(Position start, Position control1, Position control2, Position destination, boolean isSpline, boolean onlyRotate, boolean isForDuck)
     {
         arcLength = splineController.getArcLength(start, control1, control2, destination);
-        double thetaError = destination.t - position.t;
+        double thetaError = destination.t - position.t; // -6
         boolean isCounterClockwise = false;
+        if (Math.abs(destination.t - (position.t - 2 * Math.PI)) < Math.abs(thetaError)) {
+            thetaError = destination.t - (position.t - 2 * Math.PI);
+            isCounterClockwise = true;
+        }
+        if (Math.abs(destination.t - (position.t + 2 * Math.PI)) < Math.abs(thetaError)) {
+            thetaError = destination.t - (position.t + 2 * Math.PI);
+            isCounterClockwise = true;
+        }
         if ((thetaError) > 0 && (thetaError < Math.PI) ) {
             isCounterClockwise = true;
         }
@@ -173,18 +191,18 @@ public class Navigation {
             posOutput = negOutput;
         else
             posOutput = magnitude * Math.cos(orientation);
-//
-//        telem.addData("X", position.x);
-//        telem.addData("Y", position.y);
-//        telem.addData("T", position.t);
-//        telem.addData("Orientation", orientation);
-//        telem.addData("target T", waypointPos.t);
-//        telem.addData("Theta Error", thetaError);
-//        telem.addData("ARM", _hardware.armMotor.getCurrentPosition());
-//        telem.addData("Raw Theta", _hardware.gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle);
-//        telem.addData("Init Theta", Constants.INIT_THETA);
-//        telem.addData("Velocity", Math.sqrt(Math.pow(velocity.dx, 2) + Math.pow(velocity.dy, 2)));
-//        telem.update();
+
+        telem.addData("X", position.x);
+        telem.addData("Y", position.y);
+        telem.addData("T", position.t);
+        telem.addData("Orientation", orientation);
+        telem.addData("target T", waypointPos.t);
+        telem.addData("Theta Error", thetaError);
+        telem.addData("ARM", _hardware.armMotor.getCurrentPosition());
+        telem.addData("Raw Theta", _hardware.gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle);
+        telem.addData("Init Theta", Constants.INIT_THETA);
+        telem.addData("Velocity", Math.sqrt(Math.pow(velocity.dx, 2) + Math.pow(velocity.dy, 2)));
+        telem.update();
 
 
         double thetaOutput = thetaController.getOutput(Math.abs(thetaError), 0);

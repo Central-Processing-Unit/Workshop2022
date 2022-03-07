@@ -54,26 +54,28 @@ public class Homography {
         AutonCore.telem.update();
 //        worldYRelativeToRobot += 3;//3;
 //        worldXRelativeToRobot *= 1.1;
-        worldXRelativeToRobot -= 3;
+        worldXRelativeToRobot += 2.439;//3;
+        worldXRelativeToRobot = 0;
 
         // (worldYRelativeToRobot, worldXRelativeToRobot) is a coordinate relative to the robot, with the y-axis being in line with the direction that the robot is facing (aka theta is forward)
         // in this coordinate space, (0, 0) is the position of the camera
 
         // Thus, convert to absolute world space using the algorithm from Encoder
-        double theta = robotPos.t;
+        double theta = robotPos.t;//Instructions.initialTheta;//robotPos.t;
         double deltaXf = worldXRelativeToRobot * Math.cos(theta) - worldYRelativeToRobot * Math.sin(theta);
         double deltaYf = worldYRelativeToRobot * Math.cos(theta) + worldXRelativeToRobot * Math.sin(theta);
 //        deltaXf *= 0.95;
 //        deltaYf *= 0.95;
 
 
-        double fieldTheta = -Math.atan(deltaYf / deltaXf) - Math.PI;
-        double newTheta = Instructions.initialTheta + (Constants.IS_BLUE_TEAM ? 1 : -1) * fieldTheta;
+        double fieldTheta = -Math.atan(deltaYf / deltaXf)/* - Math.PI*/;
+        double newTheta = /*Instructions.initialTheta +*/ (Constants.IS_BLUE_TEAM ? -1 : -1) * fieldTheta;
         AutonCore.telem.addData("dxf", deltaXf);
         AutonCore.telem.addData("dyf", deltaYf);
         AutonCore.telem.addData("x", x);
         AutonCore.telem.addData("y", y);
-        AutonCore.telem.addData("initialTheta", fieldTheta);
+        AutonCore.telem.addData("t", robotPos.t);
+        AutonCore.telem.addData("initialTheta", Instructions.initialTheta);
         AutonCore.telem.addData("fieldTheta", fieldTheta);
         AutonCore.telem.addData("newTheta", newTheta);
         AutonCore.telem.update();
@@ -82,7 +84,7 @@ public class Homography {
         } else if (newTheta < 0) {
             newTheta += 2 * Math.PI;
         }
-        return new Position(robotPos.x + 25.4 * deltaXf, robotPos.y + 25.4 * deltaYf, newTheta);
+        return new Position(robotPos.x + 25.4 * deltaXf, robotPos.y + 25.4 * deltaYf, 0);
     }
 
 }
