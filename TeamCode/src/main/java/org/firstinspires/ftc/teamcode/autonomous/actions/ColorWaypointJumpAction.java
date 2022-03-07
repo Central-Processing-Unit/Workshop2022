@@ -20,7 +20,7 @@ public class ColorWaypointJumpAction extends Action {
 
     @Override
     public void execute() {
-        isInClaw = hardware.colorSensor.green() >= 110 || hardware.colorSensor.red() >= 80;
+        isInClaw = hardware.colorSensor.green() >= 110 && hardware.colorSensor.red() >= 80;
         if (!isInClaw) { // >=80 means that the block/ball/duck is in the claw
             instructions.waypointManager.setIndex(waypointIndex - 1);
         }

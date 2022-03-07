@@ -17,7 +17,7 @@ public class Drive extends Core {
     int carouselDirection = 0;
     Orientation gyro_angles;
     long prevTime = System.currentTimeMillis();
-    boolean isClawClosed;
+    boolean isClawClosed = true;
     long bLastPressed = -1;
     long yLastPressed = -1;
     boolean turboMode;

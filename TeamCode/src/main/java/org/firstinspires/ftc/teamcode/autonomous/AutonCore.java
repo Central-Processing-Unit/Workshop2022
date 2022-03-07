@@ -25,6 +25,8 @@ public class AutonCore {
 
         opMode.waitForStart();
         runtime.reset();
+        long t = System.currentTimeMillis();
+        while (System.currentTimeMillis() - t < 6000) {}
 
         /*do {
             Constants.INIT_THETA = hardware.gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).secondAngle;
