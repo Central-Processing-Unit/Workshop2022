@@ -1,17 +1,11 @@
 package org.firstinspires.ftc.teamcode.autonomous.waypoint;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.teamcode.autonomous.AutonCore;
 import org.firstinspires.ftc.teamcode.autonomous.Constants;
-import org.firstinspires.ftc.teamcode.autonomous.actions.ArmPositionAction;
-import org.firstinspires.ftc.teamcode.autonomous.actions.util.ObjectDetector;
 import org.firstinspires.ftc.teamcode.autonomous.control.PID;
 import org.firstinspires.ftc.teamcode.autonomous.control.SplineController;
 import org.firstinspires.ftc.teamcode.autonomous.hardware.Hardware;
@@ -62,11 +56,7 @@ public class Navigation {
         waypoints.clear();
     }
 
-    public void driveToTarget(Position destination, boolean isForDuck) {
-        driveToTarget(destination, false, false, isForDuck);
-    }
-
-    public void driveToTarget(Position destination, boolean isSpline, boolean onlyRotate, boolean isForDuck) { driveToTarget(new Position(0,0,0), new Position(0,0,0), new Position(0,0,0), destination, isSpline, onlyRotate, isForDuck); }
+    public void driveToTarget(Position destination, boolean isSpline, boolean onlyRotate) { driveToTarget(new Position(0,0,0), new Position(0,0,0), new Position(0,0,0), destination, isSpline, onlyRotate); }
 
     public boolean isTargetReached(Waypoint waypoint) {
         boolean thetaFinished = false;
@@ -87,7 +77,7 @@ public class Navigation {
         return !(((Math.abs(waypoint.targetPos.x - position.x) > 10) || (Math.abs(waypoint.targetPos.y - position.y) > 10) || !thetaFinished) && (!waypoint.onlyRotate || !thetaFinished)) && (!waypoint.isSpline || t > 1);
     }
 
-	public void driveToTarget(Position start, Position control1, Position control2, Position destination, boolean isSpline, boolean onlyRotate, boolean isForDuck)
+	public void driveToTarget(Position start, Position control1, Position control2, Position destination, boolean isSpline, boolean onlyRotate)
     {
         arcLength = splineController.getArcLength(start, control1, control2, destination);
         double thetaError = destination.t - position.t; // -6
@@ -112,7 +102,7 @@ public class Navigation {
         if (isSpline && t < 1) {
             splineToTarget(start, control1, control2, destination);
         } else {
-            moveToTarget(destination, thetaError, isCounterClockwise, onlyRotate, isForDuck);
+            moveToTarget(destination, thetaError, isCounterClockwise, onlyRotate);
         }
 
     }
@@ -160,7 +150,7 @@ public class Navigation {
             _hardware.setMotorValues(0, 0);
     }
 
-    public void moveToTarget(Position waypointPos, double thetaError, boolean isCounterClockwise, boolean onlyRotate, boolean isForDuck)
+    public void moveToTarget(Position waypointPos, double thetaError, boolean isCounterClockwise, boolean onlyRotate)
     {
         position = _localization.getRobotPosition();
         _localization.increment(position);
@@ -176,9 +166,6 @@ public class Navigation {
             orientation = Math.PI / 2;
 
         double error = Math.sqrt(Math.pow(waypointPos.y - position.y, 2) + Math.pow(waypointPos.x - position.x, 2));
-        if (isForDuck && error < 35) {
-            _hardware.clawServo.setPosition(0.75);
-        }
         double speed = Math.sqrt(Math.pow(velocity.dy, 2) + Math.pow(velocity.dx, 2));
 
         magnitude = controller.getOutput(error, speed);

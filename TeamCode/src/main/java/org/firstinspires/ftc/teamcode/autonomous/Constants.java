@@ -14,7 +14,4 @@ public final class Constants {
     public static final double INITIAL_X = 215;
     public static final double BLUE_INITIAL_THETA = 3 * Math.PI / 2;
     public static final double RED_INITIAL_THETA = Math.PI / 2;
-    public static final int WEBCAM_WIDTH = 1280;
-    public static final int WEBCAM_HEIGHT = 720;
-    public static final int WEBCAM_SECTION_WIDTH = 527;
 }
